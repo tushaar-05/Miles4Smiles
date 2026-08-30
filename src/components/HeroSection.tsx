@@ -138,7 +138,7 @@ export default function HeroSection() {
 
             {/* Register button */}
             <Link
-              href="#register"
+              href="/register"
               id="hero-register-btn"
               className="h-register-btn"
               style={{
@@ -217,7 +217,7 @@ export default function HeroSection() {
                 </Link>
               ))}
               <Link
-                href="#register"
+                href="/register"
                 onClick={() => setMobileOpen(false)}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '8px',

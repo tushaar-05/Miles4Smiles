@@ -51,7 +51,7 @@ export default function Navbar() {
         {/* REGISTER button — lime green */}
         <div className="hidden md:block">
           <Link
-            href="#register"
+            href="/register"
             id="navbar-register-cta"
             className="inline-flex items-center gap-2.5 bg-[#c8f135] hover:bg-[#d4f851] active:bg-[#b8e025] text-neutral-900 font-black text-sm px-5 py-2.5 rounded-lg transition-all duration-150 tracking-widest uppercase"
           >
@@ -85,7 +85,7 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="#register"
+            href="/register"
             onClick={() => setMobileOpen(false)}
             className="inline-flex items-center justify-center gap-2 bg-[#c8f135] text-neutral-900 font-black text-sm px-5 py-3 rounded-lg uppercase tracking-widest mt-1"
           >
