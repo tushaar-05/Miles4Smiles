@@ -546,6 +546,9 @@ export default function HeroSection() {
             alignItems: 'center',
             overflow: 'hidden',
             flexShrink: 0,
+            transform: 'rotate(-2deg) scale(1.06)',
+            transformOrigin: 'center center',
+            boxShadow: '0 -6px 24px rgba(0, 0, 0, 0.28)',
           }}
         >
           <div
