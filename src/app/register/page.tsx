@@ -12,6 +12,9 @@ import {
   Mail,
   ShieldCheck,
   PartyPopper,
+  Stethoscope,
+  HeartHandshake,
+  Smile,
 } from 'lucide-react';
 
 /* ─── Dropdown Options ─── */
@@ -177,8 +180,37 @@ export default function RegisterPage() {
           margin-top: 10px;
         }
 
+        /* Impact band */
+        .impact {
+          max-width: 840px;
+          margin: -34px auto 0;
+          padding: 0 16px;
+          position: relative;
+          z-index: 6;
+        }
+        .impact-card {
+          background: #fff;
+          border-radius: 16px;
+          box-shadow: 0 14px 40px rgba(11, 26, 74, 0.14);
+          padding: 18px 22px;
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 18px;
+        }
+        .impact-item { display: flex; align-items: flex-start; gap: 10px; }
+        .impact-icon {
+          width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+          background: rgba(200, 255, 61, 0.25); color: var(--navy-2);
+          display: flex; align-items: center; justify-content: center;
+        }
+        .impact-item h4 { font-size: 13px; font-weight: 700; color: var(--ink); margin: 0 0 2px; }
+        .impact-item p { font-size: 12px; color: var(--slate); margin: 0; line-height: 1.4; }
+        @media (max-width: 620px) {
+          .impact-card { grid-template-columns: 1fr; }
+        }
+
         /* Main card */
-        .shell { max-width: 840px; margin: -46px auto 60px; padding: 0 16px; position: relative; z-index: 5; }
+        .shell { max-width: 840px; margin: 30px auto 60px; padding: 0 16px; position: relative; z-index: 5; }
         .card {
           background: #fff;
           border-radius: 20px;
@@ -291,6 +323,8 @@ export default function RegisterPage() {
         .cat-price small { font-size: 14px; font-weight: 600; opacity: 0.7; }
         .cat-note { font-size: 13px; line-height: 1.5; color: var(--slate); background: var(--paper); border-radius: 10px; padding: 12px 14px; }
         .cat-card.active .cat-note { color: rgba(255, 255, 255, 0.85); background: rgba(255, 255, 255, 0.08); }
+        .cat-impact { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--navy-2); margin-top: 10px; }
+        .cat-card.active .cat-impact { color: var(--lime); }
 
         /* Finish line panel */
         .finish {
@@ -310,6 +344,7 @@ export default function RegisterPage() {
         .finish-label { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, 0.65); }
         .finish-price { font-size: 34px; font-weight: 900; color: var(--lime); line-height: 1; margin: 4px 0 6px; }
         .finish-sub { font-size: 12.5px; color: rgba(255, 255, 255, 0.7); }
+        .finish-trust { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: rgba(200, 255, 61, 0.9); margin-top: 8px; }
         .finish-cta {
           background: var(--lime);
           color: var(--navy);
@@ -341,6 +376,7 @@ export default function RegisterPage() {
         .ticket-grid span { font-size: 11px; color: var(--slate); }
         .ticket-grid div { font-weight: 700; color: var(--ink); margin-top: 2px; }
         .home-btn { display: inline-block; background: var(--navy); color: #fff; padding: 14px 30px; border-radius: 999px; font-weight: 700; font-size: 14px; text-decoration: none; }
+        .impact-note { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: var(--navy-2); background: rgba(200, 255, 61, 0.18); border-radius: 999px; padding: 9px 16px; margin: 0 0 26px; }
 
         @media (max-width: 620px) {
           .checkpoint { grid-template-columns: 1fr; }
@@ -372,9 +408,36 @@ export default function RegisterPage() {
           </div>
 
           <h1 className="hero-title display">5K Charity Run — Registration</h1>
-          <p className="hero-sub">Five checkpoints stand between you and your bib number.</p>
+          <p className="hero-sub">Five checkpoints stand between you and your bib number — and every rupee funds a child's smile.</p>
         </div>
       </header>
+
+      {/* ══════════════ IMPACT BAND ══════════════ */}
+      <div className="impact">
+        <div className="impact-card">
+          <div className="impact-item">
+            <div className="impact-icon"><Stethoscope size={16} /></div>
+            <div>
+              <h4>Free dental screening</h4>
+              <p>Your fee funds a check-up for a child who wouldn't otherwise get one.</p>
+            </div>
+          </div>
+          <div className="impact-item">
+            <div className="impact-icon"><HeartHandshake size={16} /></div>
+            <div>
+              <h4>100% goes to the cause</h4>
+              <p>No cut, no admin fee — your registration goes straight to Miles for Smiles.</p>
+            </div>
+          </div>
+          <div className="impact-item">
+            <div className="impact-icon"><Smile size={16} /></div>
+            <div>
+              <h4>Real aftercare</h4>
+              <p>Treatment and hygiene kits so the care doesn't stop at the first visit.</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* ══════════════ MAIN ══════════════ */}
       <main className="shell">
@@ -385,6 +448,10 @@ export default function RegisterPage() {
             </div>
             <h2 className="display">Registration confirmed</h2>
             <p>Thanks for running with us — your bib is locked in and your spot on the route is saved.</p>
+
+            <div className="impact-note">
+              <Smile size={15} /> Your ₹{price} is already on its way to a child's dental care
+            </div>
 
             <div className="ticket">
               <div className="ticket-top">
@@ -453,6 +520,7 @@ export default function RegisterPage() {
                         <h4 className="cat-title">Competitive</h4>
                         <div className="cat-price tabular"><span className="display">₹249</span><small>.00</small></div>
                         <p className="cat-note">You'll start a little ahead of the pack, closer to the timing line.</p>
+                        <div className="cat-impact"><Smile size={13} /> Funds a full dental check-up + hygiene kit</div>
                       </div>
 
                       <div
@@ -468,6 +536,7 @@ export default function RegisterPage() {
                         <h4 className="cat-title">Non-Competitive</h4>
                         <div className="cat-price tabular"><span className="display">₹149</span><small>.00</small></div>
                         <p className="cat-note">Run the 5K at your own pace, alongside friends and family.</p>
+                        <div className="cat-impact"><Smile size={13} /> Funds a free dental screening for a child</div>
                       </div>
                     </div>
                   </div>
@@ -615,6 +684,7 @@ export default function RegisterPage() {
                     <div className="finish-label">5KM · Selected category total</div>
                     <div className="finish-price tabular display">₹{price}.00</div>
                     <div className="finish-sub">{category === 'competitive' ? 'Competitive 5K run' : 'Non-competitive 5K fun run'}</div>
+                    <div className="finish-trust"><HeartHandshake size={13} /> 100% goes to Miles for Smiles</div>
                   </div>
                   <button type="submit" disabled={isSubmitting} className="finish-cta">
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
