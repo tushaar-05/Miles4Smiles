@@ -88,24 +88,32 @@ export default function HeroSection() {
             {/* Logo */}
             <Link
               href="/"
-              aria-label="Run Beyond Limits"
-              style={{ flexShrink: 0, lineHeight: 0 }}
+              aria-label="Miles for Smiles"
+              style={{ flexShrink: 0, lineHeight: 0, display: 'flex', alignItems: 'center' }}
             >
-              <svg width="38" height="32" viewBox="0 0 38 32" fill="none" aria-hidden="true">
-                <rect x="2"  y="2"  width="14" height="5" rx="0.5" fill="#C8FF3D" />
-                <rect x="2"  y="12" width="22" height="5" rx="0.5" fill="#C8FF3D" />
-                <rect x="2"  y="22" width="12" height="5" rx="0.5" fill="#C8FF3D" />
-                <rect x="19" y="22" width="5"  height="5" rx="0.5" fill="#C8FF3D" />
-              </svg>
+              <Image
+                src="/images/logo.png"
+                alt="Miles for Smiles Logo"
+                width={160}
+                height={44}
+                style={{
+                  height: 'auto',
+                  maxHeight: '40px',
+                  width: 'auto',
+                  maxWidth: '180px',
+                  objectFit: 'contain',
+                }}
+                priority
+              />
             </Link>
 
             {/* Desktop nav */}
             <nav
               className="h-desktop-nav"
-              style={{ display: 'flex', alignItems: 'center', gap: '7px', flex: 1, marginLeft: '20px' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '18px', flex: 1, marginLeft: '36px' }}
             >
               {NAV_LINKS.map((link, i) => (
-                <span key={link.href} style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                <span key={link.href} style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
                   <Link
                     href={link.href}
                     style={{
@@ -113,7 +121,7 @@ export default function HeroSection() {
                       textDecoration: 'none',
                       fontSize: '15px',
                       fontWeight: 400,
-                      letterSpacing: '0.01em',
+                      letterSpacing: '0.02em',
                       transition: 'color 0.15s',
                     }}
                   >
@@ -237,37 +245,75 @@ export default function HeroSection() {
           }}
         >
 
-          {/* ══ DATE BADGE  z-20, upper-left ══ */}
+          {/* ══ 3D DATE BADGE  z-20, upper-left ══ */}
           <div
             className="fade-in-right"
-            style={{ position: 'absolute', top: '24px', left: '36px', zIndex: 20 }}
+            style={{
+              position: 'absolute',
+              top: '32px',
+              left: '52px',
+              zIndex: 20,
+            }}
           >
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                background: '#C8FF3D',
-                color: '#0b1a4a',
-                clipPath: 'polygon(0 0, 100% 0, 100% 58%, 95% 100%, 0 100%)',
-                padding: '11px 30px 11px 14px',
-              }}
-            >
-              <span style={{ color: 'var(--blue, #12318B)', fontSize: '16px', lineHeight: 1, flexShrink: 0 }}>
-                ✦
-              </span>
-              <span
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              {/* 3D Left Extrusion (Medium Olive Shadow) */}
+
+              {/* 3D Bottom Underside Face (Dark Olive Shadow) */}
+              <div
                 style={{
-                  fontSize: 'clamp(14px, 1.5vw, 20px)',
-                  fontWeight: 700,
-                  letterSpacing: '0.09em',
-                  textTransform: 'uppercase',
-                  lineHeight: 1,
-                  whiteSpace: 'nowrap',
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  width: '100%',
+                  height: '16px',
+                  background: '#688217',
+                  clipPath: 'polygon(0 0, -20px 100%, calc(92% - 20px) 100%, 92% 0)',
+                }}
+              />
+
+              {/* Front Face (Vivid Neon Lime) */}
+              <div
+                style={{
+                  position: 'relative',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '14px',
+                  background: '#C8FF3D',
+                  color: '#1a1d24',
+                  clipPath: 'polygon(0 0, 100% 0, 100% 68%, 92% 100%, 0 100%)',
+                  padding: '13px 32px 13px 18px',
                 }}
               >
-                MAY, 21 - 24 2025
-              </span>
+                {/* 4-point Golden Star */}
+                <span
+                  style={{
+                    color: '#FFBD12',
+                    fontSize: '20px',
+                    lineHeight: 1,
+                    flexShrink: 0,
+                    display: 'inline-block',
+                    transform: 'translateY(-1px)',
+                  }}
+                >
+                  ✦
+                </span>
+
+                {/* Date Text */}
+                <span
+                  style={{
+                    fontSize: 'clamp(14px, 1.4vw, 18px)',
+                    fontWeight: 500,
+                    letterSpacing: '0.15em',
+                    textTransform: 'uppercase',
+                    lineHeight: 1,
+                    whiteSpace: 'nowrap',
+                    color: '#1a1d24',
+                    fontFamily: 'var(--font-geist-sans), Inter, system-ui, sans-serif',
+                  }}
+                >
+                  MAY, 21 - 24 2025
+                </span>
+              </div>
             </div>
           </div>
 
@@ -309,6 +355,7 @@ export default function HeroSection() {
                     src="/images/city-skyline.jpg"
                     alt="City skyline race venue"
                     fill
+                    sizes="270px"
                     style={{ objectFit: 'cover', objectPosition: 'center top' }}
                   />
                 </div>
@@ -370,6 +417,32 @@ export default function HeroSection() {
               filter: 'url(#rough-text-texture) drop-shadow(0 4px 24px rgba(0, 0, 0, 0.4))',
             }}
           >
+            {/* Line 0: MILES FOR SMILES */}
+            <div
+              className="fade-in-up"
+              style={{ paddingLeft: '28px', marginBottom: '8px' }}
+            >
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontFamily: 'var(--font-geist-sans), Inter, system-ui, sans-serif',
+                  fontWeight: 800,
+                  fontSize: 'clamp(1rem, 2.2vw, 1.8rem)',
+                  color: '#C8FF3D',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.18em',
+                  lineHeight: 1,
+                  userSelect: 'none',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <span style={{ color: '#C8FF3D', fontSize: '0.85em' }}>✦</span>
+                MILES FOR SMILES
+              </span>
+            </div>
+
             {/* Line 1: CHARITY */}
             <div
               className="fade-in-up fade-in-up-2"

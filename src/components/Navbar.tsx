@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { Calendar, Menu, X } from 'lucide-react';
 
@@ -20,18 +21,20 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-          {/* Reference-style geometric logo mark */}
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <rect x="2" y="2" width="12" height="4" fill="#c8f135" rx="1" />
-            <rect x="2" y="10" width="20" height="4" fill="#c8f135" rx="1" />
-            <rect x="2" y="18" width="12" height="4" fill="#c8f135" rx="1" />
-          </svg>
+          <Image
+            src="/images/logo.png"
+            alt="Miles for Smiles Logo"
+            width={140}
+            height={36}
+            className="h-9 w-auto object-contain"
+            priority
+          />
         </Link>
 
         {/* Desktop Nav Links with "/" separators */}
-        <div className="hidden md:flex items-center gap-2 lg:gap-3">
+        <div className="hidden md:flex items-center gap-4 lg:gap-6">
           {NAV_LINKS.map((link, i) => (
-            <span key={link.href} className="flex items-center gap-2 lg:gap-3">
+            <span key={link.href} className="flex items-center gap-4 lg:gap-6">
               <Link
                 href={link.href}
                 className="text-white/80 hover:text-white text-sm font-medium transition-colors duration-150 tracking-wide"
