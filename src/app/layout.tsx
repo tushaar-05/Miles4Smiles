@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
+const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
-  title: "Miles for Smiles | 5KM Charity Run",
-  description: "Official portal for Miles for Smiles 5KM Charity Run.",
+  title: "Mayland Marathon | May 21–24 2025",
+  description:
+    "Join the Mayland Marathon — Full Marathon, Half Marathon, and more. Race day May 21–24 2025. Register now and be part of the run.",
 };
 
 export default function RootLayout({
@@ -23,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="antialiased min-h-screen bg-white text-neutral-900">
+    <html lang="en" className={inter.variable}>
+      <body className="antialiased overflow-x-hidden" style={{ background: '#F5F5F2' }}>
         {children}
       </body>
     </html>
