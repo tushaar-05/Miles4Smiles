@@ -18,9 +18,11 @@ const TICKER_ITEMS = [
 /* ─── Nav links ─── */
 const NAV_LINKS = [
   { label: 'About',      href: '#about' },
-  { label: 'Categories', href: '#categories' },
   { label: 'Schedule',   href: '#schedule' },
-  { label: 'News',       href: '#news' },
+  { label: 'Categories', href: '#categories' },
+  { label: 'Route',      href: '#route' },
+  { label: 'Partners',   href: '#sponsors' },
+  { label: 'FAQ',        href: '#faq' },
 ];
 
 export default function HeroSection() {

@@ -5,6 +5,7 @@ import Image from 'next/image';
 export default function ManifestoSection() {
   return (
     <section
+      id="about"
       style={{
         position: 'relative',
         background: '#ffffff',

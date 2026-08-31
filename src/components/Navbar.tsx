@@ -6,10 +6,12 @@ import { useState } from 'react';
 import { Calendar, Menu, X } from 'lucide-react';
 
 const NAV_LINKS = [
-  { label: 'About', href: '#about' },
-  { label: 'Categories', href: '#categories' },
-  { label: 'Schedule', href: '#schedule' },
-  { label: 'News', href: '#news' },
+  { label: 'About', href: '/#about' },
+  { label: 'Schedule', href: '/#schedule' },
+  { label: 'Categories', href: '/#categories' },
+  { label: 'Route', href: '/#route' },
+  { label: 'Partners', href: '/#sponsors' },
+  { label: 'FAQ', href: '/#faq' },
 ];
 
 export default function Navbar() {

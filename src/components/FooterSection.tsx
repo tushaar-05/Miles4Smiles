@@ -106,13 +106,15 @@ export default function FooterSection() {
             </Link>
 
             <nav className="footer-nav">
-              <a href="#manifesto" className="nav-link">About</a>
+              <a href="#about" className="nav-link">About</a>
               <span className="nav-sep">/</span>
-              <a href="#race-flow" className="nav-link">Categories</a>
+              <a href="#schedule" className="nav-link">Schedule</a>
               <span className="nav-sep">/</span>
-              <a href="#race-flow" className="nav-link">Schedule</a>
+              <a href="#categories" className="nav-link">Categories</a>
               <span className="nav-sep">/</span>
               <a href="#route" className="nav-link">Route</a>
+              <span className="nav-sep">/</span>
+              <a href="#sponsors" className="nav-link">Partners</a>
               <span className="nav-sep">/</span>
               <a href="#faq" className="nav-link">FAQ</a>
             </nav>

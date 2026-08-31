@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Minus, HelpCircle, Mail, MessageCircle, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Plus, Minus, HelpCircle, Mail, Phone, MessageCircle, Sparkles, CheckCircle2 } from 'lucide-react';
 
 interface FAQItem {
   id: number;
@@ -147,24 +147,27 @@ export default function FaqSection() {
           })}
         </div>
 
-        {/* ─── STILL HAVE QUESTIONS BANNER ─── */}
+        {/* ─── STILL HAVE QUESTIONS BANNER (CENTERED) ─── */}
         <div className="faq-support-card">
-          <div className="support-left">
-            <div className="support-icon">
-              <HelpCircle size={26} />
-            </div>
-            <div>
-              <h4 className="support-title">Still have a question?</h4>
-              <p className="support-desc">Can’t find the answer you’re looking for? Reach out to Setu & Rameez on the organizing committee directly.</p>
-            </div>
+          <div className="support-icon">
+            <HelpCircle size={28} />
           </div>
+          
+          <h4 className="support-title">Still have a question?</h4>
+          
+          <p className="support-desc">
+            Can’t find the answer you’re looking for? Reach out to Setu & Rameez on the organizing committee directly.
+          </p>
 
-          <div className="support-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <div className="support-actions">
             <a href="mailto:setunst@gmail.com,rameezrahman17@gmail.com" className="support-btn mail-btn">
-              <Mail size={16} /> Email Us
+              <Mail size={16} strokeWidth={2.5} /> Email Us
             </a>
-            <a href="tel:+919172901968" className="support-btn mail-btn" style={{ background: '#ffffff', color: '#070f26' }}>
-              Call +91 91729 01968
+            <a href="tel:+919172901968" className="support-btn phone-btn">
+              <Phone size={15} strokeWidth={2.5} /> Call +91 91729 01968
+            </a>
+            <a href="tel:+919301804524" className="support-btn phone-btn">
+              <Phone size={15} strokeWidth={2.5} /> Call +91 93018 04524
             </a>
           </div>
         </div>
@@ -345,93 +348,92 @@ export default function FaqSection() {
         }
 
         .faq-support-card {
-          background: rgba(11, 26, 74, 0.75);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 20px;
-          padding: 24px 30px;
+          background: rgba(11, 26, 74, 0.8);
+          backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 24px;
+          padding: 38px 32px 36px;
           display: flex;
+          flex-direction: column;
           align-items: center;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          gap: 20px;
-        }
-
-        .support-left {
-          display: flex;
-          align-items: center;
-          gap: 16px;
+          justify-content: center;
+          text-align: center;
+          max-width: 840px;
+          margin: 50px auto 0;
+          box-shadow: 0 16px 45px rgba(0, 0, 0, 0.35);
         }
 
         .support-icon {
-          width: 48px;
-          height: 48px;
-          border-radius: 14px;
+          width: 54px;
+          height: 54px;
+          border-radius: 16px;
           background: rgba(200, 255, 61, 0.15);
+          border: 1px solid rgba(200, 255, 61, 0.3);
           color: #C8FF3D;
           display: flex;
           align-items: center;
           justify-content: center;
-          flex-shrink: 0;
+          margin-bottom: 16px;
         }
 
         .support-title {
-          font-size: 16px;
-          font-weight: 800;
+          font-size: 20px;
+          font-weight: 900;
           color: #ffffff;
-          margin: 0 0 4px 0;
+          margin: 0 0 8px 0;
+          letter-spacing: 0.01em;
+          text-transform: uppercase;
         }
 
         .support-desc {
-          font-size: 13px;
-          color: rgba(255, 255, 255, 0.7);
-          margin: 0;
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.75);
+          max-width: 560px;
+          margin: 0 auto 24px;
+          line-height: 1.6;
         }
 
         .support-actions {
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 12px;
+          flex-wrap: wrap;
         }
 
         .support-btn {
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 8px;
-          padding: 10px 20px;
-          border-radius: 12px;
-          font-size: 13px;
-          font-weight: 800;
+          padding: 12px 24px;
+          border-radius: 9999px;
+          font-size: 13.5px;
+          font-weight: 900;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
           text-decoration: none;
-          transition: all 0.2s ease;
         }
 
         .mail-btn {
           background: #C8FF3D;
           color: #070f26;
-          box-shadow: 0 4px 16px rgba(200, 255, 61, 0.25);
+          box-shadow: 0 6px 20px rgba(200, 255, 61, 0.35);
         }
 
-        .mail-btn:hover {
-          background: #d4ff59;
-          transform: translateY(-2px);
+        .phone-btn {
+          background: #ffffff;
+          color: #070f26;
+          box-shadow: 0 6px 20px rgba(255, 255, 255, 0.15);
         }
 
         @media (max-width: 768px) {
-          .faq-support-card {
-            flex-direction: column;
-            text-align: center;
-          }
-          .support-left {
-            flex-direction: column;
-            text-align: center;
-          }
           .support-actions {
+            flex-direction: column;
             width: 100%;
-            justify-content: center;
           }
           .support-btn {
             width: 100%;
-            justify-content: center;
           }
         }
       `}</style>
