@@ -5,6 +5,7 @@
   --lime: #C8FF3D;
   --page-bg: #F5F5F2;
   --navy: #0b1a4a;
+  --ticker-speed: 24s;
 }
 
 * {
@@ -14,7 +15,23 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
 body {
@@ -31,7 +48,7 @@ body {
 }
 
 .ticker-track {
-  animation: ticker-scroll 28s linear infinite;
+  animation: ticker-scroll var(--ticker-speed, 24s) linear infinite;
 }
 
 /* Hero giant typography */

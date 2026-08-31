@@ -101,10 +101,7 @@ export default function CategoriesSection() {
                 <CheckCircle2 size={16} className="perk-icon" />
                 <span>Official <strong>Runner BIB</strong></span>
               </div>
-              <div className="perk-item">
-                <CheckCircle2 size={16} className="perk-icon" />
-                <span>Customized <strong>Finisher Medal</strong></span>
-              </div>
+
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon" />
                 <span>On-Route <strong>Hydration & Electrolytes</strong></span>
@@ -189,12 +186,12 @@ export default function CategoriesSection() {
               </div>
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon lime-icon" />
-                <span>Official <strong>Timed RFID Bib</strong></span>
+                <span>Official <strong>Runner Bib</strong></span>
               </div>
-              <div className="perk-item">
+              {/* <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon lime-icon" />
                 <span>Customized <strong>Finisher Medal</strong></span>
-              </div>
+              </div> */}
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon lime-icon" />
                 <span>On-Route <strong>Hydration & Electrolytes</strong></span>

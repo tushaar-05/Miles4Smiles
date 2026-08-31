@@ -83,7 +83,7 @@ export default function RouteSection() {
                 fontWeight: 400,
               }}
             >
-              Our multi-distance courses are designed with distinct starting points tailored to each category, all leading to a unified finish line celebration.
+              The route begins at Club Charholi and heads along DY Patil University Road to the 2.5 KM turnaround, before returning to the shared finish line.
             </p>
 
             {/* Paragraph 2 */}
@@ -96,7 +96,10 @@ export default function RouteSection() {
                 fontWeight: 400,
               }}
             >
-              Participants will find <strong style={{ color: '#ffffff', fontWeight: 800 }}>multiple hydration posts</strong> along the complete route, with both competitive and fun run participants supported by stations distributed across their distances.
+              <strong style={{ color: '#ffffff', fontWeight: 800 }}>
+                Hydration stations
+              </strong>{' '}
+              along the route keep runners refreshed and supported throughout the run.
             </p>
           </div>
         </div>

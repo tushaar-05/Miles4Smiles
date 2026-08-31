@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import SmoothScroll from "@/components/SmoothScroll";
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -9,9 +10,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Mayland Marathon | May 21–24 2025",
+  title: "Miles for Smiles 5K | September 05, 2026",
   description:
-    "Join the Mayland Marathon — Full Marathon, Half Marathon, and more. Race day May 21–24 2025. Register now and be part of the run.",
+    "Official Miles for Smiles 5K Charity Marathon — Join the run, bring smiles, and support pediatric health. September 05, 2026.",
 };
 
 export default function RootLayout({
@@ -22,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="antialiased overflow-x-hidden" style={{ background: '#F5F5F2' }}>
-        {children}
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );

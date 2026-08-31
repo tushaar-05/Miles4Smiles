@@ -1,18 +1,16 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, Menu, X } from 'lucide-react';
-import { useState } from 'react';
 
 /* ─── Ticker content ─── */
 const TICKER_ITEMS = [
-  'MAY 21 - 24',
-  'RUN BEYOND LIMITS',
-  'FULL MARATHON',
-  'HALF MARATHON',
+  '5K RUN',
   'CHARITY RUN',
   'REGISTER NOW',
+  'SEP - 5TH',
 ];
 
 /* ─── Nav links ─── */
@@ -27,7 +25,78 @@ const NAV_LINKS = [
 
 export default function HeroSection() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const tickerItems = [...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS]; // seamless loop
+  const tickerRef = useRef<HTMLDivElement>(null);
+  const tickerItems = [...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS]; // seamless loop
+
+  /* ─── Butter-Smooth RAF Momentum Marquee Loop ─── */
+  useEffect(() => {
+    let x = 0;
+    const baseSpeed = 0.85; // smooth gentle cruising speed (px/frame)
+    let extraSpeed = 0;
+    let lastScrollY = window.scrollY;
+    let rafId: number;
+
+    const onWindowScroll = () => {
+      const currentScrollY = window.scrollY;
+      const deltaY = Math.abs(currentScrollY - lastScrollY);
+      lastScrollY = currentScrollY;
+
+      // Very subtle, gentle boost on scroll
+      extraSpeed = Math.min(extraSpeed + deltaY * 0.012, 1.2);
+    };
+
+    window.addEventListener('scroll', onWindowScroll, { passive: true });
+
+    // Also connect to Lenis velocity if present
+    const lenis = (window as unknown as { lenis?: { on: (event: string, cb: (e: { velocity: number }) => void) => void } }).lenis;
+    if (lenis && lenis.on) {
+      lenis.on('scroll', ({ velocity }: { velocity: number }) => {
+        extraSpeed = Math.min(extraSpeed + Math.abs(velocity) * 0.015, 1.2);
+      });
+    }
+
+    const loop = () => {
+      // Smooth physical decay
+      extraSpeed *= 0.90;
+      if (extraSpeed < 0.005) extraSpeed = 0;
+
+      const currentVelocity = baseSpeed + extraSpeed;
+      x -= currentVelocity;
+
+      if (tickerRef.current) {
+        const halfWidth = tickerRef.current.scrollWidth / 2;
+        if (halfWidth > 0 && Math.abs(x) >= halfWidth) {
+          x += halfWidth;
+        }
+        tickerRef.current.style.transform = `translate3d(${x}px, 0, 0)`;
+      }
+
+      rafId = requestAnimationFrame(loop);
+    };
+
+    rafId = requestAnimationFrame(loop);
+
+    return () => {
+      window.removeEventListener('scroll', onWindowScroll);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('#')) {
+      const targetId = href.replace('#', '');
+      const elem = document.getElementById(targetId);
+      if (elem) {
+        e.preventDefault();
+        const lenis = (window as unknown as { lenis?: { scrollTo: (target: HTMLElement, options?: { offset?: number; duration?: number }) => void } }).lenis;
+        if (lenis) {
+          lenis.scrollTo(elem, { offset: -60, duration: 1.2 });
+        } else {
+          elem.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+  };
 
   return (
     /*
@@ -60,9 +129,9 @@ export default function HeroSection() {
             backgroundImage: "url('/images/BG.png')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            opacity: 0.65,
+            opacity: 0.1,
             pointerEvents: 'none',
-            zIndex: 0,
+            zIndex: 1,
           }}
         />
 
@@ -108,8 +177,9 @@ export default function HeroSection() {
             >
               {NAV_LINKS.map((link, i) => (
                 <span key={link.href} style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-                  <Link
+                  <a
                     href={link.href}
+                    onClick={(e) => handleNavClick(e, link.href)}
                     style={{
                       color: 'rgba(255,255,255,0.85)',
                       textDecoration: 'none',
@@ -120,7 +190,7 @@ export default function HeroSection() {
                     }}
                   >
                     {link.label}
-                  </Link>
+                  </a>
                   {i < NAV_LINKS.length - 1 && (
                     <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '15px', userSelect: 'none' }}>
                       /
@@ -560,7 +630,7 @@ export default function HeroSection() {
           }}
         >
           <div
-            className="ticker-track"
+            ref={tickerRef}
             style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', willChange: 'transform' }}
           >
             {tickerItems.map((item, i) => (
