@@ -583,7 +583,7 @@ export default function HeroSection() {
             style={{
               position: 'absolute',
               top: '0px',
-              bottom: '-110px',
+              bottom: '0px',
               left: '38%',
               width: '48%',
               zIndex: 30,
