@@ -306,6 +306,7 @@ export default function HeroSection() {
             HERO BODY — Canvas for typography, date badge, card & runner
         ──────────────────────────────────────────────────── */}
         <div
+          className="hero-body-canvas"
           style={{
             position: 'relative',
             flex: 1,
@@ -550,7 +551,7 @@ export default function HeroSection() {
 
             {/* Line 2: 5K RUN */}
             <div
-              className="fade-in-up fade-in-up-3"
+              className="fade-in-up fade-in-up-3 hero-typo-line2"
               style={{ paddingLeft: '20px' }}
             >
               <span
@@ -558,7 +559,7 @@ export default function HeroSection() {
                   display: 'block',
                   fontFamily: 'var(--font-geist-sans), Inter, system-ui, sans-serif',
                   fontWeight: 900,
-                  fontSize: 'clamp(5rem, 14vw, 15rem)',
+                  fontSize: 'clamp(4.2rem, 14vw, 15rem)',
                   color: '#FFFFFF',
                   textTransform: 'uppercase',
                   letterSpacing: '-0.01em',
@@ -574,11 +575,8 @@ export default function HeroSection() {
           </div>
 
           {/* ══════════════════════════════════════════════════════
-              RUNNER CUTOUT — z-30  (IN FRONT of text)
+              ATHLETIC RUNNER CUTOUT — z-30  (IN FRONT OF headline)
               ══════════════════════════════════════════════════════
-              Enlarged significantly (height: 148%), cropped naturally
-              around the knee/thigh area to match hero-reference.png framing.
-              Head sits right below header, right-center over the headline.
           */}
           <div
             className="runner-container fade-in-up fade-in-up-1"
@@ -613,10 +611,6 @@ export default function HeroSection() {
         </div>
         {/* end hero body */}
 
-        {/* ────────────────────────────────────────────────────
-            NEON LIME TICKER  z-40  (IN FRONT at bottom)
-            90px tall · neon lime · scrolling marquee
-        ──────────────────────────────────────────────────── */}
         {/* ────────────────────────────────────────────────────
             NEON LIME TICKER  z-40  (IN FRONT at bottom)
             90px tall · neon lime · scrolling marquee
@@ -692,6 +686,16 @@ export default function HeroSection() {
 
         /* Mobile < 768px */
         @media (max-width: 767px) {
+          #hero {
+            min-height: auto !important;
+            height: auto !important;
+          }
+
+          .hero-body-canvas {
+            min-height: 430px !important;
+            height: 450px !important;
+          }
+
           .hero-outer-wrapper {
             overflow: hidden !important;
             width: 100% !important;
@@ -704,34 +708,37 @@ export default function HeroSection() {
           .h-editorial-card { display: none !important; }
 
           .hero-header-wrap {
-            padding: 14px 18px 10px !important;
+            padding: 12px 16px 6px !important;
           }
 
           .hero-date-badge-wrap {
-            top: 14px !important;
-            left: 16px !important;
+            top: 8px !important;
+            left: 14px !important;
             z-index: 45 !important;
           }
 
-          /* Force text ON TOP of runner image */
+          /* Force text ON TOP of runner image and make it BOLD & PROMINENT */
           .hero-typo-wrap {
             z-index: 35 !important;
-            padding-bottom: 24px !important;
+            padding-bottom: 18px !important;
           }
 
           .hero-typo-line0 span {
-            font-size: clamp(0.95rem, 3.2vw, 1.3rem) !important;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8) !important;
+            font-size: clamp(1rem, 3.8vw, 1.4rem) !important;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85) !important;
+            letter-spacing: 0.16em !important;
           }
 
           .hero-typo-line1 span {
-            font-size: clamp(3.2rem, 13vw, 5.5rem) !important;
-            text-shadow: 0 4px 18px rgba(0, 0, 0, 0.85), 0 2px 6px rgba(0, 0, 0, 0.9) !important;
+            font-size: clamp(4.4rem, 16.5vw, 6.6rem) !important;
+            line-height: 0.84 !important;
+            text-shadow: 0 4px 18px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0, 0, 0, 0.95) !important;
           }
 
           .hero-typo-line2 span {
-            font-size: clamp(4.2rem, 18vw, 7.5rem) !important;
-            text-shadow: 0 4px 22px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 0.95) !important;
+            font-size: clamp(5.6rem, 21.5vw, 9.4rem) !important;
+            line-height: 0.82 !important;
+            text-shadow: 0 4px 24px rgba(0, 0, 0, 0.95), 0 2px 8px rgba(0, 0, 0, 0.98) !important;
           }
 
           .hero-typo-line0,
