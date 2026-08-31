@@ -897,14 +897,86 @@ export default function RegisterPage() {
           text-align: center;
         }
 
-        .print-header { display: none; }
-
         @media (max-width: 768px) {
-          .impact-card { grid-template-columns: 1fr; }
-          .cat-grid { grid-template-columns: 1fr; }
-          .finish-body { flex-direction: column; align-items: stretch; text-align: center; }
-          .finish-trust { justify-content: center; }
-          .finish-cta { width: 100%; }
+          .hero {
+            padding: 30px 16px 50px !important;
+          }
+          .hero-title {
+            font-size: 2.2rem !important;
+          }
+          .impact {
+            margin: -24px auto 0 !important;
+            padding: 0 14px !important;
+          }
+          .impact-card {
+            grid-template-columns: 1fr !important;
+            padding: 16px 18px !important;
+            gap: 14px !important;
+          }
+          .shell {
+            padding: 0 14px !important;
+            margin: 24px auto 60px !important;
+          }
+          .form-pad {
+            padding: 24px 18px !important;
+          }
+          .cat-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .checkpoint {
+            gap: 14px !important;
+          }
+          .marker {
+            width: 32px !important;
+            height: 32px !important;
+          }
+          .field-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .finish {
+            padding: 20px 18px !important;
+            border-radius: 14px !important;
+          }
+          .finish-body {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            text-align: center !important;
+          }
+          .finish-trust {
+            justify-content: center !important;
+          }
+          .finish-cta {
+            width: 100% !important;
+          }
+
+          /* Pass on mobile */
+          .pass-hero {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+          }
+          .pass-hero-right {
+            text-align: left !important;
+          }
+          .pass-details-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .pass-schedule-strip {
+            flex-direction: column !important;
+            gap: 8px !important;
+            align-items: flex-start !important;
+          }
+          .sched-sep {
+            display: none !important;
+          }
+          .pass-barcode-strip {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+          }
+          .barcode-instructions {
+            text-align: center !important;
+          }
         }
 
         /* ══════════════ DEDICATED PRINT STYLES ══════════════ */

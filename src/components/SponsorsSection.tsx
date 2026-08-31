@@ -520,7 +520,25 @@ export default function SponsorsSection() {
         .bib-email strong { color: #fff; }
 
         @media (max-width: 900px) {
-          .sp-cta { grid-template-columns: 1fr; }
+          .sp-cta-wrap {
+            padding: 0 16px 60px !important;
+          }
+          .sp-cta {
+            grid-template-columns: 1fr !important;
+            padding: 28px 20px !important;
+            border-radius: 20px !important;
+            gap: 24px !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .sponsor-brand-card {
+            min-width: 170px !important;
+            height: 70px !important;
+            padding: 0 16px !important;
+          }
+          .perks-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
     </section>

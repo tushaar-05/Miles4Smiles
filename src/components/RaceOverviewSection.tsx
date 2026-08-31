@@ -593,6 +593,17 @@ export default function RaceOverviewSection() {
           .roadmap-row-card {
             grid-template-columns: 1fr !important;
             gap: 16px !important;
+            padding: 22px 18px !important;
+            border-radius: 18px !important;
+          }
+          .featured-race-card > div:first-child,
+          .special-race-card > div:first-child,
+          .roadmap-row-card > div:first-child {
+            min-width: 100% !important;
+            text-align: left !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
           }
         }
       `}</style>

@@ -203,14 +203,15 @@ export default function CountdownTickerSection() {
           background: rgba(11, 26, 74, 0.85);
           border: 2px solid rgba(200, 255, 61, 0.3);
           border-radius: 16px;
-          padding: 18px 24px;
-          min-width: clamp(80px, 14vw, 130px);
+          padding: 16px 20px;
+          min-width: clamp(72px, 18vw, 130px);
           backdrop-filter: blur(8px);
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+          text-align: center;
         }
         .countdown-number {
           font-family: var(--font-geist-sans), Inter, sans-serif;
-          font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+          font-size: clamp(1.9rem, 6vw, 4.5rem);
           font-weight: 900;
           line-height: 1;
           color: #ffffff;
@@ -218,16 +219,27 @@ export default function CountdownTickerSection() {
           font-variant-numeric: tabular-nums;
         }
         .countdown-label {
-          font-size: clamp(10px, 1.2vw, 12px);
+          font-size: clamp(9px, 1.8vw, 12px);
           font-weight: 800;
-          letter-spacing: 0.15em;
+          letter-spacing: 0.12em;
           color: rgba(255, 255, 255, 0.7);
         }
         .countdown-colon {
-          font-size: clamp(2rem, 4vw, 3.5rem);
+          font-size: clamp(1.4rem, 4vw, 3.5rem);
           font-weight: 900;
           color: #C8FF3D;
           opacity: 0.8;
+        }
+
+        @media (max-width: 600px) {
+          .countdown-block {
+            padding: 12px 10px !important;
+            border-radius: 12px !important;
+            min-width: 64px !important;
+          }
+          .countdown-colon {
+            display: none !important;
+          }
         }
       `}</style>
     </section>

@@ -428,12 +428,42 @@ export default function FaqSection() {
         }
 
         @media (max-width: 768px) {
+          .faq-section {
+            padding: 70px 16px 80px !important;
+          }
+          .faq-tabs {
+            overflow-x: auto;
+            flex-wrap: nowrap !important;
+            justify-content: flex-start !important;
+            padding-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+          }
+          .faq-tabs::-webkit-scrollbar {
+            display: none;
+          }
+          .faq-tab {
+            flex-shrink: 0;
+            padding: 8px 16px !important;
+            font-size: 12px !important;
+          }
+          .faq-card {
+            padding: 18px 18px !important;
+            border-radius: 14px !important;
+          }
+          .faq-support-card {
+            padding: 30px 18px !important;
+            border-radius: 18px !important;
+            margin-top: 36px !important;
+          }
           .support-actions {
             flex-direction: column;
             width: 100%;
+            gap: 10px;
           }
           .support-btn {
             width: 100%;
+            padding: 13px 20px !important;
           }
         }
       `}</style>

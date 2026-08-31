@@ -6,6 +6,7 @@ export default function RouteSection() {
   return (
     <section
       id="route"
+      className="route-section"
       style={{
         position: 'relative',
         background: '#001A5A',
@@ -59,13 +60,13 @@ export default function RouteSection() {
             <h2
               style={{
                 fontFamily: 'var(--font-heading), var(--font-geist-sans), Impact, Inter, sans-serif',
-                fontSize: 'clamp(3rem, 6.5vw, 5.2rem)',
+                fontSize: 'clamp(2.6rem, 6.5vw, 5.2rem)',
                 fontWeight: 900,
                 color: '#ffffff',
                 letterSpacing: '0.02em',
                 lineHeight: 0.92,
                 textTransform: 'uppercase',
-                margin: '0 0 32px 0',
+                margin: '0 0 24px 0',
                 textShadow: '0 4px 24px rgba(0, 0, 0, 0.4)',
               }}
             >
@@ -79,7 +80,7 @@ export default function RouteSection() {
                 fontSize: 'clamp(1rem, 1.45vw, 1.18rem)',
                 color: 'rgba(255, 255, 255, 0.9)',
                 lineHeight: 1.65,
-                margin: '0 0 24px 0',
+                margin: '0 0 20px 0',
                 fontWeight: 400,
               }}
             >
@@ -107,9 +108,12 @@ export default function RouteSection() {
 
       <style jsx>{`
         @media (max-width: 900px) {
+          .route-section {
+            padding: 60px 16px 70px !important;
+          }
           .route-grid {
             grid-template-columns: 1fr !important;
-            gap: 40px !important;
+            gap: 32px !important;
             text-align: center;
           }
           .route-grid > div:last-child {

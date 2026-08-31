@@ -140,6 +140,7 @@ export default function HeroSection() {
         ──────────────────────────────────────────────────── */}
         <header style={{ position: 'relative', zIndex: 50, flexShrink: 0 }}>
           <div
+            className="hero-header-wrap"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -265,9 +266,11 @@ export default function HeroSection() {
           {mobileOpen && (
             <div
               style={{
-                background: 'rgba(0,0,0,0.28)',
-                padding: '14px 24px 18px',
-                display: 'flex', flexDirection: 'column', gap: '14px',
+                background: 'rgba(7, 15, 38, 0.95)',
+                backdropFilter: 'blur(12px)',
+                padding: '18px 24px 22px',
+                display: 'flex', flexDirection: 'column', gap: '16px',
+                borderBottom: '1.5px solid rgba(200, 255, 61, 0.3)',
               }}
             >
               {NAV_LINKS.map(link => (
@@ -275,7 +278,7 @@ export default function HeroSection() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  style={{ color: 'rgba(255,255,255,0.85)', textDecoration: 'none', fontWeight: 500 }}
+                  style={{ color: 'rgba(255,255,255,0.92)', textDecoration: 'none', fontWeight: 600, fontSize: '15px' }}
                 >
                   {link.label}
                 </Link>
@@ -284,14 +287,16 @@ export default function HeroSection() {
                 href="/register"
                 onClick={() => setMobileOpen(false)}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '8px',
-                  background: '#C8FF3D', color: '#111', padding: '9px 16px',
-                  borderRadius: '7px', fontWeight: 700, fontSize: '12px',
-                  letterSpacing: '0.1em', textTransform: 'uppercase',
-                  textDecoration: 'none', width: 'fit-content',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                  background: '#C8FF3D', color: '#0b1a4a', padding: '12px 20px',
+                  borderRadius: '10px', fontWeight: 800, fontSize: '13px',
+                  letterSpacing: '0.08em', textTransform: 'uppercase',
+                  textDecoration: 'none', width: '100%',
+                  marginTop: '6px',
+                  boxShadow: '0 6px 18px rgba(200, 255, 61, 0.35)',
                 }}
               >
-                <Calendar size={13} /> Register
+                <Calendar size={15} /> Register for 5K Run
               </Link>
             </div>
           )}
@@ -311,7 +316,7 @@ export default function HeroSection() {
 
           {/* ══ 3D DATE BADGE  z-20, upper-left ══ */}
           <div
-            className="fade-in-right"
+            className="fade-in-right hero-date-badge-wrap"
             style={{
               position: 'absolute',
               top: '32px',
@@ -480,6 +485,7 @@ export default function HeroSection() {
           </svg>
 
           <div
+            className="hero-typo-wrap"
             style={{
               position: 'absolute',
               inset: 0,
@@ -494,7 +500,7 @@ export default function HeroSection() {
           >
             {/* Line 0: MILES FOR SMILES */}
             <div
-              className="fade-in-up"
+              className="fade-in-up hero-typo-line0"
               style={{ paddingLeft: '28px', marginBottom: '8px' }}
             >
               <span
@@ -520,7 +526,7 @@ export default function HeroSection() {
 
             {/* Line 1: CHARITY */}
             <div
-              className="fade-in-up fade-in-up-2"
+              className="fade-in-up fade-in-up-2 hero-typo-line1"
               style={{ paddingLeft: '28px', marginBottom: '-0.04em' }}
             >
               <span
@@ -528,7 +534,7 @@ export default function HeroSection() {
                   display: 'block',
                   fontFamily: 'var(--font-geist-sans), Inter, system-ui, sans-serif',
                   fontWeight: 900,
-                  fontSize: 'clamp(4rem, 8vw, 11.5rem)',
+                  fontSize: 'clamp(3.4rem, 8vw, 11.5rem)',
                   color: '#FFFFFF',
                   textTransform: 'uppercase',
                   letterSpacing: '-0.01em',
@@ -684,10 +690,54 @@ export default function HeroSection() {
           .h-desktop-nav   { display: none !important; }
           .h-register-btn  { display: none !important; }
           .h-mobile-toggle { display: flex !important; }
+          .h-editorial-card { display: none !important; }
+
+          .hero-header-wrap {
+            padding: 14px 18px 12px !important;
+          }
+
+          .hero-date-badge-wrap {
+            top: 14px !important;
+            left: 16px !important;
+          }
+
+          .hero-typo-wrap {
+            padding-bottom: 16px !important;
+          }
+
+          .hero-typo-line0,
+          .hero-typo-line1 {
+            padding-left: 16px !important;
+          }
+          .hero-typo-line2 {
+            padding-left: 12px !important;
+          }
+
           .runner-container {
             left: 50% !important;
-            transform: translateX(-50%);
-            width: 85% !important;
+            transform: translateX(-50%) !important;
+            width: 90% !important;
+            bottom: 0 !important;
+            opacity: 0.85;
+          }
+
+          .angled-ticker-shell {
+            bottom: -16px !important;
+          }
+        }
+
+        /* Very Small Mobile < 420px */
+        @media (max-width: 420px) {
+          .hero-header-wrap {
+            padding: 12px 14px !important;
+          }
+          .hero-date-badge-wrap {
+            top: 10px !important;
+            left: 12px !important;
+          }
+          .hero-date-badge-wrap span {
+            font-size: 12px !important;
+            letter-spacing: 0.08em !important;
           }
         }
       `}</style>

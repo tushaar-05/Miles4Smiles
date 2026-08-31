@@ -320,6 +320,16 @@ export default function FooterSection() {
         }
 
         @media (max-width: 860px) {
+          .footer-wrap {
+            padding: 16px 12px 36px !important;
+          }
+          .footer-card {
+            border-radius: 20px !important;
+            padding: 42px 16px 28px !important;
+          }
+          .countdown-timer-display {
+            font-size: clamp(2.2rem, 8vw, 4.5rem) !important;
+          }
           .footer-bottom-row {
             flex-direction: column;
             align-items: center;
@@ -333,9 +343,17 @@ export default function FooterSection() {
           }
           .footer-nav {
             justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px 12px;
           }
           .footer-right {
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
+            gap: 10px;
+          }
+          .footer-contact-sep {
+            display: none !important;
           }
         }
       `}</style>

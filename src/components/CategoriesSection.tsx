@@ -613,11 +613,35 @@ export default function CategoriesSection() {
         }
 
         @media (max-width: 768px) {
+          .categories-section {
+            padding: 70px 16px 80px !important;
+          }
+          .prize-banner {
+            padding: 24px 18px !important;
+            border-radius: 18px !important;
+          }
+          .prize-banner-top {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+          }
+          .prize-amount {
+            font-size: 1.8rem !important;
+          }
+          .cat-card {
+            padding: 28px 20px !important;
+            border-radius: 20px !important;
+          }
           .categories-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
           }
           .prize-split-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr !important;
+            gap: 14px !important;
+          }
+          .rank-item {
+            padding: 10px 12px !important;
           }
         }
       `}</style>

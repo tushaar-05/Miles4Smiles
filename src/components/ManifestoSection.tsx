@@ -6,14 +6,16 @@ export default function ManifestoSection() {
   return (
     <section
       id="about"
+      className="manifesto-section"
       style={{
         position: 'relative',
         background: '#ffffff',
-        padding: '100px 24px 110px',
+        padding: '90px 20px 100px',
         overflow: 'hidden',
       }}
     >
       <div
+        className="manifesto-container"
         style={{
           maxWidth: '1280px',
           margin: '0 auto',
@@ -52,15 +54,17 @@ export default function ManifestoSection() {
 
         {/* ─── CENTER STATEMENT TEXT ─── */}
         <div
+          className="manifesto-text-wrap"
           style={{
-            maxWidth: '880px',
+            maxWidth: '860px',
             textAlign: 'center',
             position: 'relative',
             zIndex: 2,
-            padding: '0 20px',
+            padding: '0 24px',
           }}
         >
           <p
+            className="manifesto-paragraph"
             style={{
               fontFamily: 'var(--font-geist-sans), Inter, system-ui, sans-serif',
               fontSize: 'clamp(1.25rem, 2.5vw, 2.15rem)',
@@ -71,10 +75,7 @@ export default function ManifestoSection() {
               margin: 0,
             }}
           >
-            {/* Running isn’t only about distance or speed. It’s about movement,
-            balance, and feeling alive. Our community brings together people who
-            believe every step is part of something bigger. */}
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Perspiciatis beatae quam vel aut dolore debitis blanditiis ipsa! Culpa ullam optio id, nam, nihil 
+            Running isn’t only about distance or speed. It’s about movement, empathy, and giving every child a reason to smile. Our community brings together runners from across the country to turn every kilometer into life-saving pediatric healthcare.
           </p>
         </div>
 
@@ -107,14 +108,24 @@ export default function ManifestoSection() {
 
       <style jsx>{`
         @media (max-width: 860px) {
+          .manifesto-section {
+            padding: 60px 16px 70px !important;
+          }
+          .manifesto-container {
+            flex-direction: column !important;
+            gap: 28px !important;
+            min-height: auto !important;
+          }
+          .manifesto-text-wrap {
+            padding: 0 8px !important;
+          }
+          .manifesto-paragraph {
+            font-size: clamp(1.15rem, 4.5vw, 1.45rem) !important;
+            line-height: 1.6 !important;
+          }
           .manifesto-card-left,
           .manifesto-card-right {
-            position: relative !important;
-            top: auto !important;
-            left: auto !important;
-            right: auto !important;
-            transform: none !important;
-            margin: 0 auto;
+            display: none !important;
           }
         }
       `}</style>
