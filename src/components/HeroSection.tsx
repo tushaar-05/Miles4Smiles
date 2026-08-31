@@ -102,7 +102,7 @@ export default function HeroSection() {
     /*
      * Off-white outer wrapper creates the margin around hero — matching reference.
      */
-    <div style={{ background: 'var(--blue, #12318B)', width: '100%', overflow: 'visible', position: 'relative', zIndex: 10 }}>
+    <div className="hero-outer-wrapper" style={{ background: 'var(--blue, #12318B)', width: '100%', overflow: 'hidden', position: 'relative', zIndex: 10 }}>
 
       {/* ══════════════════════════════════════════════════════════
           HERO SECTION
@@ -114,7 +114,7 @@ export default function HeroSection() {
         style={{
           position: 'relative',
           backgroundColor: 'var(--blue, #12318B)',
-          overflow: 'visible',
+          overflow: 'hidden',
           width: '100%',
           minHeight: '100vh',
           display: 'flex',
@@ -617,7 +617,12 @@ export default function HeroSection() {
             NEON LIME TICKER  z-40  (IN FRONT at bottom)
             90px tall · neon lime · scrolling marquee
         ──────────────────────────────────────────────────── */}
+        {/* ────────────────────────────────────────────────────
+            NEON LIME TICKER  z-40  (IN FRONT at bottom)
+            90px tall · neon lime · scrolling marquee
+        ──────────────────────────────────────────────────── */}
         <div
+          className="hero-ticker-shell"
           style={{
             position: 'relative',
             zIndex: 40,
@@ -687,22 +692,46 @@ export default function HeroSection() {
 
         /* Mobile < 768px */
         @media (max-width: 767px) {
+          .hero-outer-wrapper {
+            overflow: hidden !important;
+            width: 100% !important;
+            max-width: 100vw !important;
+          }
+
           .h-desktop-nav   { display: none !important; }
           .h-register-btn  { display: none !important; }
           .h-mobile-toggle { display: flex !important; }
           .h-editorial-card { display: none !important; }
 
           .hero-header-wrap {
-            padding: 14px 18px 12px !important;
+            padding: 14px 18px 10px !important;
           }
 
           .hero-date-badge-wrap {
             top: 14px !important;
             left: 16px !important;
+            z-index: 45 !important;
           }
 
+          /* Force text ON TOP of runner image */
           .hero-typo-wrap {
-            padding-bottom: 16px !important;
+            z-index: 35 !important;
+            padding-bottom: 24px !important;
+          }
+
+          .hero-typo-line0 span {
+            font-size: clamp(0.95rem, 3.2vw, 1.3rem) !important;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8) !important;
+          }
+
+          .hero-typo-line1 span {
+            font-size: clamp(3.2rem, 13vw, 5.5rem) !important;
+            text-shadow: 0 4px 18px rgba(0, 0, 0, 0.85), 0 2px 6px rgba(0, 0, 0, 0.9) !important;
+          }
+
+          .hero-typo-line2 span {
+            font-size: clamp(4.2rem, 18vw, 7.5rem) !important;
+            text-shadow: 0 4px 22px rgba(0, 0, 0, 0.9), 0 2px 8px rgba(0, 0, 0, 0.95) !important;
           }
 
           .hero-typo-line0,
@@ -713,16 +742,31 @@ export default function HeroSection() {
             padding-left: 12px !important;
           }
 
+          /* Runner sits behind text and tucks right into marquee */
           .runner-container {
             left: 50% !important;
             transform: translateX(-50%) !important;
-            width: 90% !important;
-            bottom: 0 !important;
-            opacity: 0.85;
+            width: 100% !important;
+            max-width: 440px !important;
+            top: 30px !important;
+            bottom: -35px !important;
+            z-index: 20 !important;
+            opacity: 1 !important;
           }
 
-          .angled-ticker-shell {
-            bottom: -16px !important;
+          .runner-container img {
+            height: 195% !important;
+            width: auto !important;
+          }
+
+          /* Marquee overlaps runner with zero gap */
+          .hero-ticker-shell {
+            margin: 0 !important;
+            margin-top: -24px !important;
+            width: 114% !important;
+            left: -7% !important;
+            z-index: 40 !important;
+            height: 80px !important;
           }
         }
 
@@ -736,7 +780,7 @@ export default function HeroSection() {
             left: 12px !important;
           }
           .hero-date-badge-wrap span {
-            font-size: 12px !important;
+            font-size: 11.5px !important;
             letter-spacing: 0.08em !important;
           }
         }
