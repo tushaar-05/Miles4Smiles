@@ -520,17 +520,37 @@ export default function SponsorsSection() {
         .bib-email strong { color: #fff; }
 
         @media (max-width: 900px) {
+          .sp {
+            padding: 60px 14px 0 !important;
+          }
           .sp-cta-wrap {
-            padding: 0 16px 60px !important;
+            padding: 0 0 60px !important;
+            width: 100% !important;
+            max-width: 100% !important;
           }
           .sp-cta {
             grid-template-columns: 1fr !important;
-            padding: 28px 20px !important;
-            border-radius: 20px !important;
-            gap: 24px !important;
+            padding: 32px 20px !important;
+            border-radius: 22px !important;
+            gap: 28px !important;
+            width: 100% !important;
+          }
+          .sp-cta-title {
+            font-size: clamp(2.1rem, 7vw, 2.8rem) !important;
+          }
+          .sponsor-bib {
+            padding: 26px 18px 22px !important;
+            width: 100% !important;
           }
         }
         @media (max-width: 600px) {
+          .sp {
+            padding: 50px 12px 0 !important;
+          }
+          .sp-cta {
+            padding: 26px 16px !important;
+            border-radius: 18px !important;
+          }
           .sponsor-brand-card {
             min-width: 170px !important;
             height: 70px !important;
@@ -538,6 +558,7 @@ export default function SponsorsSection() {
           }
           .perks-grid {
             grid-template-columns: 1fr !important;
+            gap: 10px !important;
           }
         }
       `}</style>
