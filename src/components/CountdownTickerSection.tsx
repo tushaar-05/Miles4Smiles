@@ -5,16 +5,16 @@ import Link from 'next/link';
 import { Timer, ArrowRight, Zap } from 'lucide-react';
 
 export default function CountdownTickerSection() {
-  /* Target Date: May 21, 2025 */
+  /* Target Date: September 5, 2026 */
   const [timeLeft, setTimeLeft] = useState({
-    days: '81',
-    hours: '14',
-    minutes: '28',
-    seconds: '45',
+    days: '00',
+    hours: '00',
+    minutes: '00',
+    seconds: '00',
   });
 
   useEffect(() => {
-    const targetDate = new Date('2025-05-21T07:00:00+05:30').getTime();
+    const targetDate = new Date('2026-09-05T06:30:00+05:30').getTime();
 
     const updateTimer = () => {
       const now = new Date().getTime();
@@ -32,6 +32,8 @@ export default function CountdownTickerSection() {
           minutes: String(m).padStart(2, '0'),
           seconds: String(s).padStart(2, '0'),
         });
+      } else {
+        setTimeLeft({ days: '00', hours: '00', minutes: '00', seconds: '00' });
       }
     };
 

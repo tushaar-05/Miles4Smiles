@@ -314,7 +314,7 @@ export default function HeroSection() {
                     fontFamily: 'var(--font-geist-sans), Inter, system-ui, sans-serif',
                   }}
                 >
-                  MAY, 21 - 24 2025
+                  SEPTEMBER 05, 2026
                 </span>
               </div>
             </div>

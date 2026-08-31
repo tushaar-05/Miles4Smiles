@@ -329,14 +329,15 @@ export default function SponsorsSection() {
             </p>
 
             <a
-              href="mailto:contact@milesforsmiles.org?subject=Sponsorship%20Proposal%20-%20Miles4Smiles%205K"
+              href="mailto:setunst@gmail.com,rameezrahman17@gmail.com?subject=Sponsorship%20Proposal%20-%20Miles4Smiles%205K"
               className="bib-cta"
             >
               Request Proposal <ArrowUpRight size={18} strokeWidth={3} />
             </a>
 
             <div className="bib-trust"><ShieldCheck size={13} /> Verified charity partner network</div>
-            <div className="bib-email">Direct: <strong>contact@milesforsmiles.org</strong></div>
+            <div className="bib-email">Direct: <strong>setunst@gmail.com</strong> | <strong>+91 91729 01968</strong></div>
+            <div className="bib-email" style={{ marginTop: '4px' }}><strong>rameezrahman17@gmail.com</strong> | <strong>+91 93018 04524</strong></div>
           </div>
 
         </div>

@@ -70,9 +70,10 @@ export default function ManifestoSection() {
               margin: 0,
             }}
           >
-            Running isn’t only about distance or speed. It’s about movement,
+            {/* Running isn’t only about distance or speed. It’s about movement,
             balance, and feeling alive. Our community brings together people who
-            believe every step is part of something bigger.
+            believe every step is part of something bigger. */}
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Perspiciatis beatae quam vel aut dolore debitis blanditiis ipsa! Culpa ullam optio id, nam, nihil 
           </p>
         </div>
 

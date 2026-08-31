@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-// Target event date — update when confirmed
-const EVENT_DATE = new Date('2026-12-15T07:00:00+05:30');
+// Target event date — September 5, 2026
+const EVENT_DATE = new Date('2026-09-05T06:30:00+05:30');
 
 interface TimeLeft {
   days: number;
