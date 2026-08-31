@@ -308,7 +308,7 @@ export default function RaceOverviewSection() {
                   </div>
 
                   {/* Right Column: Icon & Action */}
-                  <div style={{ textAlign: 'right', position: 'relative', zIndex: 2 }}>
+                  <div className="schedule-icon-col" style={{ textAlign: 'right', position: 'relative', zIndex: 2 }}>
                     <div
                       style={{
                         width: '64px',
@@ -402,6 +402,7 @@ export default function RaceOverviewSection() {
                   </div>
 
                   <div
+                    className="schedule-icon-col"
                     style={{
                       position: 'relative',
                       zIndex: 2,
@@ -497,6 +498,7 @@ export default function RaceOverviewSection() {
 
                 {/* Icon */}
                 <div
+                  className="schedule-icon-col"
                   style={{
                     position: 'relative',
                     zIndex: 2,
@@ -520,59 +522,67 @@ export default function RaceOverviewSection() {
 
         {/* ─── CHARITY & WRAP UP BANNER ─── */}
         <div
+          className="wrapup-banner"
           style={{
             marginTop: '65px',
             background: 'linear-gradient(135deg, rgba(18, 49, 139, 0.85) 0%, rgba(7, 15, 38, 0.95) 100%)',
             border: '2px solid rgba(200, 255, 61, 0.35)',
             borderRadius: '24px',
-            padding: '30px 40px',
+            padding: '28px 36px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            flexWrap: 'wrap',
             gap: '20px',
             boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+          <div className="wrapup-left" style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
             <div
+              className="wrapup-icon-box"
               style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '18px',
+                width: '52px',
+                height: '52px',
+                minWidth: '52px',
+                maxWidth: '52px',
+                flexShrink: 0,
+                borderRadius: '16px',
                 background: 'rgba(200, 255, 61, 0.15)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: '1px solid rgba(200, 255, 61, 0.4)',
+                border: '1.5px solid rgba(200, 255, 61, 0.4)',
               }}
             >
-              <Heart size={28} color="#C8FF3D" fill="#C8FF3D" />
+              <Heart size={26} color="#C8FF3D" fill="#C8FF3D" style={{ flexShrink: 0 }} />
             </div>
             <div>
-              <div style={{ fontSize: '17px', fontWeight: 800, color: '#ffffff', marginBottom: '3px' }}>
+              <div className="wrapup-title" style={{ fontSize: '17px', fontWeight: 800, color: '#ffffff', marginBottom: '4px', lineHeight: 1.3 }}>
                 Full Event Wrap Up & Venue Clearance by 8:00 AM
               </div>
-              <div style={{ fontSize: '13.5px', color: 'rgba(255, 255, 255, 0.75)' }}>
+              <div className="wrapup-desc" style={{ fontSize: '13.5px', color: 'rgba(255, 255, 255, 0.75)', lineHeight: 1.5 }}>
                 100% of registration proceeds support Miles for Smiles charity initiatives.
               </div>
             </div>
           </div>
 
           <div
+            className="wrapup-badge"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '8px',
               background: '#C8FF3D',
               color: '#070f26',
-              padding: '12px 24px',
+              padding: '13px 24px',
               borderRadius: '14px',
               fontSize: '13px',
               fontWeight: 900,
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
               boxShadow: '0 8px 24px rgba(200, 255, 61, 0.3)',
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
             }}
           >
             <ShieldCheck size={18} /> Reporting: 5:30 AM Sharp
@@ -588,6 +598,9 @@ export default function RaceOverviewSection() {
           transform: translateX(6px);
         }
         @media (max-width: 768px) {
+          .schedule-icon-col {
+            display: none !important;
+          }
           .featured-race-card,
           .special-race-card,
           .roadmap-row-card {
@@ -604,6 +617,40 @@ export default function RaceOverviewSection() {
             display: flex;
             align-items: center;
             justify-content: space-between;
+          }
+
+          .wrapup-banner {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            padding: 22px 18px !important;
+            margin-top: 40px !important;
+            border-radius: 18px !important;
+            gap: 16px !important;
+          }
+          .wrapup-left {
+            align-items: flex-start !important;
+            gap: 14px !important;
+          }
+          .wrapup-icon-box {
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px !important;
+            max-width: 44px !important;
+            border-radius: 12px !important;
+            margin-top: 2px;
+          }
+          .wrapup-title {
+            font-size: 15px !important;
+            margin-bottom: 4px !important;
+          }
+          .wrapup-desc {
+            font-size: 12.5px !important;
+          }
+          .wrapup-badge {
+            width: 100% !important;
+            padding: 12px 16px !important;
+            font-size: 12px !important;
+            letter-spacing: 0.06em !important;
           }
         }
       `}</style>

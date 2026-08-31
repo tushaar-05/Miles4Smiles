@@ -613,50 +613,60 @@ export default function HeroSection() {
 
         {/* ────────────────────────────────────────────────────
             NEON LIME TICKER  z-40  (IN FRONT at bottom)
-            90px tall · neon lime · scrolling marquee
+            Full athletic marquee banner - zero cutoffs on desktop & mobile
         ──────────────────────────────────────────────────── */}
         <div
-          className="hero-ticker-shell"
+          className="hero-ticker-outer"
           style={{
             position: 'relative',
             zIndex: 40,
-            background: '#C8FF3D',
-            height: '92px',
-            width: '114%',
-            left: '-7%',
-            display: 'flex',
-            alignItems: 'center',
+            width: '100%',
             overflow: 'hidden',
-            flexShrink: 0,
-            transform: 'rotate(-2deg)',
-            transformOrigin: 'right center',
-            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.35)',
-            margin: '20px 0 16px 0',
+            padding: '14px 0 18px',
+            marginTop: '-10px',
           }}
         >
           <div
-            ref={tickerRef}
-            style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', willChange: 'transform' }}
+            className="hero-ticker-shell"
+            style={{
+              position: 'relative',
+              background: '#C8FF3D',
+              width: '112%',
+              marginLeft: '-6%',
+              padding: '16px 0',
+              display: 'flex',
+              alignItems: 'center',
+              overflow: 'hidden',
+              transform: 'rotate(-1.2deg)',
+              transformOrigin: 'center center',
+              boxShadow: '0 8px 30px rgba(0, 0, 0, 0.35)',
+            }}
           >
-            {tickerItems.map((item, i) => (
-              <span
-                key={i}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '20px',
-                  padding: '0 20px',
-                  fontSize: 'clamp(1.25rem, 2.6vw, 2.1rem)',
-                  fontWeight: 700,
-                  letterSpacing: '0.055em',
-                  textTransform: 'uppercase',
-                  color: '#0b1a4a',
-                }}
-              >
-                <span style={{ color: 'var(--blue, #12318B)', fontSize: '0.6em', lineHeight: 1 }}>✦</span>
-                {item}
-              </span>
-            ))}
+            <div
+              ref={tickerRef}
+              style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', willChange: 'transform' }}
+            >
+              {tickerItems.map((item, i) => (
+                <span
+                  key={i}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '22px',
+                    padding: '0 22px',
+                    fontSize: 'clamp(1.15rem, 2vw, 1.8rem)',
+                    fontWeight: 800,
+                    letterSpacing: '0.055em',
+                    textTransform: 'uppercase',
+                    color: '#0b1a4a',
+                    lineHeight: 1,
+                  }}
+                >
+                  <span style={{ color: 'var(--blue, #12318B)', fontSize: '0.7em', lineHeight: 1 }}>✦</span>
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -692,8 +702,8 @@ export default function HeroSection() {
           }
 
           .hero-body-canvas {
-            min-height: 430px !important;
-            height: 450px !important;
+            min-height: 485px !important;
+            height: 505px !important;
           }
 
           .hero-outer-wrapper {
@@ -712,7 +722,7 @@ export default function HeroSection() {
           }
 
           .hero-date-badge-wrap {
-            top: 8px !important;
+            top: 10px !important;
             left: 14px !important;
             z-index: 45 !important;
           }
@@ -720,7 +730,7 @@ export default function HeroSection() {
           /* Force text ON TOP of runner image and make it BOLD & PROMINENT */
           .hero-typo-wrap {
             z-index: 35 !important;
-            padding-bottom: 18px !important;
+            padding-bottom: 22px !important;
           }
 
           .hero-typo-line0 span {
@@ -743,52 +753,65 @@ export default function HeroSection() {
 
           .hero-typo-line0,
           .hero-typo-line1 {
-            padding-left: 16px !important;
+            padding-left: 14px !important;
           }
           .hero-typo-line2 {
-            padding-left: 12px !important;
+            padding-left: 10px !important;
           }
 
-          /* Runner sits behind text and tucks right into marquee */
+          /* Runner properly scaled & tucked into marquee */
           .runner-container {
-            left: 50% !important;
+            left: 54% !important;
             transform: translateX(-50%) !important;
-            width: 100% !important;
-            max-width: 440px !important;
-            top: 30px !important;
-            bottom: -35px !important;
+            width: 82% !important;
+            max-width: 340px !important;
+            top: 12px !important;
+            bottom: -30px !important;
             z-index: 20 !important;
-            opacity: 1 !important;
+            opacity: 0.96 !important;
           }
 
           .runner-container img {
-            height: 195% !important;
+            height: 136% !important;
             width: auto !important;
+            object-fit: contain !important;
+            object-position: bottom center !important;
           }
 
-          /* Marquee overlaps runner with zero gap */
+          /* Marquee outer and inner on mobile */
+          .hero-ticker-outer {
+            padding: 10px 0 14px !important;
+            margin-top: -18px !important;
+          }
           .hero-ticker-shell {
-            margin: 0 !important;
-            margin-top: -24px !important;
             width: 114% !important;
-            left: -7% !important;
-            z-index: 40 !important;
-            height: 80px !important;
+            margin-left: -7% !important;
+            padding: 12px 0 !important;
+            transform: rotate(-1.2deg) !important;
+          }
+          .hero-ticker-shell span {
+            font-size: 1.1rem !important;
+            padding: 0 14px !important;
+            gap: 14px !important;
           }
         }
 
         /* Very Small Mobile < 420px */
         @media (max-width: 420px) {
+          .hero-body-canvas {
+            min-height: 460px !important;
+            height: 480px !important;
+          }
           .hero-header-wrap {
-            padding: 12px 14px !important;
+            padding: 10px 14px !important;
           }
           .hero-date-badge-wrap {
-            top: 10px !important;
-            left: 12px !important;
+            top: 8px !important;
+            left: 10px !important;
           }
           .hero-date-badge-wrap span {
-            font-size: 11.5px !important;
-            letter-spacing: 0.08em !important;
+            font-size: 11px !important;
+            letter-spacing: 0.06em !important;
           }
         }
       `}</style>
