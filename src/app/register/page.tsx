@@ -419,41 +419,238 @@ export default function RegisterPage() {
           margin-bottom: 28px;
         }
 
-        .ticket {
-          background: #fafaf8;
-          border: 2px dashed #ccd3e2;
-          border-radius: 18px;
-          padding: 24px 28px;
-          max-width: 540px;
-          margin: 0 auto 30px;
-          text-align: left;
+        /* ══════════ OFFICIAL BRANDED MARATHON PASS STYLES ══════════ */
+        .success-wrapper {
+          max-width: 680px;
+          margin: 0 auto 60px;
         }
-        .ticket-top {
+        .screen-confirm-head {
+          text-align: center;
+          margin-bottom: 24px;
+        }
+
+        .marathon-pass {
+          background: #ffffff;
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 20px 60px rgba(11, 26, 74, 0.15);
+          border: 2px solid var(--navy-2);
+        }
+
+        .pass-hero {
+          background: var(--navy-2);
+          background-image: linear-gradient(135deg, #0b1a4a 0%, #12318b 100%);
+          padding: 18px 24px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-bottom: 18px;
-          border-bottom: 1px solid var(--line);
-          margin-bottom: 18px;
+          color: #ffffff;
+          gap: 16px;
+          flex-wrap: wrap;
         }
-        .bib-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--slate); }
-        .bib-num { font-size: 2.2rem; font-weight: 900; color: var(--navy-2); line-height: 1; margin-top: 4px; }
-        .paid-chip {
+        .pass-hero-left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .pass-event-tag {
+          background: rgba(200, 255, 61, 0.18);
+          color: var(--lime);
+          border: 1px solid rgba(200, 255, 61, 0.35);
+          padding: 4px 10px;
+          border-radius: 999px;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.06em;
+        }
+        .pass-hero-right {
+          text-align: right;
+        }
+        .pass-badge-date {
+          font-size: 14px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          color: var(--lime);
+        }
+        .pass-venue-text {
+          font-size: 10.5px;
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          margin-top: 2px;
+        }
+
+        .pass-body {
+          padding: 22px 24px;
+          background: #ffffff;
+        }
+
+        /* Simulated Marathon BIB Card */
+        .bib-card {
+          position: relative;
+          background: #fafaf8;
+          border: 2.5px solid var(--navy-2);
+          border-radius: 16px;
+          padding: 16px 20px;
+          text-align: center;
+          margin-bottom: 18px;
+          box-shadow: 0 6px 20px rgba(11, 26, 74, 0.06);
+        }
+        .bib-pin {
+          position: absolute;
+          width: 13px;
+          height: 13px;
+          background: #ffffff;
+          border: 2px solid var(--navy-2);
+          border-radius: 50%;
+        }
+        .bib-pin.tl { top: 8px; left: 8px; }
+        .bib-pin.tr { top: 8px; right: 8px; }
+        .bib-pin.bl { bottom: 8px; left: 8px; }
+        .bib-pin.br { bottom: 8px; right: 8px; }
+
+        .bib-header-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 2px;
+        }
+        .bib-sub-label {
+          font-size: 11px;
+          font-weight: 900;
+          color: var(--slate);
+          letter-spacing: 0.12em;
+        }
+        .bib-paid-badge {
           background: var(--lime);
           color: var(--navy);
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 900;
-          padding: 6px 14px;
-          border-radius: 8px;
+          padding: 4px 10px;
+          border-radius: 6px;
+          letter-spacing: 0.04em;
         }
-        .ticket-grid {
+
+        .bib-number-display {
+          font-size: clamp(3.6rem, 8vw, 4.8rem);
+          font-weight: 900;
+          color: var(--navy-2);
+          line-height: 0.95;
+          margin: 4px 0 8px;
+          letter-spacing: 0.03em;
+        }
+
+        .bib-category-pill {
+          display: inline-block;
+          background: var(--navy);
+          color: var(--lime);
+          padding: 5px 14px;
+          border-radius: 999px;
+          font-size: 11.5px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        /* Runner details */
+        .pass-details-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 14px;
-          font-size: 13px;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px 14px;
+          padding: 14px 16px;
+          background: #f4f6fb;
+          border-radius: 12px;
+          margin-bottom: 16px;
+          border: 1px solid #dfe3ed;
         }
-        .ticket-grid span { color: var(--slate); font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; display: block; margin-bottom: 2px; }
-        .ticket-grid div { color: var(--ink); font-weight: 600; }
+        .detail-cell {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .detail-label {
+          font-size: 9.5px;
+          font-weight: 800;
+          color: var(--slate);
+          letter-spacing: 0.06em;
+        }
+        .detail-value {
+          font-size: 12.5px;
+          font-weight: 700;
+          color: var(--navy);
+        }
+        .detail-value.mono {
+          font-family: monospace;
+        }
+
+        /* Schedule */
+        .pass-schedule-strip {
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+          background: #ffffff;
+          border: 1.5px dashed #ccd3e2;
+          border-radius: 10px;
+          padding: 8px 12px;
+          margin-bottom: 16px;
+          font-size: 11px;
+        }
+        .sched-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .sched-time {
+          font-weight: 900;
+          color: var(--navy-2);
+        }
+        .sched-desc {
+          color: var(--slate);
+          font-weight: 600;
+        }
+        .sched-sep {
+          color: var(--navy-2);
+          font-size: 8px;
+          opacity: 0.6;
+        }
+
+        /* Barcode */
+        .pass-barcode-strip {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-top: 12px;
+          border-top: 2px dashed #ccd3e2;
+          gap: 16px;
+        }
+        .barcode-graphic {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 3px;
+        }
+        .barcode-text {
+          font-size: 9px;
+          font-family: monospace;
+          color: var(--slate);
+          letter-spacing: 0.1em;
+        }
+        .barcode-instructions {
+          text-align: right;
+          max-width: 240px;
+        }
+        .barcode-instructions strong {
+          display: block;
+          font-size: 11px;
+          color: var(--navy-2);
+          letter-spacing: 0.06em;
+        }
+        .barcode-instructions span {
+          font-size: 9.5px;
+          color: var(--slate);
+          line-height: 1.3;
+          display: block;
+        }
 
         .success-actions {
           display: flex;
@@ -482,17 +679,21 @@ export default function RegisterPage() {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          background: #fff;
+          background: var(--lime);
           color: var(--navy);
-          border: 1.5px solid var(--line);
-          padding: 12px 24px;
+          border: none;
+          padding: 13px 28px;
           border-radius: 12px;
           font-size: 14px;
-          font-weight: 700;
+          font-weight: 800;
           cursor: pointer;
           transition: all 0.15s ease;
+          box-shadow: 0 6px 18px rgba(200, 255, 61, 0.4);
         }
-        .print-btn:hover { background: #f0f2f7; }
+        .print-btn:hover {
+          background: #d5ff59;
+          transform: translateY(-2px);
+        }
 
         /* Form Card */
         .card {
@@ -696,6 +897,8 @@ export default function RegisterPage() {
           text-align: center;
         }
 
+        .print-header { display: none; }
+
         @media (max-width: 768px) {
           .impact-card { grid-template-columns: 1fr; }
           .cat-grid { grid-template-columns: 1fr; }
@@ -703,126 +906,309 @@ export default function RegisterPage() {
           .finish-trust { justify-content: center; }
           .finish-cta { width: 100%; }
         }
+
+        /* ══════════════ DEDICATED PRINT STYLES ══════════════ */
+        @media print {
+          @page {
+            margin: 1.2cm;
+            size: portrait;
+          }
+          body, .page {
+            background: #ffffff !important;
+            color: #0b1a4a !important;
+            min-height: auto !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          .hero,
+          .impact,
+          .success-icon,
+          .success-actions,
+          .success > p,
+          .impact-note {
+            display: none !important;
+          }
+          .shell {
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .success {
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            text-align: left !important;
+          }
+          .success h2 {
+            display: none !important;
+          }
+          .print-header {
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2.5px solid #0b1a4a;
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+          }
+          .ticket {
+            background: #ffffff !important;
+            border: 2px solid #0b1a4a !important;
+            border-radius: 12px !important;
+            box-shadow: none !important;
+            max-width: 100% !important;
+            padding: 22px 26px !important;
+            margin: 0 auto !important;
+            page-break-inside: avoid !important;
+          }
+          .paid-chip {
+            background: #e8ecf8 !important;
+            color: #0b1a4a !important;
+            border: 1.5px solid #0b1a4a !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .bib-num {
+            color: #12318b !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .print-footer-note {
+            display: block !important;
+            text-align: center;
+            font-size: 11px;
+            color: #5c6785;
+            margin-top: 18px;
+            border-top: 1px solid #dfe3ed;
+            padding-top: 12px;
+          }
+        }
       `}</style>
 
-      {/* ══════════════ HERO HEADER ══════════════ */}
-      <header className="hero">
-        <div className="hero-inner">
-          <Link href="/" className="back-link">
-            <ArrowLeft size={16} /> Back to main event
-          </Link>
+      {!isSubmitted && (
+        <>
+          {/* ══════════════ HERO HEADER ══════════════ */}
+          <header className="hero">
+            <div className="hero-inner">
+              <Link href="/" className="back-link">
+                <ArrowLeft size={16} /> Back to main event
+              </Link>
 
-          <div className="tag-row">
-            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center' }}>
-              <Image
-                src="/images/logo.png"
-                alt="Miles for Smiles Logo"
-                width={240}
-                height={60}
-                style={{ height: '54px', width: 'auto', objectFit: 'contain' }}
-                priority
-              />
-            </Link>
-            <span className="tag-pill">#RUNFORCHARITY</span>
-          </div>
+              <div className="tag-row">
+                <Link href="/" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <Image
+                    src="/images/logo.png"
+                    alt="Miles for Smiles Logo"
+                    width={240}
+                    height={60}
+                    style={{ height: '54px', width: 'auto', objectFit: 'contain' }}
+                    priority
+                  />
+                </Link>
+                <span className="tag-pill">#RUNFORCHARITY</span>
+              </div>
 
-          <h1 className="hero-title display">5K Charity Run — Registration</h1>
-          <p className="hero-sub">Secure your official BIB number and support pediatric healthcare for children in need.</p>
-        </div>
-      </header>
+              <h1 className="hero-title display">5K Charity Run — Registration</h1>
+              <p className="hero-sub">Secure your official BIB number and support pediatric healthcare for children in need.</p>
+            </div>
+          </header>
 
-      {/* ══════════════ IMPACT BAND ══════════════ */}
-      <div className="impact">
-        <div className="impact-card">
-          <div className="impact-item">
-            <div className="impact-icon"><Stethoscope size={16} /></div>
-            <div>
-              <h4>Free Pediatric Care</h4>
-              <p>Your registration directly funds dental screenings and treatment for underprivileged children.</p>
+          {/* ══════════════ IMPACT BAND ══════════════ */}
+          <div className="impact">
+            <div className="impact-card">
+              <div className="impact-item">
+                <div className="impact-icon"><Stethoscope size={16} /></div>
+                <div>
+                  <h4>Free Pediatric Care</h4>
+                  <p>Your registration directly funds dental screenings and treatment for underprivileged children.</p>
+                </div>
+              </div>
+              <div className="impact-item">
+                <div className="impact-icon"><HeartHandshake size={16} /></div>
+                <div>
+                  <h4>100% Charity Cause</h4>
+                  <p>All race registration funds go straight to verified pediatric health programs.</p>
+                </div>
+              </div>
+              <div className="impact-item">
+                <div className="impact-icon"><Smile size={16} /></div>
+                <div>
+                  <h4>Real Medical Support</h4>
+                  <p>Providing essential surgeries, oral hygiene kits, and aftercare for kids.</p>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="impact-item">
-            <div className="impact-icon"><HeartHandshake size={16} /></div>
-            <div>
-              <h4>100% Charity Cause</h4>
-              <p>All race registration funds go straight to verified pediatric health programs.</p>
-            </div>
-          </div>
-          <div className="impact-item">
-            <div className="impact-icon"><Smile size={16} /></div>
-            <div>
-              <h4>Real Medical Support</h4>
-              <p>Providing essential surgeries, oral hygiene kits, and aftercare for kids.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
 
       {/* ══════════════ MAIN CONTENT ══════════════ */}
-      <main className="shell">
+      <main className="shell" style={{ marginTop: isSubmitted ? '40px' : undefined }}>
         {isSubmitted ? (
-          /* ─── SUCCESS CONFIRMATION SCREEN ─── */
-          <div className="success">
-            <div className="success-icon">
-              <Check size={36} color="#0b1a4a" strokeWidth={3.5} />
+          /* ─── SUCCESS CONFIRMATION SCREEN — PREMIUM BRANDED MARATHON PASS ─── */
+          <div className="success-wrapper">
+            
+            {/* Screen celebratory title (hidden on print) */}
+            <div className="screen-confirm-head">
+              <div className="success-icon">
+                <Check size={36} color="#0b1a4a" strokeWidth={3.5} />
+              </div>
+              <h2 className="display" style={{ fontSize: '2.4rem', color: '#0b1a4a', marginBottom: '6px' }}>Registration Confirmed!</h2>
+              <p style={{ color: '#5c6785', fontSize: '14px', maxWidth: '500px', margin: '0 auto 16px' }}>
+                Payment verified! Your official race chest number is issued and your spot on the starting grid is locked in.
+              </p>
+              <div className="impact-note">
+                <Smile size={15} /> Your ₹{price} contribution is on its way to a child&rsquo;s healthcare
+              </div>
             </div>
-            <h2 className="display">Registration Confirmed!</h2>
-            <p>Payment successful! Your official 5K BIB number has been generated and your spot on the starting grid is locked in.</p>
 
-            <div className="impact-note">
-              <Smile size={15} /> Your ₹{price} contribution is on its way to a child&rsquo;s healthcare
-            </div>
+            {/* ══════════ OFFICIAL BRANDED MARATHON RUNNER PASS ══════════ */}
+            <div className="marathon-pass">
+              
+              {/* Pass Top Banner */}
+              <div className="pass-hero">
+                <div className="pass-hero-left">
+                  <Image
+                    src="/images/logo.png"
+                    alt="Miles for Smiles"
+                    width={180}
+                    height={46}
+                    style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
+                  />
+                  <div className="pass-event-tag">#RUNFORCHARITY • 5K RUN</div>
+                </div>
+                <div className="pass-hero-right">
+                  <div className="pass-badge-date">SEP 05, 2026</div>
+                  <div className="pass-venue-text">CLUB CHARHOLI, PUNE • 5:30 AM</div>
+                </div>
+              </div>
 
-            <div className="ticket">
-              <div className="ticket-top">
-                <div>
-                  <div className="bib-label">Assigned Chest Number</div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginTop: '4px' }}>
-                    <div className="bib-num tabular display" style={{ color: 'var(--navy-2)', fontSize: '2.8rem' }}>
-                      #{chestNumber || '101'}
-                    </div>
-                    <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--slate)', letterSpacing: '0.04em' }}>
-                      ({bibNumber})
-                    </span>
+              {/* Pass Main Body */}
+              <div className="pass-body">
+
+                {/* Simulated Marathon BIB Card */}
+                <div className="bib-card">
+                  <div className="bib-pin tl" />
+                  <div className="bib-pin tr" />
+                  <div className="bib-pin bl" />
+                  <div className="bib-pin br" />
+
+                  <div className="bib-header-row">
+                    <span className="bib-sub-label">OFFICIAL RACE CHEST NUMBER</span>
+                    <span className="bib-paid-badge tabular">PAID ₹{price}.00</span>
+                  </div>
+
+                  <div className="bib-number-display display tabular">
+                    #{chestNumber || '101'}
+                  </div>
+
+                  <div className="bib-category-pill">
+                    {category === 'competitive' ? 'COMPETITIVE 5K • FRONT-GRID PRIORITY' : 'NON-COMPETITIVE 5K • JOY RUN'}
                   </div>
                 </div>
-                <div className="paid-chip tabular">PAID ₹{price}.00</div>
-              </div>
-              <div className="ticket-grid">
-                <div>
-                  <span>Participant Name</span>
-                  <div>{formData.firstName} {formData.lastName}</div>
+
+                {/* Runner Details Grid */}
+                <div className="pass-details-grid">
+                  <div className="detail-cell">
+                    <span className="detail-label">PARTICIPANT NAME</span>
+                    <span className="detail-value">{formData.firstName} {formData.lastName}</span>
+                  </div>
+                  <div className="detail-cell">
+                    <span className="detail-label">T-SHIRT SIZE</span>
+                    <span className="detail-value">{formData.tShirtSize}</span>
+                  </div>
+                  <div className="detail-cell">
+                    <span className="detail-label">BLOOD GROUP</span>
+                    <span className="detail-value">{formData.bloodGroup}</span>
+                  </div>
+                  <div className="detail-cell">
+                    <span className="detail-label">CITY</span>
+                    <span className="detail-value">{formData.city || 'Pune'}</span>
+                  </div>
+                  <div className="detail-cell">
+                    <span className="detail-label">EMERGENCY CONTACT</span>
+                    <span className="detail-value">{formData.emergencyName} ({formData.emergencyPhone})</span>
+                  </div>
+                  <div className="detail-cell">
+                    <span className="detail-label">PAYMENT TRANSACTION ID</span>
+                    <span className="detail-value mono" style={{ fontSize: '11px' }}>{paymentDetails.paymentId || 'Verified'}</span>
+                  </div>
                 </div>
-                <div>
-                  <span>Chest No. / BIB</span>
-                  <div style={{ color: 'var(--navy-2)', fontWeight: 800 }}>#{chestNumber} ({bibNumber})</div>
+
+                {/* Race Day Schedule Strip */}
+                <div className="pass-schedule-strip">
+                  <div className="sched-item">
+                    <span className="sched-time">5:30 AM</span>
+                    <span className="sched-desc">Reporting & Kit Collection</span>
+                  </div>
+                  <div className="sched-sep">✦</div>
+                  <div className="sched-item">
+                    <span className="sched-time">6:10 AM</span>
+                    <span className="sched-desc">Zumba & Warmup</span>
+                  </div>
+                  <div className="sched-sep">✦</div>
+                  <div className="sched-item">
+                    <span className="sched-time">6:30 AM</span>
+                    <span className="sched-desc">Race Flag-Off</span>
+                  </div>
                 </div>
-                <div>
-                  <span>Race Category</span>
-                  <div>{category === 'competitive' ? '5K Competitive (₹249)' : '5K Joy Run (₹149)'}</div>
+
+                {/* Barcode & Security Strip */}
+                <div className="pass-barcode-strip">
+                  <div className="barcode-graphic">
+                    {/* Simulated SVG Barcode */}
+                    <svg height="34" width="220" viewBox="0 0 220 34" fill="#0b1a4a">
+                      <rect x="0" y="0" width="3" height="34"/>
+                      <rect x="5" y="0" width="2" height="34"/>
+                      <rect x="9" y="0" width="4" height="34"/>
+                      <rect x="16" y="0" width="2" height="34"/>
+                      <rect x="20" y="0" width="5" height="34"/>
+                      <rect x="28" y="0" width="2" height="34"/>
+                      <rect x="32" y="0" width="3" height="34"/>
+                      <rect x="38" y="0" width="4" height="34"/>
+                      <rect x="45" y="0" width="2" height="34"/>
+                      <rect x="49" y="0" width="6" height="34"/>
+                      <rect x="58" y="0" width="2" height="34"/>
+                      <rect x="63" y="0" width="4" height="34"/>
+                      <rect x="70" y="0" width="3" height="34"/>
+                      <rect x="76" y="0" width="5" height="34"/>
+                      <rect x="84" y="0" width="2" height="34"/>
+                      <rect x="88" y="0" width="4" height="34"/>
+                      <rect x="95" y="0" width="3" height="34"/>
+                      <rect x="101" y="0" width="5" height="34"/>
+                      <rect x="109" y="0" width="2" height="34"/>
+                      <rect x="114" y="0" width="4" height="34"/>
+                      <rect x="121" y="0" width="3" height="34"/>
+                      <rect x="127" y="0" width="6" height="34"/>
+                      <rect x="136" y="0" width="2" height="34"/>
+                      <rect x="141" y="0" width="4" height="34"/>
+                      <rect x="148" y="0" width="3" height="34"/>
+                      <rect x="154" y="0" width="5" height="34"/>
+                      <rect x="162" y="0" width="2" height="34"/>
+                      <rect x="167" y="0" width="4" height="34"/>
+                      <rect x="174" y="0" width="3" height="34"/>
+                      <rect x="180" y="0" width="5" height="34"/>
+                      <rect x="188" y="0" width="2" height="34"/>
+                      <rect x="193" y="0" width="4" height="34"/>
+                      <rect x="200" y="0" width="3" height="34"/>
+                      <rect x="206" y="0" width="5" height="34"/>
+                      <rect x="214" y="0" width="3" height="34"/>
+                    </svg>
+                    <span className="barcode-text">M4S-2026-CHEST-{chestNumber || '101'}</span>
+                  </div>
+                  <div className="barcode-instructions">
+                    <strong>OFFICIAL ENTRY PASS</strong>
+                    <span>Present this pass at the counter on race morning for BIB & kit collection.</span>
+                  </div>
                 </div>
-                <div>
-                  <span>T-Shirt Size</span>
-                  <div>{formData.tShirtSize}</div>
-                </div>
-                <div>
-                  <span>Blood Group</span>
-                  <div>{formData.bloodGroup}</div>
-                </div>
-                <div>
-                  <span>Razorpay Payment ID</span>
-                  <div style={{ wordBreak: 'break-all', fontSize: '12px', fontFamily: 'monospace' }}>{paymentDetails.paymentId || 'Verified'}</div>
-                </div>
-                <div style={{ gridColumn: '1 / -1' }}>
-                  <span>Emergency Contact</span>
-                  <div>{formData.emergencyName} ({formData.emergencyPhone})</div>
-                </div>
+
               </div>
             </div>
 
-            <div className="success-actions">
+            {/* Action Buttons (hidden on print) */}
+            <div className="success-actions" style={{ marginTop: '24px' }}>
               <button onClick={handlePrint} className="print-btn">
-                <Printer size={16} /> Print Confirmation
+                <Printer size={16} /> Print Official Pass
               </button>
               <Link href="/" className="home-btn">
                 Return to Home

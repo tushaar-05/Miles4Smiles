@@ -76,3 +76,152 @@ body {
   opacity: 0;
   animation-delay: 0.2s;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   GLOBAL PRINT STYLESHEET (OFFICIAL SINGLE-PAGE MARATHON PASS)
+   ══════════════════════════════════════════════════════════════════ */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0.6cm 0.8cm;
+  }
+
+  html, body, .page {
+    background: #ffffff !important;
+    color: #0b1a4a !important;
+    font-size: 10.5pt !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Eliminate all noise */
+  header.hero,
+  .hero,
+  .impact,
+  .screen-confirm-head,
+  .success-actions,
+  .home-btn,
+  .print-btn,
+  .back-link,
+  .tag-row,
+  .secure-badge {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  main.shell,
+  .shell,
+  .success-wrapper {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .marathon-pass {
+    background: #ffffff !important;
+    border: 2.5px solid #0b1a4a !important;
+    border-radius: 14px !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pass-hero {
+    background: #0b1a4a !important;
+    color: #ffffff !important;
+    padding: 14px 20px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pass-event-tag {
+    background: rgba(200, 255, 61, 0.2) !important;
+    color: #c8ff3d !important;
+    border: 1px solid #c8ff3d !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pass-badge-date {
+    color: #c8ff3d !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pass-body {
+    padding: 16px 20px !important;
+  }
+
+  .bib-card {
+    background: #f8fafc !important;
+    border: 2px solid #0b1a4a !important;
+    padding: 12px 18px !important;
+    margin-bottom: 12px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .bib-paid-badge {
+    background: #c8ff3d !important;
+    color: #0b1a4a !important;
+    border: 1px solid #0b1a4a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .bib-number-display {
+    font-size: 3.8rem !important;
+    color: #12318b !important;
+    margin: 2px 0 6px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .bib-category-pill {
+    background: #0b1a4a !important;
+    color: #c8ff3d !important;
+    padding: 4px 12px !important;
+    font-size: 10.5pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pass-details-grid {
+    background: #f4f6fb !important;
+    border: 1px solid #dfe3ed !important;
+    gap: 8px 14px !important;
+    padding: 12px 14px !important;
+    margin-bottom: 12px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pass-schedule-strip {
+    background: #ffffff !important;
+    border: 1.5px dashed #ccd3e2 !important;
+    padding: 8px 12px !important;
+    margin-bottom: 12px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pass-barcode-strip {
+    padding-top: 10px !important;
+  }
+}
