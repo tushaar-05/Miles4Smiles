@@ -31,29 +31,21 @@ export default function HeroSection() {
     /*
      * Off-white outer wrapper creates the margin around hero — matching reference.
      */
-    <div style={{ background: '#F5F5F2', padding: '10px 10px 0 10px' }}>
+    <div style={{ background: 'var(--blue, #12318B)', width: '100%', overflow: 'visible', position: 'relative', zIndex: 10 }}>
 
       {/* ══════════════════════════════════════════════════════════
           HERO SECTION
-          Royal blue · rounded top corners · fills viewport height
+          Royal blue · fills viewport height edge-to-edge
           ══════════════════════════════════════════════════════════
-          Z-index layering (bottom → top):
-            z-0   Royal Blue Background (#12318B / BG.png)
-            z-10  Giant Typography ("RUN BEYOND" & "LIMITS")
-            z-20  Date badge + City Editorial Card
-            z-30  Runner Cutout (Large, cropped head-to-knee)
-            z-40  Neon Lime Bottom Ticker
-            z-50  Header / Navigation
       */}
       <section
         id="hero"
         style={{
           position: 'relative',
           backgroundColor: 'var(--blue, #12318B)',
-          borderRadius: '16px 16px 0 0',
-          overflow: 'hidden',
+          overflow: 'visible',
           width: '100%',
-          minHeight: 'calc(100vh - 10px)',
+          minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -240,7 +232,7 @@ export default function HeroSection() {
           style={{
             position: 'relative',
             flex: 1,
-            overflow: 'hidden',
+            overflow: 'visible',
             minHeight: '480px',
           }}
         >
@@ -257,6 +249,17 @@ export default function HeroSection() {
           >
             <div style={{ position: 'relative', display: 'inline-block' }}>
               {/* 3D Left Extrusion (Medium Olive Shadow) */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '-20px',
+                  width: '20px',
+                  height: 'calc(100% + 16px)',
+                  background: '#819E1E',
+                  clipPath: 'polygon(0 16px, 100% 0, 100% calc(100% - 16px), 0 100%)',
+                }}
+              />
 
               {/* 3D Bottom Underside Face (Dark Olive Shadow) */}
               <div
@@ -504,7 +507,7 @@ export default function HeroSection() {
             style={{
               position: 'absolute',
               top: '0px',
-              bottom: '0px',
+              bottom: '-110px',
               left: '38%',
               width: '48%',
               zIndex: 30,
@@ -520,7 +523,7 @@ export default function HeroSection() {
               src="/images/runner-cutout.png"
               alt="Runner - Charity 5K Run"
               style={{
-                height: '178%',
+                height: '188%',
                 width: 'auto',
                 maxWidth: 'none',
                 objectFit: 'cover',
@@ -541,14 +544,17 @@ export default function HeroSection() {
             position: 'relative',
             zIndex: 40,
             background: '#C8FF3D',
-            height: '90px',
+            height: '92px',
+            width: '114%',
+            left: '-7%',
             display: 'flex',
             alignItems: 'center',
             overflow: 'hidden',
             flexShrink: 0,
-            transform: 'rotate(-2deg) scale(1.06)',
-            transformOrigin: 'center center',
-            boxShadow: '0 -6px 24px rgba(0, 0, 0, 0.28)',
+            transform: 'rotate(-2deg)',
+            transformOrigin: 'right center',
+            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.35)',
+            margin: '20px 0 16px 0',
           }}
         >
           <div
