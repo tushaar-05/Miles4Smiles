@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, Menu, X } from 'lucide-react';
+import { Calendar, Menu, X, ChevronRight, ArrowRight } from 'lucide-react';
 
 /* ─── Ticker content ─── */
 const TICKER_ITEMS = [
@@ -21,6 +21,15 @@ const NAV_LINKS = [
   { label: 'Route',      href: '#route' },
   { label: 'Partners',   href: '#sponsors' },
   { label: 'FAQ',        href: '#faq' },
+];
+
+const MOBILE_DRAWER_LINKS = [
+  { label: 'ABOUT THE RUN',       href: '#about' },
+  { label: 'EVENT SCHEDULE',      href: '#schedule' },
+  { label: 'RACE CATEGORIES',     href: '#categories' },
+  { label: 'RUNNING TRACKS',      href: '#route' },
+  { label: 'PARTNERS & SPONSORS', href: '#sponsors' },
+  { label: 'FAQ',                 href: '#faq' },
 ];
 
 export default function HeroSection() {
@@ -99,10 +108,100 @@ export default function HeroSection() {
   };
 
   return (
-    /*
-     * Off-white outer wrapper creates the margin around hero — matching reference.
-     */
-    <div className="hero-outer-wrapper" style={{ background: 'var(--blue, #12318B)', width: '100%', overflow: 'hidden', position: 'relative', zIndex: 10 }}>
+    <>
+      {/* ══════════════════════════════════════════════════════
+          ROOT-LEVEL MOBILE SIDE DRAWER (SLIDES IN FROM LEFT)
+          Placed at root to avoid any parent overflow or stacking clipping
+          ══════════════════════════════════════════════════════ */}
+      <div
+        className={`mobile-drawer-backdrop ${mobileOpen ? 'open' : ''}`}
+        onClick={() => setMobileOpen(false)}
+        aria-hidden={!mobileOpen}
+      />
+
+      <div
+        className={`mobile-side-drawer ${mobileOpen ? 'open' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation Menu"
+      >
+        {/* Drawer Top Header with Logo & Close 'X' Button */}
+        <div className="drawer-header">
+          <Link
+            href="/"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Miles for Smiles"
+            style={{ display: 'flex', alignItems: 'center', lineHeight: 0 }}
+          >
+            <Image
+              src="/images/logo.png"
+              alt="Miles for Smiles Logo"
+              width={140}
+              height={38}
+              style={{
+                height: 'auto',
+                maxHeight: '34px',
+                width: 'auto',
+                maxWidth: '150px',
+                objectFit: 'contain',
+              }}
+              priority
+            />
+          </Link>
+          <button
+            className="drawer-close-btn"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close menu"
+          >
+            <X size={26} strokeWidth={2.5} />
+          </button>
+        </div>
+
+        {/* Navigation List — Clean Stack with Hairline Dividers */}
+        <nav className="drawer-nav">
+          {MOBILE_DRAWER_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={(e) => {
+                handleNavClick(e, link.href);
+                setMobileOpen(false);
+              }}
+              className="drawer-link"
+            >
+              <span>{link.label}</span>
+              <ChevronRight size={18} opacity={0.6} />
+            </Link>
+          ))}
+        </nav>
+
+        {/* Dedicated Separate Register Now Button */}
+        <div className="drawer-cta-wrap">
+          <Link
+            href="/register"
+            onClick={() => setMobileOpen(false)}
+            className="drawer-register-btn"
+          >
+            <span>REGISTER NOW</span>
+            <ArrowRight size={18} strokeWidth={3} />
+          </Link>
+        </div>
+
+        {/* Drawer Bottom Details */}
+        <div className="drawer-footer">
+          <div className="drawer-event-pill">
+            <span style={{ color: '#C8FF3D' }}>✦</span> SEP 05, 2026 • 6:30 AM
+          </div>
+          <div className="drawer-contact-line">
+            <a href="mailto:setunst@gmail.com">setunst@gmail.com</a>
+          </div>
+          <div className="drawer-contact-line" style={{ marginTop: '4px' }}>
+            <a href="tel:9172901968">+91 91729 01968</a>
+          </div>
+        </div>
+      </div>
+
+      <div className="hero-outer-wrapper" style={{ background: 'var(--blue, #12318B)', width: '100%', overflow: 'hidden', position: 'relative', zIndex: 10 }}>
 
       {/* ══════════════════════════════════════════════════════════
           HERO SECTION
@@ -261,45 +360,6 @@ export default function HeroSection() {
 
           {/* Hairline divider */}
           <div style={{ height: '1px', background: 'rgba(255,255,255,0.14)', margin: '0 36px' }} />
-
-          {/* Mobile dropdown */}
-          {mobileOpen && (
-            <div
-              style={{
-                background: 'rgba(7, 15, 38, 0.95)',
-                backdropFilter: 'blur(12px)',
-                padding: '18px 24px 22px',
-                display: 'flex', flexDirection: 'column', gap: '16px',
-                borderBottom: '1.5px solid rgba(200, 255, 61, 0.3)',
-              }}
-            >
-              {NAV_LINKS.map(link => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  style={{ color: 'rgba(255,255,255,0.92)', textDecoration: 'none', fontWeight: 600, fontSize: '15px' }}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link
-                href="/register"
-                onClick={() => setMobileOpen(false)}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                  background: '#C8FF3D', color: '#0b1a4a', padding: '12px 20px',
-                  borderRadius: '10px', fontWeight: 800, fontSize: '13px',
-                  letterSpacing: '0.08em', textTransform: 'uppercase',
-                  textDecoration: 'none', width: '100%',
-                  marginTop: '6px',
-                  boxShadow: '0 6px 18px rgba(200, 255, 61, 0.35)',
-                }}
-              >
-                <Calendar size={15} /> Register for 5K Run
-              </Link>
-            </div>
-          )}
         </header>
 
         {/* ────────────────────────────────────────────────────
@@ -796,6 +856,159 @@ export default function HeroSection() {
           }
         }
 
+        /* ══════════════════════════════════════════════════════
+            MOBILE SIDE DRAWER (SLIDES IN FROM LEFT)
+           ══════════════════════════════════════════════════════ */
+        .mobile-drawer-backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(7, 15, 38, 0.7);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          z-index: 998;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .mobile-drawer-backdrop.open {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .mobile-side-drawer {
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          width: min(85vw, 340px);
+          height: 100vh;
+          height: 100dvh;
+          background: #f7f6f0;
+          color: #0b1a4a;
+          z-index: 999;
+          transform: translateX(-100%);
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          flex-direction: column;
+          box-shadow: 12px 0 40px rgba(0, 0, 0, 0.4);
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .mobile-side-drawer.open {
+          transform: translateX(0);
+        }
+
+        .drawer-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 18px 20px;
+          border-bottom: 1.5px solid rgba(200, 255, 61, 0.25);
+          background: #0b1a4a;
+          flex-shrink: 0;
+        }
+        .drawer-close-btn {
+          background: none;
+          border: none;
+          color: #C8FF3D;
+          cursor: pointer;
+          padding: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.2s ease;
+        }
+        .drawer-close-btn:hover {
+          transform: scale(1.1);
+        }
+
+        .drawer-nav {
+          display: flex;
+          flex-direction: column;
+          background: #f7f6f0;
+          flex-shrink: 0;
+        }
+        .drawer-link {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 17px 22px;
+          font-family: var(--font-geist-sans), 'Inter', sans-serif;
+          font-size: 15px;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          color: #0b1a4a;
+          text-decoration: none;
+          border-bottom: 1px solid rgba(11, 26, 74, 0.1);
+          transition: background 0.15s ease, padding-left 0.15s ease, color 0.15s ease;
+        }
+        .drawer-link:hover, .drawer-link:active {
+          background: rgba(18, 49, 139, 0.06);
+          padding-left: 26px;
+          color: #12318b;
+        }
+
+        .drawer-cta-wrap {
+          padding: 20px 20px 14px;
+          background: #f7f6f0;
+          flex-shrink: 0;
+        }
+        .drawer-register-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          background: #C8FF3D;
+          color: #0b1a4a;
+          padding: 15px 20px;
+          border-radius: 12px;
+          font-family: var(--font-geist-sans), 'Inter', sans-serif;
+          font-size: 14.5px;
+          font-weight: 900;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          text-decoration: none;
+          box-shadow: 0 6px 20px rgba(200, 255, 61, 0.4);
+          transition: all 0.15s ease;
+          width: 100%;
+        }
+        .drawer-register-btn:active {
+          transform: scale(0.98);
+          background: #d4ff59;
+        }
+
+        .drawer-footer {
+          padding: 20px 22px 28px;
+          border-top: 1px solid rgba(11, 26, 74, 0.1);
+          background: #eeecea;
+          margin-top: auto;
+          flex-shrink: 0;
+        }
+        .drawer-event-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #0b1a4a;
+          color: #ffffff;
+          padding: 7px 14px;
+          border-radius: 20px;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          margin-bottom: 12px;
+        }
+        .drawer-contact-line {
+          font-size: 12.5px;
+          color: #5c6785;
+        }
+        .drawer-contact-line a {
+          color: #0b1a4a;
+          text-decoration: none;
+          font-weight: 700;
+        }
+
         /* Very Small Mobile < 420px */
         @media (max-width: 420px) {
           .hero-body-canvas {
@@ -816,5 +1029,6 @@ export default function HeroSection() {
         }
       `}</style>
     </div>
+    </>
   );
 }

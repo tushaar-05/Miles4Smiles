@@ -106,14 +106,14 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    gender: 'Male',
-    bloodGroup: 'O+',
+    gender: '',
+    bloodGroup: '',
     weight: '',
     height: '',
-    tShirtSize: 'M',
-    dobDay: '15',
-    dobMonth: '05',
-    dobYear: '2000',
+    tShirtSize: '',
+    dobDay: '',
+    dobMonth: '',
+    dobYear: '',
     email: '',
     phone: '',
     city: '',
@@ -890,11 +890,31 @@ export default function RegisterPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
+          margin-top: 20px;
+          width: 100%;
+        }
+        .secure-badge-pill {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 8px 18px;
+          background: rgba(18, 49, 139, 0.05);
+          border: 1px solid rgba(18, 49, 139, 0.12);
+          border-radius: 999px;
           font-size: 12px;
+          font-weight: 500;
           color: var(--slate);
-          margin-top: 18px;
+          line-height: 1.3;
           text-align: center;
+        }
+        .secure-badge-pill strong {
+          color: var(--navy);
+          font-weight: 700;
+        }
+        .secure-icon {
+          color: var(--navy-2);
+          flex-shrink: 0;
         }
 
         @media (max-width: 768px) {
@@ -918,17 +938,39 @@ export default function RegisterPage() {
             margin: 24px auto 60px !important;
           }
           .form-pad {
-            padding: 24px 18px !important;
+            padding: 24px 16px !important;
           }
           .cat-grid {
             grid-template-columns: 1fr !important;
           }
-          .checkpoint {
-            gap: 14px !important;
+          .route {
+            gap: 28px !important;
           }
-          .marker {
-            width: 32px !important;
-            height: 32px !important;
+          .checkpoint {
+            flex-direction: column !important;
+            gap: 10px !important;
+          }
+          .marker-col {
+            display: none !important;
+          }
+          .checkpoint-head {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            margin-bottom: 12px !important;
+          }
+          .checkpoint-head .km {
+            font-size: 1.2rem !important;
+          }
+          .checkpoint-head h3 {
+            font-size: 15.5px !important;
+          }
+          .checkpoint-body {
+            width: 100% !important;
+          }
+          .emergency-box {
+            padding: 16px 14px !important;
+            border-radius: 12px !important;
           }
           .field-grid {
             grid-template-columns: 1fr !important;
@@ -946,6 +988,12 @@ export default function RegisterPage() {
             justify-content: center !important;
           }
           .finish-cta {
+            width: 100% !important;
+          }
+          .secure-badge-pill {
+            font-size: 11px !important;
+            padding: 8px 14px !important;
+            gap: 6px !important;
             width: 100% !important;
           }
 
@@ -1377,7 +1425,8 @@ export default function RegisterPage() {
                     <div className="field-grid" style={{ marginTop: '14px' }}>
                       <div className="field">
                         <label>Gender <span className="star">*</span></label>
-                        <select value={formData.gender} onChange={e => handleChange('gender', e.target.value)}>
+                        <select required value={formData.gender} onChange={e => handleChange('gender', e.target.value)}>
+                          <option value="">Select Gender</option>
                           <option value="Male">Male</option>
                           <option value="Female">Female</option>
                           <option value="Other">Other</option>
@@ -1386,13 +1435,16 @@ export default function RegisterPage() {
                       <div className="field">
                         <label>Date of Birth <span className="star">*</span> (Min Age: 10 Yrs)</label>
                         <div className="dob-grid">
-                          <select value={formData.dobDay} onChange={e => handleChange('dobDay', e.target.value)}>
+                          <select required value={formData.dobDay} onChange={e => handleChange('dobDay', e.target.value)}>
+                            <option value="">Day</option>
                             {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
                           </select>
-                          <select value={formData.dobMonth} onChange={e => handleChange('dobMonth', e.target.value)}>
+                          <select required value={formData.dobMonth} onChange={e => handleChange('dobMonth', e.target.value)}>
+                            <option value="">Month</option>
                             {MONTHS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
                           </select>
-                          <select value={formData.dobYear} onChange={e => handleChange('dobYear', e.target.value)}>
+                          <select required value={formData.dobYear} onChange={e => handleChange('dobYear', e.target.value)}>
+                            <option value="">Year</option>
                             {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
                           </select>
                         </div>
@@ -1413,7 +1465,8 @@ export default function RegisterPage() {
                     <div className="field-grid">
                       <div className="field">
                         <label>Blood Group <span className="star">*</span></label>
-                        <select value={formData.bloodGroup} onChange={e => handleChange('bloodGroup', e.target.value)}>
+                        <select required value={formData.bloodGroup} onChange={e => handleChange('bloodGroup', e.target.value)}>
+                          <option value="">Select Blood Group</option>
                           {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
                         </select>
                       </div>
@@ -1427,7 +1480,8 @@ export default function RegisterPage() {
                       </div>
                       <div className="field">
                         <label>T-Shirt Size <span className="star">*</span></label>
-                        <select value={formData.tShirtSize} onChange={e => handleChange('tShirtSize', e.target.value)}>
+                        <select required value={formData.tShirtSize} onChange={e => handleChange('tShirtSize', e.target.value)}>
+                          <option value="">Select Size</option>
                           {TSHIRT_SIZES.map(ts => <option key={ts.code} value={ts.code}>{ts.label}</option>)}
                         </select>
                       </div>
@@ -1506,7 +1560,10 @@ export default function RegisterPage() {
               </div>
 
               <div className="secure-badge">
-                <Lock size={13} /> 256-bit Encrypted & Secured by Razorpay Payment Gateway
+                <span className="secure-badge-pill">
+                  <Lock size={13} className="secure-icon" />
+                  <span>256-bit Encrypted & Secured by <strong>Razorpay Payment Gateway</strong></span>
+                </span>
               </div>
 
             </form>
