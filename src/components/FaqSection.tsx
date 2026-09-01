@@ -15,7 +15,7 @@ const FAQS: FAQItem[] = [
     id: 1,
     category: 'kit',
     question: 'What is included in the official runner registration kit?',
-    answer: 'Every registered runner receives an exclusive high-performance dry-fit event jersey, official RFID timing bib, customized finisher medal, energy drinks, healthy post-run breakfast box, and a downloadable timing e-certificate.',
+    answer: 'Every registered runner receives an exclusive high-performance dry-fit event jersey, official RFID timing bib, energy drinks, and a downloadable timing e-certificate.',
   },
   {
     id: 2,

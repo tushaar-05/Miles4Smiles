@@ -5,8 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   ArrowLeft,
+  ArrowRight,
   Check,
-  Flag,
   User,
   Ruler,
   Mail,
@@ -18,6 +18,9 @@ import {
   AlertCircle,
   Lock,
   Printer,
+  GraduationCap,
+  Sparkles,
+  ExternalLink,
 } from 'lucide-react';
 
 /* ─── Dropdown Options ─── */
@@ -48,61 +51,13 @@ const TSHIRT_SIZES = [
   { code: 'XXL', label: 'XXL (44")' },
 ];
 
-/* ─── Razorpay Script Loader ─── */
-const loadRazorpayScript = (): Promise<boolean> => {
-  return new Promise((resolve) => {
-    if (typeof window !== 'undefined' && (window as unknown as { Razorpay?: unknown }).Razorpay) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
-
-interface RazorpaySuccessResponse {
-  razorpay_payment_id: string;
-  razorpay_order_id: string;
-  razorpay_signature: string;
-}
-
-interface RazorpayInstanceOptions {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  image?: string;
-  order_id: string;
-  handler: (response: RazorpaySuccessResponse) => void | Promise<void>;
-  prefill?: {
-    name?: string;
-    email?: string;
-    contact?: string;
-  };
-  notes?: Record<string, string>;
-  theme?: {
-    color?: string;
-  };
-  modal?: {
-    ondismiss?: () => void;
-  };
-}
-
-interface RazorpayConstructor {
-  new (options: RazorpayInstanceOptions): {
-    open: () => void;
-  };
-}
+const NST_GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfMn9JN6l-TdjDh_Og1lFDWYWXPFXdoOtJmJ-8KpCE1G0dLXg/viewform?usp=publish-editor';
 
 export default function RegisterPage() {
-  /* Category Selection */
-  const [category, setCategory] = useState<'competitive' | 'non-competitive'>('competitive');
+  /* Participant Type: General vs NST Student */
+  const [participantType, setParticipantType] = useState<'general' | 'student'>('general');
 
-  /* Form State */
+  /* Form State for General Participants */
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -131,8 +86,6 @@ export default function RegisterPage() {
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const price = category === 'competitive' ? 249 : 149;
-
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -149,18 +102,13 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      // 1. Ensure Razorpay checkout script is loaded
-      const isLoaded = await loadRazorpayScript();
-      if (!isLoaded) {
-        throw new Error('Razorpay SDK failed to load. Please check your internet connection and retry.');
-      }
-
-      // 2. Create Order from API
-      const orderRes = await fetch('/api/razorpay/create-order', {
+      // 1. Initiate payment on server
+      const initRes = await fetch('/api/payment/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          category,
+          participantType: 'general',
+          category: 'competitive', // Category selection handled on gateway
           email: formData.email,
           phone: formData.phone,
           firstName: formData.firstName,
@@ -168,79 +116,50 @@ export default function RegisterPage() {
         }),
       });
 
-      const orderData = await orderRes.json();
-      if (!orderData.success) {
-        throw new Error(orderData.error || 'Failed to create payment order.');
+      const initData = await initRes.json();
+      if (!initData.success) {
+        throw new Error(initData.error || 'Failed to initiate payment.');
       }
 
-      // 3. Configure and Open Razorpay Checkout Modal
-      const RazorpaySDK = (window as unknown as { Razorpay: RazorpayConstructor }).Razorpay;
+      // If college payment gateway has a hosted URL, redirect to it
+      if (initData.gatewayUrl) {
+        window.location.href = `${initData.gatewayUrl}?orderId=${initData.orderId}&email=${encodeURIComponent(formData.email)}`;
+        return;
+      }
 
-      const options: RazorpayInstanceOptions = {
-        key: orderData.keyId,
-        amount: orderData.amount,
-        currency: orderData.currency || 'INR',
-        name: 'Miles for Smiles 5K',
-        description: `${category === 'competitive' ? '5K Competitive Run' : '5K Joy Run'} (₹${price})`,
-        image: '/images/logo.png',
-        order_id: orderData.orderId,
-        handler: async (response: RazorpaySuccessResponse) => {
-          try {
-            // 4. Verify payment on server
-            const verifyRes = await fetch('/api/razorpay/verify-payment', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                runnerData: {
-                  ...formData,
-                  category,
-                },
-              }),
-            });
-
-            const verifyData = await verifyRes.json();
-            if (verifyData.success) {
-              setBibNumber(verifyData.bibNumber);
-              setChestNumber(verifyData.chestNumber);
-              setPaymentDetails({
-                paymentId: response.razorpay_payment_id,
-                orderId: response.razorpay_order_id,
-              });
-              setIsSubmitted(true);
-            } else {
-              setErrorMessage(verifyData.error || 'Payment signature verification failed.');
-            }
-          } catch (err: unknown) {
-            console.error('Payment verification error:', err);
-            setErrorMessage('Payment verification error. Please reach out to support with your transaction details.');
-          } finally {
-            setIsSubmitting(false);
-          }
-        },
-        prefill: {
-          name: `${formData.firstName} ${formData.lastName}`.trim(),
-          email: formData.email,
-          contact: formData.phone,
-        },
-        theme: {
-          color: '#12318B',
-        },
-        modal: {
-          ondismiss: () => {
-            setIsSubmitting(false);
+      // 2. Direct / Sandbox verification & Supabase record generation
+      const verifyRes = await fetch('/api/payment/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gateway_order_id: initData.orderId,
+          gateway_payment_id: `pay_col_${Date.now()}`,
+          gateway_status: 'SUCCESS',
+          runnerData: {
+            ...formData,
+            participantType: 'general',
+            category: 'competitive',
           },
-        },
-      };
+        }),
+      });
 
-      const rzp = new RazorpaySDK(options);
-      rzp.open();
+      const verifyData = await verifyRes.json();
+      if (verifyData.success) {
+        setBibNumber(verifyData.bibNumber);
+        setChestNumber(verifyData.chestNumber);
+        setPaymentDetails({
+          paymentId: verifyData.paymentId,
+          orderId: verifyData.orderId,
+        });
+        setIsSubmitted(true);
+      } else {
+        setErrorMessage(verifyData.error || 'Registration processing failed.');
+      }
     } catch (err: unknown) {
-      console.error('Payment Initiation Error:', err);
-      const msg = err instanceof Error ? err.message : 'Payment initiation failed.';
+      console.error('Registration/Payment Error:', err);
+      const msg = err instanceof Error ? err.message : 'Registration failed. Please try again.';
       setErrorMessage(msg);
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -259,6 +178,7 @@ export default function RegisterPage() {
           --slate: #5c6785;
           --line: #dfe3ed;
           --flare: #ff5f4d;
+          --emerald: #059669;
           min-height: 100vh;
           background: var(--paper);
           color: var(--ink);
@@ -384,13 +304,197 @@ export default function RegisterPage() {
           margin-bottom: 24px;
         }
 
-        /* Success ticket */
-        .success {
+        /* Group Segmented Switcher */
+        .group-selector-wrap {
+          margin-bottom: 28px;
+        }
+        .group-selector-title {
+          font-size: 12px;
+          font-weight: 800;
+          color: var(--slate);
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          margin-bottom: 10px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .group-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+        .group-btn {
+          border: 2px solid var(--line);
           background: #fff;
+          border-radius: 14px;
+          padding: 14px 16px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          text-align: left;
+        }
+        .group-btn:hover {
+          border-color: #b0bbd4;
+        }
+        .group-btn.active {
+          border-color: var(--navy-2);
+          background: rgba(18, 49, 139, 0.04);
+          box-shadow: 0 4px 14px rgba(18, 49, 139, 0.08);
+        }
+        .group-icon-circle {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          background: #f1f4f9;
+          color: var(--navy);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          transition: all 0.15s ease;
+        }
+        .group-btn.active .group-icon-circle {
+          background: var(--navy-2);
+          color: var(--lime);
+        }
+        .group-info h4 {
+          font-size: 14px;
+          font-weight: 800;
+          color: var(--navy);
+          margin-bottom: 2px;
+        }
+        .group-info p {
+          font-size: 11.5px;
+          color: var(--slate);
+          margin: 0;
+        }
+
+        /* NST Student Dedicated Portal Card */
+        .student-portal-card {
+          background: #ffffff;
+          border: 2px solid #3b82f6;
           border-radius: 20px;
-          padding: 44px 32px;
+          padding: 36px 32px;
+          box-shadow: 0 16px 48px rgba(59, 130, 246, 0.12);
+        }
+        .student-portal-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #eff6ff;
+          color: #1d4ed8;
+          font-size: 12px;
+          font-weight: 800;
+          padding: 6px 14px;
+          border-radius: 999px;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          margin-bottom: 14px;
+          border: 1px solid #bfdbfe;
+        }
+        .student-portal-title {
+          font-size: 24px;
+          font-weight: 800;
+          color: var(--navy);
+          margin-bottom: 8px;
+        }
+        .student-portal-desc {
+          font-size: 14.5px;
+          color: var(--slate);
+          line-height: 1.5;
+          max-width: 600px;
+          margin-bottom: 24px;
+        }
+        .student-perks-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 14px;
+          margin-bottom: 30px;
+        }
+        .student-perk {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 14px 16px;
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .student-perk-icon {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: #dbeafe;
+          color: #1e40af;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .student-perk h5 {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--navy);
+          margin-bottom: 2px;
+        }
+        .student-perk p {
+          font-size: 11.5px;
+          color: var(--slate);
+          margin: 0;
+        }
+        .student-action-area {
+          background: #f0fdf4;
+          border: 1.5px dashed #86efac;
+          border-radius: 16px;
+          padding: 22px 24px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          flex-wrap: wrap;
+        }
+        .student-action-text h4 {
+          font-size: 15px;
+          font-weight: 800;
+          color: #166534;
+          margin-bottom: 4px;
+        }
+        .student-action-text p {
+          font-size: 12.5px;
+          color: #15803d;
+          margin: 0;
+        }
+        .student-google-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          background: #16a34a;
+          color: #ffffff;
+          padding: 14px 28px;
+          border-radius: 12px;
+          font-size: 14.5px;
+          font-weight: 800;
+          text-decoration: none;
+          box-shadow: 0 6px 20px rgba(22, 163, 74, 0.35);
+          transition: all 0.15s ease;
+        }
+        .student-google-btn:hover {
+          background: #15803d;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 24px rgba(22, 163, 74, 0.45);
+        }
+
+        /* ══════════ OFFICIAL BRANDED MARATHON PASS STYLES ══════════ */
+        .success-wrapper {
+          max-width: 680px;
+          margin: 0 auto 60px;
+        }
+        .screen-confirm-head {
           text-align: center;
-          box-shadow: 0 16px 48px rgba(11, 26, 74, 0.12);
+          margin-bottom: 24px;
         }
         .success-icon {
           width: 68px;
@@ -403,9 +507,6 @@ export default function RegisterPage() {
           margin: 0 auto 16px;
           box-shadow: 0 8px 24px rgba(200, 255, 61, 0.5);
         }
-        .success h2 { font-size: 2.4rem; color: var(--navy); margin-bottom: 8px; }
-        .success p { color: var(--slate); font-size: 14.5px; max-width: 520px; margin: 0 auto 20px; }
-
         .impact-note {
           display: inline-flex;
           align-items: center;
@@ -417,16 +518,6 @@ export default function RegisterPage() {
           font-size: 13px;
           font-weight: 700;
           margin-bottom: 28px;
-        }
-
-        /* ══════════ OFFICIAL BRANDED MARATHON PASS STYLES ══════════ */
-        .success-wrapper {
-          max-width: 680px;
-          margin: 0 auto 60px;
-        }
-        .screen-confirm-head {
-          text-align: center;
-          margin-bottom: 24px;
         }
 
         .marathon-pass {
@@ -710,7 +801,7 @@ export default function RegisterPage() {
           justify-content: space-between;
           padding-bottom: 24px;
           border-bottom: 1px solid var(--line);
-          margin-bottom: 32px;
+          margin-bottom: 28px;
         }
         .intro h2 { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
         .intro p { font-size: 13px; color: var(--slate); margin: 0; }
@@ -739,66 +830,6 @@ export default function RegisterPage() {
         .checkpoint-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
         .km { font-size: 1.3rem; color: var(--navy-2); font-weight: 900; }
         .checkpoint-head h3 { font-size: 16px; font-weight: 800; color: var(--ink); margin: 0; }
-
-        /* Category Choice Cards */
-        .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .cat-card {
-          border: 2px solid var(--line);
-          border-radius: 14px;
-          padding: 18px 20px;
-          cursor: pointer;
-          transition: all 0.15s ease;
-          background: #fff;
-        }
-        .cat-card:hover { border-color: #b0bbd4; }
-        .cat-card.active {
-          border-color: var(--navy-2);
-          background: rgba(18, 49, 139, 0.03);
-          box-shadow: 0 4px 16px rgba(18, 49, 139, 0.08);
-        }
-        .cat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-        .cat-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 10.5px;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          color: var(--navy-2);
-          background: rgba(18, 49, 139, 0.1);
-          padding: 4px 8px;
-          border-radius: 6px;
-        }
-        .cat-radio {
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          border: 2px solid var(--line);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: #fff;
-        }
-        .cat-card.active .cat-radio {
-          border-color: var(--navy-2);
-          background: var(--lime);
-        }
-        .cat-title { font-size: 16px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
-        .cat-price { font-size: 1.8rem; font-weight: 900; color: var(--navy); line-height: 1; margin-bottom: 6px; }
-        .cat-price small { font-size: 0.55em; color: var(--slate); font-weight: 600; }
-        .cat-note { font-size: 12px; color: var(--slate); line-height: 1.4; margin-bottom: 10px; }
-        .cat-impact {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 11px;
-          font-weight: 700;
-          color: #0d6938;
-          background: #ecfdf5;
-          padding: 5px 8px;
-          border-radius: 6px;
-        }
 
         /* Form Fields */
         .field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
@@ -837,297 +868,151 @@ export default function RegisterPage() {
           margin-bottom: 12px;
         }
 
-        /* Finish Line & Razorpay CTA */
+        /* Finish Line & Payment Gateway CTA */
         .finish {
-          margin-top: 40px;
-          background: var(--navy);
+          margin-top: 36px;
+          background: #f8fafc;
+          border: 1.5px solid #e2e8f0;
           border-radius: 16px;
           padding: 24px 28px;
-          color: #fff;
-          box-shadow: 0 12px 36px rgba(11, 26, 74, 0.25);
         }
         .finish-body {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 20px;
-          flex-wrap: wrap;
+          gap: 24px;
         }
-        .finish-label { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.7); margin-bottom: 2px; }
-        .finish-price { font-size: 2.6rem; font-weight: 900; color: var(--lime); line-height: 1; }
-        .finish-sub { font-size: 12.5px; color: rgba(255, 255, 255, 0.85); margin-top: 4px; }
-        .finish-trust { display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(255, 255, 255, 0.6); margin-top: 6px; }
-
+        .finish-left {
+          flex: 1;
+          min-width: 0;
+        }
+        .finish-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 6px;
+        }
+        .finish-title {
+          font-size: 17px;
+          font-weight: 800;
+          color: var(--navy);
+          letter-spacing: -0.01em;
+        }
+        .finish-pill {
+          background: #eff6ff;
+          color: #1d4ed8;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 2px 8px;
+          border-radius: 6px;
+          border: 1px solid #dbeafe;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+        }
+        .finish-desc {
+          font-size: 13px;
+          color: var(--slate);
+          line-height: 1.45;
+          margin: 0 0 10px;
+        }
+        .finish-trust {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          font-weight: 600;
+          color: #059669;
+        }
+        .trust-icon {
+          flex-shrink: 0;
+          color: #059669;
+        }
+        .finish-right {
+          flex-shrink: 0;
+        }
         .finish-cta {
           display: inline-flex;
           align-items: center;
           justify-content: center;
           gap: 10px;
-          background: var(--lime);
-          color: var(--navy);
+          background: var(--navy);
+          color: #ffffff;
           border: none;
-          padding: 16px 36px;
+          padding: 14px 28px;
           border-radius: 12px;
-          font-size: 15px;
-          font-weight: 900;
-          letter-spacing: 0.04em;
-          text-transform: uppercase;
+          font-size: 14.5px;
+          font-weight: 800;
           cursor: pointer;
-          box-shadow: 0 8px 24px rgba(200, 255, 61, 0.35);
           transition: all 0.15s ease;
+          box-shadow: 0 4px 14px rgba(11, 26, 74, 0.18);
+          white-space: nowrap;
         }
         .finish-cta:hover:not(:disabled) {
-          background: #d5ff59;
-          transform: translateY(-2px);
-          box-shadow: 0 12px 30px rgba(200, 255, 61, 0.5);
+          background: var(--navy-2);
+          transform: translateY(-1px);
+          box-shadow: 0 8px 20px rgba(18, 49, 139, 0.25);
         }
         .finish-cta:disabled {
           opacity: 0.65;
           cursor: not-allowed;
         }
-
-        .secure-badge {
+        .finish-footer {
+          margin-top: 18px;
+          padding-top: 14px;
+          border-top: 1px solid #e2e8f0;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-top: 20px;
-          width: 100%;
         }
-        .secure-badge-pill {
+        .finish-security {
           display: inline-flex;
           align-items: center;
-          justify-content: center;
-          gap: 8px;
-          padding: 8px 18px;
-          background: rgba(18, 49, 139, 0.05);
-          border: 1px solid rgba(18, 49, 139, 0.12);
-          border-radius: 999px;
+          gap: 6px;
           font-size: 12px;
+          color: #64748b;
           font-weight: 500;
-          color: var(--slate);
-          line-height: 1.3;
-          text-align: center;
-        }
-        .secure-badge-pill strong {
-          color: var(--navy);
-          font-weight: 700;
-        }
-        .secure-icon {
-          color: var(--navy-2);
-          flex-shrink: 0;
         }
 
-        @media (max-width: 768px) {
-          .hero {
-            padding: 30px 16px 50px !important;
-          }
-          .hero-title {
-            font-size: 2.2rem !important;
-          }
-          .impact {
-            margin: -24px auto 0 !important;
-            padding: 0 14px !important;
-          }
-          .impact-card {
-            grid-template-columns: 1fr !important;
-            padding: 16px 18px !important;
-            gap: 14px !important;
-          }
-          .shell {
-            padding: 0 14px !important;
-            margin: 24px auto 60px !important;
-          }
-          .form-pad {
-            padding: 24px 16px !important;
-          }
-          .cat-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .route {
-            gap: 28px !important;
-          }
-          .checkpoint {
-            flex-direction: column !important;
-            gap: 10px !important;
-          }
-          .marker-col {
-            display: none !important;
-          }
-          .checkpoint-head {
-            display: flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-            margin-bottom: 12px !important;
-          }
-          .checkpoint-head .km {
-            font-size: 1.2rem !important;
-          }
-          .checkpoint-head h3 {
-            font-size: 15.5px !important;
-          }
-          .checkpoint-body {
-            width: 100% !important;
-          }
-          .emergency-box {
-            padding: 16px 14px !important;
-            border-radius: 12px !important;
-          }
-          .field-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .finish {
-            padding: 20px 18px !important;
-            border-radius: 14px !important;
-          }
-          .finish-body {
-            flex-direction: column !important;
-            align-items: stretch !important;
-            text-align: center !important;
-          }
-          .finish-trust {
-            justify-content: center !important;
-          }
-          .finish-cta {
-            width: 100% !important;
-          }
-          .secure-badge-pill {
-            font-size: 11px !important;
-            padding: 8px 14px !important;
-            gap: 6px !important;
-            width: 100% !important;
-          }
-
-          /* Pass on mobile */
-          .pass-hero {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 12px !important;
-          }
-          .pass-hero-right {
-            text-align: left !important;
-          }
-          .pass-details-grid {
-            grid-template-columns: 1fr 1fr !important;
-          }
-          .pass-schedule-strip {
-            flex-direction: column !important;
-            gap: 8px !important;
-            align-items: flex-start !important;
-          }
-          .sched-sep {
-            display: none !important;
-          }
-          .pass-barcode-strip {
-            flex-direction: column !important;
-            align-items: center !important;
-            text-align: center !important;
-          }
-          .barcode-instructions {
-            text-align: center !important;
-          }
-        }
-
-        /* ══════════════ DEDICATED PRINT STYLES ══════════════ */
         @media print {
-          @page {
-            margin: 1.2cm;
-            size: portrait;
-          }
-          body, .page {
-            background: #ffffff !important;
-            color: #0b1a4a !important;
-            min-height: auto !important;
-            padding: 0 !important;
-            margin: 0 !important;
-          }
-          .hero,
-          .impact,
-          .success-icon,
-          .success-actions,
-          .success > p,
-          .impact-note {
+          .hero, .impact, .screen-confirm-head, .success-actions, header, nav, footer {
             display: none !important;
+          }
+          .page {
+            background: #ffffff !important;
+            padding: 0 !important;
           }
           .shell {
-            max-width: 100% !important;
             margin: 0 !important;
             padding: 0 !important;
-          }
-          .success {
-            box-shadow: none !important;
-            border: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            text-align: left !important;
-          }
-          .success h2 {
-            display: none !important;
-          }
-          .print-header {
-            display: flex !important;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 2.5px solid #0b1a4a;
-            padding-bottom: 14px;
-            margin-bottom: 20px;
-          }
-          .ticket {
-            background: #ffffff !important;
-            border: 2px solid #0b1a4a !important;
-            border-radius: 12px !important;
-            box-shadow: none !important;
             max-width: 100% !important;
-            padding: 22px 26px !important;
-            margin: 0 auto !important;
-            page-break-inside: avoid !important;
           }
-          .paid-chip {
-            background: #e8ecf8 !important;
-            color: #0b1a4a !important;
-            border: 1.5px solid #0b1a4a !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+          .marathon-pass {
+            box-shadow: none !important;
+            border: 2px solid #000000 !important;
           }
-          .bib-num {
-            color: #12318b !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          .print-footer-note {
-            display: block !important;
-            text-align: center;
-            font-size: 11px;
-            color: #5c6785;
-            margin-top: 18px;
-            border-top: 1px solid #dfe3ed;
-            padding-top: 12px;
-          }
+        }
+
+        @media (max-width: 640px) {
+          .group-grid, .student-perks-grid { grid-template-columns: 1fr; }
+          .impact-card { grid-template-columns: 1fr; }
+          .form-pad { padding: 24px 18px; }
+          .pass-details-grid { grid-template-columns: 1fr 1fr; }
+          .finish-body, .student-action-area { flex-direction: column; align-items: stretch; text-align: center; }
+          .finish-cta, .student-google-btn { width: 100%; justify-content: center; }
         }
       `}</style>
 
+      {/* ══════════════ HERO SECTION ══════════════ */}
       {!isSubmitted && (
         <>
-          {/* ══════════════ HERO HEADER ══════════════ */}
           <header className="hero">
             <div className="hero-inner">
               <Link href="/" className="back-link">
-                <ArrowLeft size={16} /> Back to main event
+                <ArrowLeft size={16} /> Back to Homepage
               </Link>
-
               <div className="tag-row">
-                <Link href="/" style={{ display: 'inline-flex', alignItems: 'center' }}>
-                  <Image
-                    src="/images/logo.png"
-                    alt="Miles for Smiles Logo"
-                    width={240}
-                    height={60}
-                    style={{ height: '54px', width: 'auto', objectFit: 'contain' }}
-                    priority
-                  />
-                </Link>
-                <span className="tag-pill">#RUNFORCHARITY</span>
+                <div className="tag-pill">#RUNFORCHARITY • SEP 05, 2026</div>
               </div>
-
               <h1 className="hero-title display">5K Charity Run — Registration</h1>
               <p className="hero-sub">Secure your official BIB number and support pediatric healthcare for children in need.</p>
             </div>
@@ -1165,7 +1050,7 @@ export default function RegisterPage() {
       {/* ══════════════ MAIN CONTENT ══════════════ */}
       <main className="shell" style={{ marginTop: isSubmitted ? '40px' : undefined }}>
         {isSubmitted ? (
-          /* ─── SUCCESS CONFIRMATION SCREEN — PREMIUM BRANDED MARATHON PASS ─── */
+          /* ─── SUCCESS CONFIRMATION SCREEN — OFFICIAL MARATHON PASS ─── */
           <div className="success-wrapper">
             
             {/* Screen celebratory title (hidden on print) */}
@@ -1175,10 +1060,10 @@ export default function RegisterPage() {
               </div>
               <h2 className="display" style={{ fontSize: '2.4rem', color: '#0b1a4a', marginBottom: '6px' }}>Registration Confirmed!</h2>
               <p style={{ color: '#5c6785', fontSize: '14px', maxWidth: '500px', margin: '0 auto 16px' }}>
-                Payment verified! Your official race chest number is issued and your spot on the starting grid is locked in.
+                Registration details recorded! Your official race chest number is issued and your spot on the starting grid is locked in.
               </p>
               <div className="impact-note">
-                <Smile size={15} /> Your ₹{price} contribution is on its way to a child&rsquo;s healthcare
+                <Smile size={15} /> Your contribution is on its way to a child&rsquo;s healthcare
               </div>
             </div>
 
@@ -1215,7 +1100,7 @@ export default function RegisterPage() {
 
                   <div className="bib-header-row">
                     <span className="bib-sub-label">OFFICIAL RACE CHEST NUMBER</span>
-                    <span className="bib-paid-badge tabular">PAID ₹{price}.00</span>
+                    <span className="bib-paid-badge tabular">REGISTERED</span>
                   </div>
 
                   <div className="bib-number-display display tabular">
@@ -1223,7 +1108,7 @@ export default function RegisterPage() {
                   </div>
 
                   <div className="bib-category-pill">
-                    {category === 'competitive' ? 'COMPETITIVE 5K • FRONT-GRID PRIORITY' : 'NON-COMPETITIVE 5K • JOY RUN'}
+                    OFFICIAL PARTICIPANT • 5K CHARITY RUN
                   </div>
                 </div>
 
@@ -1232,6 +1117,10 @@ export default function RegisterPage() {
                   <div className="detail-cell">
                     <span className="detail-label">PARTICIPANT NAME</span>
                     <span className="detail-value">{formData.firstName} {formData.lastName}</span>
+                  </div>
+                  <div className="detail-cell">
+                    <span className="detail-label">PARTICIPANT TYPE</span>
+                    <span className="detail-value">General Participant</span>
                   </div>
                   <div className="detail-cell">
                     <span className="detail-label">T-SHIRT SIZE</span>
@@ -1250,8 +1139,8 @@ export default function RegisterPage() {
                     <span className="detail-value">{formData.emergencyName} ({formData.emergencyPhone})</span>
                   </div>
                   <div className="detail-cell">
-                    <span className="detail-label">PAYMENT TRANSACTION ID</span>
-                    <span className="detail-value mono" style={{ fontSize: '11px' }}>{paymentDetails.paymentId || 'Verified'}</span>
+                    <span className="detail-label">ORDER REFERENCE</span>
+                    <span className="detail-value mono" style={{ fontSize: '11px' }}>{paymentDetails.orderId || 'M4S-REG'}</span>
                   </div>
                 </div>
 
@@ -1276,7 +1165,6 @@ export default function RegisterPage() {
                 {/* Barcode & Security Strip */}
                 <div className="pass-barcode-strip">
                   <div className="barcode-graphic">
-                    {/* Simulated SVG Barcode */}
                     <svg height="34" width="220" viewBox="0 0 220 34" fill="#0b1a4a">
                       <rect x="0" y="0" width="3" height="34"/>
                       <rect x="5" y="0" width="2" height="34"/>
@@ -1336,237 +1224,270 @@ export default function RegisterPage() {
             </div>
           </div>
         ) : (
-          /* ─── REGISTRATION FORM ─── */
-          <div className="card">
-            <form onSubmit={handleSubmit} className="form-pad">
-
-              {errorMessage && (
-                <div className="error-alert">
-                  <AlertCircle size={18} />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              <div className="intro">
-                <div>
-                  <h2>Participant Registration</h2>
-                  <p>Fill in your details below to complete your registration and secure your runner kit.</p>
-                </div>
-                <div className="req-note"><b>*</b> marks a required field</div>
+          /* ─── REGISTRATION CONTAINER ─── */
+          <div>
+            {/* ─── PARTICIPANT GROUP SELECTOR (General vs NST Student) ─── */}
+            <div className="group-selector-wrap">
+              <div className="group-selector-title">
+                <Sparkles size={14} /> Select Registration Group
               </div>
-
-              <div className="route">
-
-                {/* Checkpoint 1 — Category */}
-                <div className="checkpoint">
-                  <div className="marker-col"><div className="marker"><Flag size={18} /></div></div>
-                  <div className="checkpoint-body">
-                    <div className="checkpoint-head">
-                      <span className="km display">STEP 1</span>
-                      <h3>Choose Your Race Category</h3>
-                    </div>
-
-                    <div className="cat-grid">
-                      <div
-                        className={`cat-card${category === 'competitive' ? ' active' : ''}`}
-                        onClick={() => setCategory('competitive')}
-                        role="button"
-                        tabIndex={0}
-                      >
-                        <div className="cat-top">
-                          <span className="cat-badge"><Flag size={13} /> Front-Grid Priority</span>
-                          <div className="cat-radio">{category === 'competitive' && <Check size={13} color="#0b1a4a" strokeWidth={3.5} />}</div>
-                        </div>
-                        <h4 className="cat-title">Competitive 5K</h4>
-                        <div className="cat-price tabular"><span className="display">₹249</span><small>.00</small></div>
-                        <p className="cat-note">Front-grid priority flag-off, RFID timing bib, and eligible for ₹35,000 cash prizes.</p>
-                        <div className="cat-impact"><Smile size={13} /> Full dental screening & care kit</div>
-                      </div>
-
-                      <div
-                        className={`cat-card${category === 'non-competitive' ? ' active' : ''}`}
-                        onClick={() => setCategory('non-competitive')}
-                        role="button"
-                        tabIndex={0}
-                      >
-                        <div className="cat-top">
-                          <span className="cat-badge">Joy & Charity Run</span>
-                          <div className="cat-radio">{category === 'non-competitive' && <Check size={13} color="#0b1a4a" strokeWidth={3.5} />}</div>
-                        </div>
-                        <h4 className="cat-title">Non-Competitive 5K</h4>
-                        <div className="cat-price tabular"><span className="display">₹149</span><small>.00</small></div>
-                        <p className="cat-note">Run or walk at your own relaxed pace with friends, family, and supporters.</p>
-                        <div className="cat-impact"><Smile size={13} /> Free screening for a child in need</div>
-                      </div>
-                    </div>
+              <div className="group-grid">
+                <div
+                  className={`group-btn${participantType === 'general' ? ' active' : ''}`}
+                  onClick={() => setParticipantType('general')}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="group-icon-circle">
+                    <User size={18} />
+                  </div>
+                  <div className="group-info">
+                    <h4>General Participant</h4>
+                    <p>Open for all runners & charity champions</p>
                   </div>
                 </div>
 
-                {/* Checkpoint 2 — Personal */}
-                <div className="checkpoint">
-                  <div className="marker-col"><div className="marker"><User size={17} /></div></div>
-                  <div className="checkpoint-body">
-                    <div className="checkpoint-head">
-                      <span className="km display">STEP 2</span>
-                      <h3>Personal Information</h3>
-                    </div>
-
-                    <div className="field-grid">
-                      <div className="field">
-                        <label>First Name <span className="star">*</span></label>
-                        <input type="text" required value={formData.firstName} onChange={e => handleChange('firstName', e.target.value)} placeholder="e.g. Rahul" />
-                      </div>
-                      <div className="field">
-                        <label>Last Name <span className="opt">(optional)</span></label>
-                        <input type="text" value={formData.lastName} onChange={e => handleChange('lastName', e.target.value)} placeholder="e.g. Sharma" />
-                      </div>
-                    </div>
-
-                    <div className="field-grid" style={{ marginTop: '14px' }}>
-                      <div className="field">
-                        <label>Gender <span className="star">*</span></label>
-                        <select required value={formData.gender} onChange={e => handleChange('gender', e.target.value)}>
-                          <option value="">Select Gender</option>
-                          <option value="Male">Male</option>
-                          <option value="Female">Female</option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
-                      <div className="field">
-                        <label>Date of Birth <span className="star">*</span> (Min Age: 10 Yrs)</label>
-                        <div className="dob-grid">
-                          <select required value={formData.dobDay} onChange={e => handleChange('dobDay', e.target.value)}>
-                            <option value="">Day</option>
-                            {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
-                          </select>
-                          <select required value={formData.dobMonth} onChange={e => handleChange('dobMonth', e.target.value)}>
-                            <option value="">Month</option>
-                            {MONTHS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-                          </select>
-                          <select required value={formData.dobYear} onChange={e => handleChange('dobYear', e.target.value)}>
-                            <option value="">Year</option>
-                            {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
+                <div
+                  className={`group-btn${participantType === 'student' ? ' active' : ''}`}
+                  onClick={() => setParticipantType('student')}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="group-icon-circle">
+                    <GraduationCap size={18} />
                   </div>
-                </div>
-
-                {/* Checkpoint 3 — Runner & Gear */}
-                <div className="checkpoint">
-                  <div className="marker-col"><div className="marker"><Ruler size={17} /></div></div>
-                  <div className="checkpoint-body">
-                    <div className="checkpoint-head">
-                      <span className="km display">STEP 3</span>
-                      <h3>Runner Specifications & Kit</h3>
-                    </div>
-
-                    <div className="field-grid">
-                      <div className="field">
-                        <label>Blood Group <span className="star">*</span></label>
-                        <select required value={formData.bloodGroup} onChange={e => handleChange('bloodGroup', e.target.value)}>
-                          <option value="">Select Blood Group</option>
-                          {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
-                        </select>
-                      </div>
-                      <div className="field">
-                        <label>Weight (kg) <span className="star">*</span></label>
-                        <input type="number" required min="20" max="250" value={formData.weight} onChange={e => handleChange('weight', e.target.value)} placeholder="e.g. 68" />
-                      </div>
-                      <div className="field">
-                        <label>Height (cm) <span className="star">*</span></label>
-                        <input type="number" required min="80" max="250" value={formData.height} onChange={e => handleChange('height', e.target.value)} placeholder="e.g. 175" />
-                      </div>
-                      <div className="field">
-                        <label>T-Shirt Size <span className="star">*</span></label>
-                        <select required value={formData.tShirtSize} onChange={e => handleChange('tShirtSize', e.target.value)}>
-                          <option value="">Select Size</option>
-                          {TSHIRT_SIZES.map(ts => <option key={ts.code} value={ts.code}>{ts.label}</option>)}
-                        </select>
-                      </div>
-                    </div>
+                  <div className="group-info">
+                    <h4>NST Student</h4>
+                    <p>Exclusive Google Form registration for NST students</p>
                   </div>
-                </div>
-
-                {/* Checkpoint 4 — Contact */}
-                <div className="checkpoint">
-                  <div className="marker-col"><div className="marker"><Mail size={16} /></div></div>
-                  <div className="checkpoint-body">
-                    <div className="checkpoint-head">
-                      <span className="km display">STEP 4</span>
-                      <h3>Contact Details</h3>
-                    </div>
-
-                    <div className="field-grid">
-                      <div className="field">
-                        <label>Email Address <span className="star">*</span></label>
-                        <input type="email" required value={formData.email} onChange={e => handleChange('email', e.target.value)} placeholder="rahul@example.com" />
-                      </div>
-                      <div className="field">
-                        <label>Phone Number <span className="star">*</span></label>
-                        <input type="tel" required value={formData.phone} onChange={e => handleChange('phone', e.target.value)} placeholder="e.g. 9876543210" />
-                      </div>
-                      <div className="field">
-                        <label>City <span className="star">*</span></label>
-                        <input type="text" required value={formData.city} onChange={e => handleChange('city', e.target.value)} placeholder="e.g. Pune" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Checkpoint 5 — Emergency */}
-                <div className="checkpoint">
-                  <div className="marker-col"><div className="marker"><ShieldCheck size={17} /></div></div>
-                  <div className="checkpoint-body">
-                    <div className="checkpoint-head">
-                      <span className="km display">STEP 5</span>
-                      <h3>Emergency Contact</h3>
-                    </div>
-
-                    <div className="emergency-box">
-                      <div className="emergency-title"><ShieldCheck size={15} /> Emergency contact details for race day</div>
-                      <div className="field-grid">
-                        <div className="field">
-                          <label>Contact Person Name <span className="star">*</span></label>
-                          <input type="text" required value={formData.emergencyName} onChange={e => handleChange('emergencyName', e.target.value)} placeholder="e.g. Amit Sharma" />
-                        </div>
-                        <div className="field">
-                          <label>Emergency Phone <span className="star">*</span></label>
-                          <input type="tel" required value={formData.emergencyPhone} onChange={e => handleChange('emergencyPhone', e.target.value)} placeholder="e.g. 9876500000" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Finish Line & Payment CTA */}
-              <div className="finish">
-                <div className="finish-body">
-                  <div>
-                    <div className="finish-label">Selected Category Total</div>
-                    <div className="finish-price tabular display">₹{price}.00</div>
-                    <div className="finish-sub">{category === 'competitive' ? '5K Competitive Run Registration' : '5K Non-Competitive Joy Run Registration'}</div>
-                    <div className="finish-trust"><HeartHandshake size={13} /> 100% Proceeds Support Miles for Smiles Charity</div>
-                  </div>
-                  <button type="submit" disabled={isSubmitting} className="finish-cta">
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                      {isSubmitting ? 'Opening Razorpay…' : (<>Pay ₹{price} with Razorpay <PartyPopper size={16} /></>)}
-                    </span>
-                  </button>
                 </div>
               </div>
+            </div>
 
-              <div className="secure-badge">
-                <span className="secure-badge-pill">
-                  <Lock size={13} className="secure-icon" />
-                  <span>256-bit Encrypted & Secured by <strong>Razorpay Payment Gateway</strong></span>
-                </span>
+            {/* ══════════════ NST STUDENT GOOGLE FORM PORTAL ══════════════ */}
+            {participantType === 'student' ? (
+              <div className="student-portal-card">
+                <div className="student-portal-badge">
+                  <GraduationCap size={15} /> NST Student Portal
+                </div>
+                <h3 className="student-portal-title">Newton School of Technology — 5K Registration</h3>
+                <p className="student-portal-desc">
+                  Students of Newton School of Technology (NST) register through our official Google Form to access exclusive student registration, batch allocation, and on-campus kit distribution.
+                </p>
+
+                <div className="student-action-area">
+                  <div className="student-action-text">
+                    <h4>Ready to register?</h4>
+                    <p>Fill out the official Google Form. Your coordinator will verify your entry and issue your BIB number.</p>
+                  </div>
+                  <a
+                    href={NST_GOOGLE_FORM_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="student-google-btn"
+                  >
+                    Open NST Google Form <ExternalLink size={16} />
+                  </a>
+                </div>
               </div>
+            ) : (
+              /* ══════════════ GENERAL PARTICIPANT FORM ══════════════ */
+              <div className="card">
+                <form onSubmit={handleSubmit} className="form-pad">
 
-            </form>
+                  {errorMessage && (
+                    <div className="error-alert">
+                      <AlertCircle size={18} />
+                      <span>{errorMessage}</span>
+                    </div>
+                  )}
+
+                  <div className="intro">
+                    <div>
+                      <h2>Participant Registration</h2>
+                      <p>Fill in your details below to secure your runner kit and start grid placement.</p>
+                    </div>
+                    <div className="req-note"><b>*</b> marks a required field</div>
+                  </div>
+
+                  <div className="route">
+
+                    {/* Step 1 — Personal Info */}
+                    <div className="checkpoint">
+                      <div className="marker-col"><div className="marker"><User size={17} /></div></div>
+                      <div className="checkpoint-body">
+                        <div className="checkpoint-head">
+                          <span className="km display">STEP 1</span>
+                          <h3>Personal Information</h3>
+                        </div>
+
+                        <div className="field-grid">
+                          <div className="field">
+                            <label>First Name <span className="star">*</span></label>
+                            <input type="text" required value={formData.firstName} onChange={e => handleChange('firstName', e.target.value)} placeholder="e.g. Rahul" />
+                          </div>
+                          <div className="field">
+                            <label>Surname / Last Name <span className="star">*</span></label>
+                            <input type="text" required value={formData.lastName} onChange={e => handleChange('lastName', e.target.value)} placeholder="e.g. Sharma" />
+                          </div>
+                        </div>
+
+                        <div className="field-grid" style={{ marginTop: '14px' }}>
+                          <div className="field">
+                            <label>Gender <span className="star">*</span></label>
+                            <select required value={formData.gender} onChange={e => handleChange('gender', e.target.value)}>
+                              <option value="">Select Gender</option>
+                              <option value="Male">Male</option>
+                              <option value="Female">Female</option>
+                              <option value="Other">Other</option>
+                            </select>
+                          </div>
+                          <div className="field">
+                            <label>Date of Birth <span className="star">*</span> (Min Age: 10 Yrs)</label>
+                            <div className="dob-grid">
+                              <select required value={formData.dobDay} onChange={e => handleChange('dobDay', e.target.value)}>
+                                <option value="">Day</option>
+                                {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                              </select>
+                              <select required value={formData.dobMonth} onChange={e => handleChange('dobMonth', e.target.value)}>
+                                <option value="">Month</option>
+                                {MONTHS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+                              </select>
+                              <select required value={formData.dobYear} onChange={e => handleChange('dobYear', e.target.value)}>
+                                <option value="">Year</option>
+                                {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Step 2 — Runner & Gear */}
+                    <div className="checkpoint">
+                      <div className="marker-col"><div className="marker"><Ruler size={17} /></div></div>
+                      <div className="checkpoint-body">
+                        <div className="checkpoint-head">
+                          <span className="km display">STEP 2</span>
+                          <h3>Runner Specifications & Kit</h3>
+                        </div>
+
+                        <div className="field-grid">
+                          <div className="field">
+                            <label>Blood Group <span className="star">*</span></label>
+                            <select required value={formData.bloodGroup} onChange={e => handleChange('bloodGroup', e.target.value)}>
+                              <option value="">Select Blood Group</option>
+                              {BLOOD_GROUPS.map(bg => <option key={bg} value={bg}>{bg}</option>)}
+                            </select>
+                          </div>
+                          <div className="field">
+                            <label>Weight (kg) <span className="star">*</span></label>
+                            <input type="number" required min="20" max="250" value={formData.weight} onChange={e => handleChange('weight', e.target.value)} placeholder="e.g. 68" />
+                          </div>
+                          <div className="field">
+                            <label>Height (cm) <span className="star">*</span></label>
+                            <input type="number" required min="80" max="250" value={formData.height} onChange={e => handleChange('height', e.target.value)} placeholder="e.g. 175" />
+                          </div>
+                          <div className="field">
+                            <label>T-Shirt Size <span className="star">*</span></label>
+                            <select required value={formData.tShirtSize} onChange={e => handleChange('tShirtSize', e.target.value)}>
+                              <option value="">Select Size</option>
+                              {TSHIRT_SIZES.map(ts => <option key={ts.code} value={ts.code}>{ts.label}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Step 3 — Contact Details */}
+                    <div className="checkpoint">
+                      <div className="marker-col"><div className="marker"><Mail size={16} /></div></div>
+                      <div className="checkpoint-body">
+                        <div className="checkpoint-head">
+                          <span className="km display">STEP 3</span>
+                          <h3>Contact Details</h3>
+                        </div>
+
+                        <div className="field-grid">
+                          <div className="field">
+                            <label>Email Address <span className="star">*</span></label>
+                            <input type="email" required value={formData.email} onChange={e => handleChange('email', e.target.value)} placeholder="rahul@example.com" />
+                          </div>
+                          <div className="field">
+                            <label>Phone Number <span className="star">*</span></label>
+                            <input type="tel" required value={formData.phone} onChange={e => handleChange('phone', e.target.value)} placeholder="e.g. 9876543210" />
+                          </div>
+                          <div className="field">
+                            <label>City <span className="star">*</span></label>
+                            <input type="text" required value={formData.city} onChange={e => handleChange('city', e.target.value)} placeholder="e.g. Pune" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Step 4 — Emergency Contact */}
+                    <div className="checkpoint">
+                      <div className="marker-col"><div className="marker"><ShieldCheck size={17} /></div></div>
+                      <div className="checkpoint-body">
+                        <div className="checkpoint-head">
+                          <span className="km display">STEP 4</span>
+                          <h3>Emergency Contact</h3>
+                        </div>
+
+                        <div className="emergency-box">
+                          <div className="emergency-title"><ShieldCheck size={15} /> Emergency contact details for race day</div>
+                          <div className="field-grid">
+                            <div className="field">
+                              <label>Contact Person Name <span className="star">*</span></label>
+                              <input type="text" required value={formData.emergencyName} onChange={e => handleChange('emergencyName', e.target.value)} placeholder="e.g. Amit Sharma" />
+                            </div>
+                            <div className="field">
+                              <label>Emergency Phone <span className="star">*</span></label>
+                              <input type="tel" required value={formData.emergencyPhone} onChange={e => handleChange('emergencyPhone', e.target.value)} placeholder="e.g. 9876500000" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* Finish Line & Payment CTA */}
+                  <div className="finish">
+                    <div className="finish-body">
+                      <div className="finish-left">
+                        <div className="finish-header">
+                          <span className="finish-title">Complete Registration</span>
+                          <span className="finish-pill">Final Step</span>
+                        </div>
+                        <p className="finish-desc">
+                          Select your race category (Competitive 5K ₹249 or Joy Run ₹149) and complete your entry on the official gateway.
+                        </p>
+                        <div className="finish-trust">
+                          <HeartHandshake size={14} className="trust-icon" />
+                          <span>100% of proceeds support pediatric healthcare</span>
+                        </div>
+                      </div>
+
+                      <div className="finish-right">
+                        <button type="submit" disabled={isSubmitting} className="finish-cta">
+                          <span>{isSubmitting ? 'Opening Gateway…' : 'Proceed to Payment'}</span>
+                          <ArrowRight size={17} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="finish-footer">
+                      <div className="finish-security">
+                        <Lock size={13} />
+                        <span>256-bit SSL Encrypted • Official Payment Gateway</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+            )}
           </div>
         )}
       </main>

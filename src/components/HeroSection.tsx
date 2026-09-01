@@ -40,42 +40,81 @@ export default function HeroSection() {
   /* ─── Butter-Smooth RAF Momentum Marquee Loop ─── */
   useEffect(() => {
     let x = 0;
-    const baseSpeed = 0.85; // smooth gentle cruising speed (px/frame)
+    const baseSpeed = 0.95; // steady athletic cruising speed (px/frame)
     let extraSpeed = 0;
-    let lastScrollY = window.scrollY;
+    const maxBoost = 3.5; // gentle, controlled speed cap
+    let lastScrollY = typeof window !== 'undefined' ? window.scrollY : 0;
+    let lastTouchY = 0;
     let rafId: number;
 
     const onWindowScroll = () => {
-      const currentScrollY = window.scrollY;
+      const currentScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
       const deltaY = Math.abs(currentScrollY - lastScrollY);
       lastScrollY = currentScrollY;
 
-      // Very subtle, gentle boost on scroll
-      extraSpeed = Math.min(extraSpeed + deltaY * 0.012, 1.2);
+      if (deltaY > 0) {
+        extraSpeed = Math.min(extraSpeed + deltaY * 0.04, maxBoost);
+      }
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      const delta = Math.abs(e.deltaY);
+      if (delta > 0) {
+        extraSpeed = Math.min(extraSpeed + delta * 0.015, maxBoost);
+      }
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        lastTouchY = e.touches[0].clientY;
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const currentY = e.touches[0].clientY;
+        const delta = Math.abs(currentY - lastTouchY);
+        lastTouchY = currentY;
+        if (delta > 0) {
+          extraSpeed = Math.min(extraSpeed + delta * 0.035, maxBoost);
+        }
+      }
     };
 
     window.addEventListener('scroll', onWindowScroll, { passive: true });
+    window.addEventListener('wheel', onWheel, { passive: true });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
 
-    // Also connect to Lenis velocity if present
-    const lenis = (window as unknown as { lenis?: { on: (event: string, cb: (e: { velocity: number }) => void) => void } }).lenis;
-    if (lenis && lenis.on) {
-      lenis.on('scroll', ({ velocity }: { velocity: number }) => {
-        extraSpeed = Math.min(extraSpeed + Math.abs(velocity) * 0.015, 1.2);
-      });
-    }
+    // Connect to Lenis smooth scroll velocity if active
+    let lenisTimer: NodeJS.Timeout | null = null;
+    const hookLenis = () => {
+      const lenis = (window as unknown as { lenis?: { on: (event: string, cb: (e: { velocity: number }) => void) => void } }).lenis;
+      if (lenis && lenis.on) {
+        lenis.on('scroll', ({ velocity }: { velocity: number }) => {
+          const v = Math.abs(velocity);
+          if (v > 0) {
+            extraSpeed = Math.min(extraSpeed + v * 0.12, maxBoost);
+          }
+        });
+      }
+    };
+    hookLenis();
+    lenisTimer = setTimeout(hookLenis, 350);
 
     const loop = () => {
-      // Smooth physical decay
-      extraSpeed *= 0.90;
-      if (extraSpeed < 0.005) extraSpeed = 0;
+      // Smooth momentum decay
+      extraSpeed *= 0.91;
+      if (extraSpeed < 0.002) extraSpeed = 0;
 
       const currentVelocity = baseSpeed + extraSpeed;
       x -= currentVelocity;
 
       if (tickerRef.current) {
-        const halfWidth = tickerRef.current.scrollWidth / 2;
-        if (halfWidth > 0 && Math.abs(x) >= halfWidth) {
-          x += halfWidth;
+        const totalWidth = tickerRef.current.scrollWidth;
+        const singleSetWidth = totalWidth / 6; // 6 cloned copies
+        if (singleSetWidth > 0 && Math.abs(x) >= singleSetWidth) {
+          x = x % singleSetWidth;
         }
         tickerRef.current.style.transform = `translate3d(${x}px, 0, 0)`;
       }
@@ -87,6 +126,10 @@ export default function HeroSection() {
 
     return () => {
       window.removeEventListener('scroll', onWindowScroll);
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      if (lenisTimer) clearTimeout(lenisTimer);
       cancelAnimationFrame(rafId);
     };
   }, []);
@@ -228,7 +271,7 @@ export default function HeroSection() {
             backgroundImage: "url('/images/BG.png')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            opacity: 0.1,
+            // opacity: 0.1,
             pointerEvents: 'none',
             zIndex: 1,
           }}

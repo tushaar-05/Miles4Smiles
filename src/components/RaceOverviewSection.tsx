@@ -68,7 +68,7 @@ const SCHEDULE = [
     time: '08:00 AM',
     title: 'Podium & Celebration Wrap-Up',
     sub: 'FINISHER MEDALS, PHOTOS & REFRESHMENTS',
-    desc: 'Cross the finish line to claim your medal, enjoy healthy breakfast drinks & podium awards!',
+    desc: 'Cross the finish line to celebrate your finish, capture photos & applaud podium awards!',
     icon: Award,
     badge: 'FINISH LINE',
     color: '#34d399',

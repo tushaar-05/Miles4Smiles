@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Trophy, Zap, CheckCircle2, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
+import { Trophy, Zap, CheckCircle2, ArrowRight, Sparkles, ShieldCheck, Medal, User, Award } from 'lucide-react';
 
 export default function CategoriesSection() {
   return (
@@ -20,11 +20,11 @@ export default function CategoriesSection() {
           </h2>
 
           <p className="cat-subtitle">
-            Whether you&rsquo;re chasing the ₹35,000 podium cash prize or jogging for charity smiles, choose the tier that matches your passion.
+            Whether you&rsquo;re chasing the ₹30,000 podium cash prize or jogging for charity smiles, choose the tier that matches your passion.
           </p>
         </div>
 
-        {/* ─── ₹35,000 CASH PRIZE HIGHLIGHT BANNER ─── */}
+        {/* ─── ₹30,000 CASH PRIZE HIGHLIGHT BANNER ─── */}
         <div className="prize-banner">
           <div className="prize-banner-top">
             <div className="prize-trophy-badge">
@@ -32,43 +32,97 @@ export default function CategoriesSection() {
             </div>
             <div>
               <div className="prize-tag">OFFICIAL CASH PRIZE POOL</div>
-              <h3 className="prize-amount">₹35,000 TOTAL REWARDS</h3>
+              <h3 className="prize-amount">₹30,000 TOTAL REWARDS</h3>
             </div>
           </div>
 
           <div className="prize-split-grid">
-            {/* Boys / Men Division */}
+            {/* Male Division */}
             <div className="prize-podium-card">
               <div className="podium-header">
-                <span className="podium-gender">🏃‍♂️ Men / Boys Category</span>
-                <span className="podium-badge">Competitive 5K</span>
+                <span className="podium-gender">
+                  <User size={16} className="podium-icon" /> Male Category
+                </span>
+                <span className="podium-badge">Age: 10 – 39 Yrs</span>
               </div>
               <div className="podium-ranks">
                 <div className="rank-item first">
-                  <span className="rank-medal">🥇 1st Place</span>
-                  <span className="rank-cash">₹10,000</span>
+                  <span className="rank-medal">
+                    <Medal size={15} className="medal-icon gold" /> 1st Place
+                  </span>
+                  <span className="rank-cash">₹5,000</span>
                 </div>
                 <div className="rank-item second">
-                  <span className="rank-medal">🥈 2nd Place</span>
-                  <span className="rank-cash">₹7,500</span>
+                  <span className="rank-medal">
+                    <Medal size={15} className="medal-icon silver" /> 2nd Place
+                  </span>
+                  <span className="rank-cash">₹3,000</span>
+                </div>
+                <div className="rank-item third">
+                  <span className="rank-medal">
+                    <Medal size={15} className="medal-icon bronze" /> 3rd Place
+                  </span>
+                  <span className="rank-cash">₹2,000</span>
                 </div>
               </div>
             </div>
 
-            {/* Girls / Women Division */}
+            {/* Female Division */}
             <div className="prize-podium-card">
               <div className="podium-header">
-                <span className="podium-gender">🏃‍♀️ Women / Girls Category</span>
-                <span className="podium-badge">Competitive 5K</span>
+                <span className="podium-gender">
+                  <User size={16} className="podium-icon" /> Female Category
+                </span>
+                <span className="podium-badge">Age: 10 – 39 Yrs</span>
               </div>
               <div className="podium-ranks">
                 <div className="rank-item first">
-                  <span className="rank-medal">🥇 1st Place</span>
-                  <span className="rank-cash">₹10,000</span>
+                  <span className="rank-medal">
+                    <Medal size={15} className="medal-icon gold" /> 1st Place
+                  </span>
+                  <span className="rank-cash">₹5,000</span>
                 </div>
                 <div className="rank-item second">
-                  <span className="rank-medal">🥈 2nd Place</span>
-                  <span className="rank-cash">₹7,500</span>
+                  <span className="rank-medal">
+                    <Medal size={15} className="medal-icon silver" /> 2nd Place
+                  </span>
+                  <span className="rank-cash">₹3,000</span>
+                </div>
+                <div className="rank-item third">
+                  <span className="rank-medal">
+                    <Medal size={15} className="medal-icon bronze" /> 3rd Place
+                  </span>
+                  <span className="rank-cash">₹2,000</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Adult Division */}
+            <div className="prize-podium-card">
+              <div className="podium-header">
+                <span className="podium-gender">
+                  <Award size={16} className="podium-icon" /> Adult Category
+                </span>
+                <span className="podium-badge" style={{ background: 'rgba(200, 255, 61, 0.25)', color: '#C8FF3D' }}>Age: 40+ Yrs</span>
+              </div>
+              <div className="podium-ranks">
+                <div className="rank-item first">
+                  <span className="rank-medal">
+                    <Medal size={15} className="medal-icon gold" /> 1st Place
+                  </span>
+                  <span className="rank-cash">₹5,000</span>
+                </div>
+                <div className="rank-item second">
+                  <span className="rank-medal">
+                    <Medal size={15} className="medal-icon silver" /> 2nd Place
+                  </span>
+                  <span className="rank-cash">₹3,000</span>
+                </div>
+                <div className="rank-item third">
+                  <span className="rank-medal">
+                    <Medal size={15} className="medal-icon bronze" /> 3rd Place
+                  </span>
+                  <span className="rank-cash">₹2,000</span>
                 </div>
               </div>
             </div>
@@ -105,10 +159,6 @@ export default function CategoriesSection() {
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon" />
                 <span>On-Route <strong>Hydration & Electrolytes</strong></span>
-              </div>
-              <div className="perk-item">
-                <CheckCircle2 size={16} className="perk-icon" />
-                <span>Healthy <strong>Post-Run Breakfast</strong></span>
               </div>
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon" />
@@ -160,7 +210,7 @@ export default function CategoriesSection() {
 
             <h3 className="cat-card-title">Competitive 5K</h3>
             <p className="cat-card-desc">
-              For athletes and competitive runners chasing leaderboard glory and the ₹35,000 cash prize pool.
+              For athletes and competitive runners chasing leaderboard glory and the ₹30,000 cash prize pool.
             </p>
 
             {/* Exclusive Competitive Advantage */}
@@ -182,7 +232,7 @@ export default function CategoriesSection() {
               </div>
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon lime-icon" />
-                <span>Eligible for <strong>₹35,000 Cash Prize</strong></span>
+                <span>Eligible for <strong>₹30,000 Cash Prize</strong> (Top 3 in Male, Female, Adult)</span>
               </div>
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon lime-icon" />
@@ -195,10 +245,6 @@ export default function CategoriesSection() {
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon lime-icon" />
                 <span>On-Route <strong>Hydration & Electrolytes</strong></span>
-              </div>
-              <div className="perk-item">
-                <CheckCircle2 size={16} className="perk-icon lime-icon" />
-                <span>Healthy <strong>Post-Run Breakfast</strong></span>
               </div>
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon lime-icon" />
@@ -379,6 +425,14 @@ export default function CategoriesSection() {
           font-size: 15px;
           font-weight: 800;
           color: #ffffff;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .podium-icon {
+          color: #C8FF3D;
+          flex-shrink: 0;
         }
 
         .podium-badge {
@@ -408,14 +462,43 @@ export default function CategoriesSection() {
         }
 
         .rank-item.first {
-          border: 1px solid rgba(200, 255, 61, 0.3);
-          background: rgba(200, 255, 61, 0.08);
+          border: 1px solid rgba(200, 255, 61, 0.35);
+          background: rgba(200, 255, 61, 0.1);
+        }
+
+        .rank-item.second {
+          border: 1px solid rgba(226, 232, 240, 0.2);
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .rank-item.third {
+          border: 1px solid rgba(245, 158, 11, 0.25);
+          background: rgba(245, 158, 11, 0.05);
         }
 
         .rank-medal {
           font-size: 14px;
           font-weight: 700;
           color: #ffffff;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .medal-icon {
+          flex-shrink: 0;
+        }
+
+        .medal-icon.gold {
+          color: #facc15;
+        }
+
+        .medal-icon.silver {
+          color: #cbd5e1;
+        }
+
+        .medal-icon.bronze {
+          color: #f59e0b;
         }
 
         .rank-cash {

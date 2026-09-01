@@ -3,27 +3,44 @@ export const EVENT_DETAILS = {
   tagline: 'Run for a Cause, Spread a Smile',
   distance: '5KM',
   type: 'Charity Run',
+  minAge: 10,
+  adultMinAge: 40,
   expectedParticipants: 500,
   categories: [
     {
-      id: 'boys',
-      label: 'Boys (5KM)',
-      description: 'Under & Open categories for Boys',
+      id: 'male',
+      label: 'Male Category (5KM)',
+      ageRange: 'Age: 10 – 39 Years',
+      description: 'Competitive 5K for Male participants (10-39 Yrs)',
     },
     {
-      id: 'girls',
-      label: 'Girls (5KM)',
-      description: 'Under & Open categories for Girls',
+      id: 'female',
+      label: 'Female Category (5KM)',
+      ageRange: 'Age: 10 – 39 Years',
+      description: 'Competitive 5K for Female participants (10-39 Yrs)',
+    },
+    {
+      id: 'adult',
+      label: 'Adult Category (5KM)',
+      ageRange: 'Age: 40+ Years',
+      description: 'Competitive 5K for Adult & Master runners (40+ Yrs)',
     },
   ],
   prizes: {
-    first: {
-      amount: 10000,
-      formatted: '₹10,000',
-    },
-    second: {
-      amount: 7500,
-      formatted: '₹7,500',
+    total: '₹30,000',
+    perCategory: {
+      first: {
+        amount: 5000,
+        formatted: '₹5,000',
+      },
+      second: {
+        amount: 3000,
+        formatted: '₹3,000',
+      },
+      third: {
+        amount: 2000,
+        formatted: '₹2,000',
+      },
     },
   },
 } as const;

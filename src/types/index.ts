@@ -1,23 +1,44 @@
 export type CategoryType = 'boys' | 'girls';
+export type RaceCategory = 'competitive' | 'non-competitive';
+export type ParticipantType = 'general' | 'student';
+export type AgeCategory = 'male' | 'female' | 'adult';
 
 export interface Participant {
   id: string;
-  fullName: string;
+  participantType: ParticipantType;
+  urn?: string;
+  collegeName?: string;
+  firstName: string;
+  lastName?: string;
   email: string;
   phone: string;
-  category: CategoryType;
-  age: number;
-  gender: 'male' | 'female' | 'other';
-  bibNumber?: number;
-  paymentStatus: 'pending' | 'completed' | 'failed';
+  category: RaceCategory;
+  ageCategory?: AgeCategory;
+  age?: number;
+  gender: 'Male' | 'Female' | 'Other';
+  dob: string;
+  bloodGroup: string;
+  weight?: string;
+  height?: string;
+  tShirtSize: string;
+  city: string;
+  emergencyName: string;
+  emergencyPhone: string;
+  chestNumber?: string;
+  bibNumber?: string;
+  amount: number;
+  paymentStatus: 'pending' | 'paid' | 'failed';
+  paymentGateway?: string;
+  gatewayOrderId?: string;
+  gatewayPaymentId?: string;
   createdAt: string;
 }
 
 export interface PaymentRecord {
   id: string;
-  participantId: string;
-  razorpayOrderId: string;
-  razorpayPaymentId?: string;
+  participantId?: string;
+  gatewayOrderId: string;
+  gatewayPaymentId?: string;
   amount: number;
   currency: string;
   status: 'created' | 'paid' | 'failed';
