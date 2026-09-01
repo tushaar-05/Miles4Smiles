@@ -28,6 +28,7 @@ export const EVENT_DETAILS = {
   ],
   prizes: {
     total: '₹30,000',
+    top10Reward: 'Official Event T-Shirts to Top 10 Winners in each category',
     perCategory: {
       first: {
         amount: 5000,

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Trophy, Zap, CheckCircle2, ArrowRight, Sparkles, ShieldCheck, Medal, User, Award } from 'lucide-react';
+import { Trophy, Zap, CheckCircle2, ArrowRight, Sparkles, ShieldCheck, Medal, User, Award, Shirt } from 'lucide-react';
 
 export default function CategoriesSection() {
   return (
@@ -127,6 +127,17 @@ export default function CategoriesSection() {
               </div>
             </div>
           </div>
+
+          {/* ─── PLUS TOP 10 WINNERS T-SHIRT REWARD STRIP ─── */}
+          <div className="top-10-bonus-banner">
+            <div className="bonus-icon-badge">
+              <Shirt size={20} />
+            </div>
+            <div className="bonus-text-wrap">
+              <h4>Plus Official Event T-Shirts to Top 10 Winners in Each Category</h4>
+              <p>Top 10 finishers in Male, Female, and Adult divisions each receive an exclusive high-performance event jersey.</p>
+            </div>
+          </div>
         </div>
 
         {/* ─── CATEGORY PRICING CARDS ─── */}
@@ -233,6 +244,10 @@ export default function CategoriesSection() {
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon lime-icon" />
                 <span>Eligible for <strong>₹30,000 Cash Prize</strong> (Top 3 in Male, Female, Adult)</span>
+              </div>
+              <div className="perk-item">
+                <CheckCircle2 size={16} className="perk-icon lime-icon" />
+                <span><strong>Official Event T-Shirts</strong> to Top 10 in each category</span>
               </div>
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon lime-icon" />
@@ -505,6 +520,45 @@ export default function CategoriesSection() {
           font-size: 18px;
           font-weight: 900;
           color: #C8FF3D;
+        }
+
+        /* Top 10 T-Shirt Bonus Banner */
+        .top-10-bonus-banner {
+          margin-top: 18px;
+          background: rgba(200, 255, 61, 0.08);
+          border: 1.5px dashed rgba(200, 255, 61, 0.35);
+          border-radius: 16px;
+          padding: 16px 20px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .bonus-icon-badge {
+          width: 42px;
+          height: 42px;
+          border-radius: 12px;
+          background: #C8FF3D;
+          color: #0b1a4a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          box-shadow: 0 4px 14px rgba(200, 255, 61, 0.3);
+        }
+
+        .bonus-text-wrap h4 {
+          font-size: 14.5px;
+          font-weight: 800;
+          color: #ffffff;
+          margin-bottom: 2px;
+        }
+
+        .bonus-text-wrap p {
+          font-size: 12.5px;
+          color: rgba(255, 255, 255, 0.8);
+          margin: 0;
+          line-height: 1.4;
         }
 
         /* Categories Grid */

@@ -51,7 +51,7 @@ const TSHIRT_SIZES = [
   { code: 'XXL', label: 'XXL (44")' },
 ];
 
-const NST_GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfMn9JN6l-TdjDh_Og1lFDWYWXPFXdoOtJmJ-8KpCE1G0dLXg/viewform?usp=publish-editor';
+const NST_GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfaMvm-ycekfQ_18OnXpbTCdDK4bG0Ra24qKbHDysN2pZnjpA/viewform?usp=publish-editor';
 
 export default function RegisterPage() {
   /* Participant Type: General vs NST Student */
@@ -102,13 +102,13 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      // 1. Initiate payment on server
+      // 1. Initiate payment & generate order reference
       const initRes = await fetch('/api/payment/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           participantType: 'general',
-          category: 'competitive', // Category selection handled on gateway
+          category: 'competitive',
           email: formData.email,
           phone: formData.phone,
           firstName: formData.firstName,
@@ -118,23 +118,17 @@ export default function RegisterPage() {
 
       const initData = await initRes.json();
       if (!initData.success) {
-        throw new Error(initData.error || 'Failed to initiate payment.');
+        throw new Error(initData.error || 'Failed to initiate registration.');
       }
 
-      // If college payment gateway has a hosted URL, redirect to it
-      if (initData.gatewayUrl) {
-        window.location.href = `${initData.gatewayUrl}?orderId=${initData.orderId}&email=${encodeURIComponent(formData.email)}`;
-        return;
-      }
-
-      // 2. Direct / Sandbox verification & Supabase record generation
+      // 2. Persist runner data & unique Chest/BIB number in Supabase
       const verifyRes = await fetch('/api/payment/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           gateway_order_id: initData.orderId,
-          gateway_payment_id: `pay_col_${Date.now()}`,
-          gateway_status: 'SUCCESS',
+          gateway_payment_id: `easebuzz_${Date.now()}`,
+          gateway_status: 'PENDING_GATEWAY',
           runnerData: {
             ...formData,
             participantType: 'general',
@@ -144,17 +138,13 @@ export default function RegisterPage() {
       });
 
       const verifyData = await verifyRes.json();
-      if (verifyData.success) {
-        setBibNumber(verifyData.bibNumber);
-        setChestNumber(verifyData.chestNumber);
-        setPaymentDetails({
-          paymentId: verifyData.paymentId,
-          orderId: verifyData.orderId,
-        });
-        setIsSubmitted(true);
-      } else {
-        setErrorMessage(verifyData.error || 'Registration processing failed.');
+      if (!verifyData.success) {
+        throw new Error(verifyData.error || 'Failed to record registration details.');
       }
+
+      // 3. Redirect participant directly to Easebuzz payment portal
+      const targetGatewayUrl = initData.gatewayUrl || 'https://easebuzz.in/link/W3PNM';
+      window.location.href = targetGatewayUrl;
     } catch (err: unknown) {
       console.error('Registration/Payment Error:', err);
       const msg = err instanceof Error ? err.message : 'Registration failed. Please try again.';
@@ -868,32 +858,32 @@ export default function RegisterPage() {
           margin-bottom: 12px;
         }
 
-        /* Finish Line & Payment Gateway CTA */
+        /* Finish Line & Payment Gateway CTA (Centered Layout) */
         .finish {
           margin-top: 36px;
           background: #f8fafc;
           border: 1.5px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 24px 28px;
+          border-radius: 18px;
+          padding: 30px 24px 20px;
+          text-align: center;
         }
-        .finish-body {
+        .finish-centered-body {
+          max-width: 560px;
+          margin: 0 auto;
           display: flex;
+          flex-direction: column;
           align-items: center;
-          justify-content: space-between;
-          gap: 24px;
-        }
-        .finish-left {
-          flex: 1;
-          min-width: 0;
+          text-align: center;
         }
         .finish-header {
-          display: flex;
+          display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 10px;
-          margin-bottom: 6px;
+          margin-bottom: 8px;
         }
         .finish-title {
-          font-size: 17px;
+          font-size: 18px;
           font-weight: 800;
           color: var(--navy);
           letter-spacing: -0.01em;
@@ -903,32 +893,38 @@ export default function RegisterPage() {
           color: #1d4ed8;
           font-size: 11px;
           font-weight: 700;
-          padding: 2px 8px;
+          padding: 3px 9px;
           border-radius: 6px;
           border: 1px solid #dbeafe;
-          letter-spacing: 0.02em;
+          letter-spacing: 0.04em;
           text-transform: uppercase;
         }
         .finish-desc {
-          font-size: 13px;
+          font-size: 13.5px;
           color: var(--slate);
-          line-height: 1.45;
-          margin: 0 0 10px;
+          line-height: 1.5;
+          margin: 0 auto 12px;
+          max-width: 500px;
+          text-align: center;
         }
         .finish-trust {
-          display: flex;
+          display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 6px;
           font-size: 12px;
           font-weight: 600;
           color: #059669;
+          margin-bottom: 20px;
         }
         .trust-icon {
           flex-shrink: 0;
           color: #059669;
         }
-        .finish-right {
-          flex-shrink: 0;
+        .finish-btn-wrap {
+          display: flex;
+          justify-content: center;
+          width: 100%;
         }
         .finish-cta {
           display: inline-flex;
@@ -938,26 +934,27 @@ export default function RegisterPage() {
           background: var(--navy);
           color: #ffffff;
           border: none;
-          padding: 14px 28px;
+          padding: 15px 36px;
           border-radius: 12px;
-          font-size: 14.5px;
+          font-size: 15px;
           font-weight: 800;
+          letter-spacing: 0.02em;
           cursor: pointer;
           transition: all 0.15s ease;
-          box-shadow: 0 4px 14px rgba(11, 26, 74, 0.18);
-          white-space: nowrap;
+          box-shadow: 0 6px 18px rgba(11, 26, 74, 0.2);
+          min-width: 240px;
         }
         .finish-cta:hover:not(:disabled) {
           background: var(--navy-2);
-          transform: translateY(-1px);
-          box-shadow: 0 8px 20px rgba(18, 49, 139, 0.25);
+          transform: translateY(-2px);
+          box-shadow: 0 10px 24px rgba(18, 49, 139, 0.3);
         }
         .finish-cta:disabled {
           opacity: 0.65;
           cursor: not-allowed;
         }
         .finish-footer {
-          margin-top: 18px;
+          margin-top: 22px;
           padding-top: 14px;
           border-top: 1px solid #e2e8f0;
           display: flex;
@@ -967,6 +964,7 @@ export default function RegisterPage() {
         .finish-security {
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 6px;
           font-size: 12px;
           color: #64748b;
@@ -1452,24 +1450,22 @@ export default function RegisterPage() {
 
                   </div>
 
-                  {/* Finish Line & Payment CTA */}
+                  {/* Finish Line & Payment CTA (Fully Centered) */}
                   <div className="finish">
-                    <div className="finish-body">
-                      <div className="finish-left">
-                        <div className="finish-header">
-                          <span className="finish-title">Complete Registration</span>
-                          <span className="finish-pill">Final Step</span>
-                        </div>
-                        <p className="finish-desc">
-                          Select your race category (Competitive 5K ₹249 or Joy Run ₹149) and complete your entry on the official gateway.
-                        </p>
-                        <div className="finish-trust">
-                          <HeartHandshake size={14} className="trust-icon" />
-                          <span>100% of proceeds support pediatric healthcare</span>
-                        </div>
+                    <div className="finish-centered-body">
+                      <div className="finish-header">
+                        <span className="finish-title">Complete Registration</span>
+                        <span className="finish-pill">Final Step</span>
+                      </div>
+                      <p className="finish-desc">
+                        Select your race category (Competitive 5K ₹249 or Joy Run ₹149) and complete your entry on the official payment gateway.
+                      </p>
+                      <div className="finish-trust">
+                        <HeartHandshake size={14} className="trust-icon" />
+                        <span>100% of proceeds support pediatric healthcare</span>
                       </div>
 
-                      <div className="finish-right">
+                      <div className="finish-btn-wrap">
                         <button type="submit" disabled={isSubmitting} className="finish-cta">
                           <span>{isSubmitting ? 'Opening Gateway…' : 'Proceed to Payment'}</span>
                           <ArrowRight size={17} />
