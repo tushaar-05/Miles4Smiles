@@ -24,7 +24,7 @@ export default function FooterSection() {
       if (difference > 0) {
         const d = Math.floor(difference / (1000 * 60 * 60 * 24));
         const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((difference % (1000 * 60)) / (1000 * 60));
+        const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
         const s = Math.floor((difference % (1000 * 60)) / 1000);
 
         setTimeLeft({
@@ -146,6 +146,68 @@ export default function FooterSection() {
 
         </div>
 
+        {/* ─── INSTITUTION & ORGANIZER CO-BRANDING SECTION ─── */}
+        <div className="footer-organizers-strip">
+          <div className="org-tag">PRESENTED & ORGANIZED BY</div>
+          <div className="org-logos-container">
+            <div className="inst-group">
+              <div className="org-logo-card">
+                <Image
+                  src="/images/nstlogo.png"
+                  alt="Newton School of Technology"
+                  width={130}
+                  height={38}
+                  style={{ height: '30px', width: 'auto', objectFit: 'contain' }}
+                />
+              </div>
+              <span className="org-cross">×</span>
+              <div className="org-logo-card">
+                <Image
+                  src="/images/adypu logo.png"
+                  alt="Ajeenkya DY Patil University"
+                  width={130}
+                  height={38}
+                  style={{ height: '30px', width: 'auto', objectFit: 'contain' }}
+                />
+              </div>
+            </div>
+
+            <div className="org-divider-pipe" />
+
+            <div className="club-group">
+              <span className="club-organized-label">ORGANIZED BY</span>
+              <div className="org-logo-card setu-card">
+                <Image
+                  src="/images/SETU Logo.png"
+                  alt="SETU Club Logo"
+                  width={38}
+                  height={38}
+                  style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
+                />
+                <span className="setu-club-title">CLUB SETU</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ─── CREDITS & COPYRIGHT FOOTER BAR ─── */}
+        <div className="footer-credits-bar">
+          <p className="copyright-text">
+            &copy; 2026 Miles for Smiles 5K Run. All rights reserved.
+          </p>
+          <div className="author-credit">
+            <span>Made with <span className="heart-pulse">&#10084;&#65039;</span> by</span>{' '}
+            <a
+              href="https://tusharworks.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="author-link"
+            >
+              Tushar Singh
+            </a>
+          </div>
+        </div>
+
       </div>
 
       <style jsx>{`
@@ -219,31 +281,31 @@ export default function FooterSection() {
           z-index: 1;
         }
 
-        .register-cta-btn:hover {
-          transform: scale(1.06) translateY(-2px) !important;
-          background-color: #d8ff66 !important;
-          box-shadow: 0 10px 30px rgba(200, 255, 61, 0.6) !important;
-        }
-
         /* Bottom Row */
         .footer-bottom-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
           flex-wrap: wrap;
-          gap: 20px;
+          gap: 24px;
         }
 
         .footer-left {
           display: flex;
           align-items: center;
-          gap: clamp(16px, 3vw, 36px);
+          gap: clamp(16px, 2.5vw, 32px);
           flex-wrap: wrap;
         }
 
         .footer-brand-logo {
           display: flex;
           align-items: center;
+          line-height: 0;
+          transition: transform 0.2s ease;
+        }
+
+        .footer-brand-logo:hover {
+          transform: scale(1.04);
         }
 
         .footer-nav {
@@ -254,10 +316,11 @@ export default function FooterSection() {
         }
 
         .nav-link {
-          color: rgba(255, 255, 255, 0.85);
-          font-size: 14px;
-          font-weight: 500;
+          color: rgba(255, 255, 255, 0.75);
           text-decoration: none;
+          font-size: 13.5px;
+          font-weight: 600;
+          letter-spacing: 0.02em;
           transition: color 0.15s ease;
         }
 
@@ -266,94 +329,193 @@ export default function FooterSection() {
         }
 
         .nav-sep {
-          color: rgba(255, 255, 255, 0.35);
+          color: rgba(255, 255, 255, 0.3);
           font-size: 13px;
-          font-weight: 300;
         }
 
         .footer-right {
           display: flex;
           align-items: center;
-          gap: 18px;
+          gap: 16px;
+          flex-wrap: wrap;
         }
 
-        .footer-mail-link {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          color: rgba(255, 255, 255, 0.85);
-          font-size: 14px;
-          font-weight: 500;
-          text-decoration: none;
-          transition: color 0.15s ease;
-        }
-
-        .footer-mail-link:hover {
-          color: #C8FF3D;
-        }
-
-        .footer-contact-sep {
-          color: rgba(255, 255, 255, 0.35);
-          font-size: 13px;
-          font-weight: 300;
-        }
-
-        .phone-links-wrap {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
+        .footer-mail-link,
         .phone-link {
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          gap: 6px;
-          color: rgba(255, 255, 255, 0.85);
-          font-size: 14px;
-          font-weight: 500;
+          gap: 8px;
+          color: rgba(255, 255, 255, 0.9);
           text-decoration: none;
+          font-size: 13px;
+          font-weight: 600;
           transition: color 0.15s ease;
         }
 
+        .footer-mail-link:hover,
         .phone-link:hover {
           color: #C8FF3D;
         }
 
+        .footer-contact-sep {
+          color: rgba(255, 255, 255, 0.3);
+          font-size: 14px;
+        }
+
+        .phone-links-wrap {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        /* Organizers Strip */
+        .footer-organizers-strip {
+          margin-top: 45px;
+          padding-top: 32px;
+          border-top: 1px solid rgba(255, 255, 255, 0.16);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 14px;
+        }
+
+        .org-tag {
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.18em;
+          color: #C8FF3D;
+          text-transform: uppercase;
+        }
+
+        .org-logos-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 16px 22px;
+        }
+
+        .inst-group {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .org-logo-card {
+          background: #ffffff;
+          padding: 8px 16px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .org-cross {
+          color: rgba(255, 255, 255, 0.65);
+          font-size: 18px;
+          font-weight: 800;
+        }
+
+        .org-divider-pipe {
+          width: 1px;
+          height: 32px;
+          background: rgba(255, 255, 255, 0.25);
+        }
+
+        .club-group {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .club-organized-label {
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.14em;
+          color: rgba(255, 255, 255, 0.7);
+          text-transform: uppercase;
+        }
+
+        .org-logo-card.setu-card {
+          gap: 10px;
+          background: #ffffff;
+        }
+
+        .setu-club-title {
+          font-size: 14px;
+          font-weight: 900;
+          color: #0b1a4a;
+          letter-spacing: 0.05em;
+        }
+
+        /* Credits bar */
+        .footer-credits-bar {
+          margin-top: 32px;
+          padding-top: 20px;
+          border-top: 1px solid rgba(255, 255, 255, 0.12);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 12px;
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.75);
+        }
+
+        .copyright-text {
+          margin: 0;
+        }
+
+        .author-credit {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-weight: 500;
+        }
+
+        .heart-pulse {
+          display: inline-block;
+          color: #ff3b30;
+          animation: pulseHeart 1.6s ease-in-out infinite;
+        }
+
+        @keyframes pulseHeart {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.25); }
+        }
+
+        .author-link {
+          color: #C8FF3D;
+          font-weight: 800;
+          text-decoration: none;
+          padding: 3px 10px;
+          background: rgba(200, 255, 61, 0.12);
+          border: 1px solid rgba(200, 255, 61, 0.35);
+          border-radius: 8px;
+          transition: all 0.2s ease;
+        }
+
+        .author-link:hover {
+          background: #C8FF3D;
+          color: #070f26;
+          box-shadow: 0 0 16px rgba(200, 255, 61, 0.6);
+          transform: translateY(-2px);
+        }
+
         @media (max-width: 860px) {
-          .footer-wrap {
-            padding: 16px 12px 36px !important;
-          }
-          .footer-card {
-            border-radius: 20px !important;
-            padding: 42px 16px 28px !important;
-          }
-          .countdown-timer-display {
-            font-size: clamp(2.2rem, 8vw, 4.5rem) !important;
-          }
           .footer-bottom-row {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .org-divider-pipe {
+            display: none;
+          }
+          .footer-credits-bar {
             flex-direction: column;
             align-items: center;
             text-align: center;
-            gap: 22px;
-          }
-          .footer-left {
-            flex-direction: column;
-            justify-content: center;
-            gap: 16px;
-          }
-          .footer-nav {
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 8px 12px;
-          }
-          .footer-right {
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-          }
-          .footer-contact-sep {
-            display: none !important;
           }
         }
       `}</style>

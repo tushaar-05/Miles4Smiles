@@ -232,6 +232,14 @@ export default function HeroSection() {
 
         {/* Drawer Bottom Details */}
         <div className="drawer-footer">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#ffffff', padding: '7px 12px', borderRadius: '12px', marginBottom: '14px' }}>
+            <Image src="/images/nstlogo.png" alt="NST Logo" width={65} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
+            <span style={{ color: '#64748b', fontSize: '11px', fontWeight: 800 }}>×</span>
+            <Image src="/images/adypu logo.png" alt="ADYPU Logo" width={65} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
+            <span style={{ color: '#94a3b8', fontSize: '12px' }}>•</span>
+            <Image src="/images/SETU Logo.png" alt="SETU Logo" width={18} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
+            <span style={{ fontSize: '10px', fontWeight: 900, color: '#0b1a4a' }}>SETU</span>
+          </div>
           <div className="drawer-event-pill">
             <span style={{ color: '#C8FF3D' }}>✦</span> SEP 05, 2026 • 9:30 AM
           </div>
@@ -291,27 +299,59 @@ export default function HeroSection() {
               gap: '12px',
             }}
           >
-            {/* Logo */}
-            <Link
-              href="/"
-              aria-label="Miles for Smiles"
-              style={{ flexShrink: 0, lineHeight: 0, display: 'flex', alignItems: 'center' }}
-            >
-              <Image
-                src="/images/logo.png"
-                alt="Miles for Smiles Logo"
-                width={160}
-                height={44}
-                style={{
-                  height: 'auto',
-                  maxHeight: '40px',
-                  width: 'auto',
-                  maxWidth: '180px',
-                  objectFit: 'contain',
-                }}
-                priority
-              />
-            </Link>
+            {/* Logo + Co-Branding Lockup */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexShrink: 0 }}>
+              <Link
+                href="/"
+                aria-label="Miles for Smiles"
+                style={{ flexShrink: 0, lineHeight: 0, display: 'flex', alignItems: 'center' }}
+              >
+                <Image
+                  src="/images/logo.png"
+                  alt="Miles for Smiles Logo"
+                  width={150}
+                  height={40}
+                  style={{
+                    height: 'auto',
+                    maxHeight: '38px',
+                    width: 'auto',
+                    maxWidth: '160px',
+                    objectFit: 'contain',
+                  }}
+                  priority
+                />
+              </Link>
+
+              {/* Institution & Club Branding Pill */}
+              <div className="h-cobranding-pill">
+                <Image
+                  src="/images/nstlogo.png"
+                  alt="NST Logo"
+                  width={75}
+                  height={22}
+                  style={{ height: '18px', width: 'auto', objectFit: 'contain' }}
+                />
+                <span className="cobrand-x">×</span>
+                <Image
+                  src="/images/adypu logo.png"
+                  alt="ADYPU Logo"
+                  width={75}
+                  height={22}
+                  style={{ height: '18px', width: 'auto', objectFit: 'contain' }}
+                />
+                <span className="cobrand-dot">•</span>
+                <div className="cobrand-club">
+                  <Image
+                    src="/images/SETU Logo.png"
+                    alt="SETU Club Logo"
+                    width={22}
+                    height={22}
+                    style={{ height: '20px', width: 'auto', objectFit: 'contain' }}
+                  />
+                  <span>SETU</span>
+                </div>
+              </div>
+            </div>
 
             {/* Desktop nav */}
             <nav
@@ -497,76 +537,6 @@ export default function HeroSection() {
                 >
                   SEPTEMBER 05, 2026
                 </span>
-              </div>
-            </div>
-          </div>
-
-          {/* ══ CITY / EDITORIAL CARD  z-20, upper-right ══ */}
-          <div
-            className="fade-in-up fade-in-up-4 h-editorial-card"
-            style={{
-              position: 'absolute',
-              top: '16px',
-              right: '36px',
-              zIndex: 20,
-              width: '270px',
-            }}
-          >
-            <div style={{ position: 'relative' }}>
-              {/* Stacked shadow cards */}
-              <div style={{
-                position: 'absolute', top: '-9px', right: '-9px',
-                width: '100%', height: '100%', borderRadius: '14px',
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.09)',
-              }} />
-              <div style={{
-                position: 'absolute', top: '-4px', right: '-4px',
-                width: '100%', height: '100%', borderRadius: '14px',
-                background: 'rgba(255,255,255,0.1)',
-                border: '1px solid rgba(255,255,255,0.14)',
-              }} />
-              {/* Main card */}
-              <div style={{
-                position: 'relative',
-                background: '#eeecea',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                boxShadow: '0 6px 36px rgba(0,0,0,0.28)',
-              }}>
-                <div style={{ width: '100%', height: '150px', position: 'relative', overflow: 'hidden' }}>
-                  <Image
-                    src="/images/city-skyline.jpg"
-                    alt="City skyline race venue"
-                    fill
-                    sizes="270px"
-                    style={{ objectFit: 'cover', objectPosition: 'center top' }}
-                  />
-                </div>
-                <div style={{ padding: '12px 14px 16px' }}>
-                  <p style={{ color: '#1c1c2e', fontSize: '12px', lineHeight: '1.6', fontWeight: 400 }}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ullamcorper
-                    nec quam eget pulvinar. Nulla eget rutrum nisl.
-                  </p>
-                  <Link
-                    href="#news"
-                    id="editorial-card-read-more"
-                    style={{
-                      display: 'inline-block',
-                      marginTop: '9px',
-                      color: '#1c1c2e',
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      letterSpacing: '0.12em',
-                      textTransform: 'uppercase',
-                      textDecoration: 'underline',
-                      textDecorationThickness: '1.5px',
-                      textUnderlineOffset: '3px',
-                    }}
-                  >
-                    READ MORE
-                  </Link>
-                </div>
               </div>
             </div>
           </div>
@@ -783,11 +753,37 @@ export default function HeroSection() {
         .h-desktop-nav   { display: flex !important; }
         .h-register-btn  { display: inline-flex !important; }
         .h-mobile-toggle { display: none !important; }
-        .h-editorial-card { display: block !important; }
+        .h-cobranding-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          background: rgba(255, 255, 255, 0.96);
+          padding: 6px 14px;
+          border-radius: 9999px;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+        .cobrand-x {
+          font-size: 13px;
+          font-weight: 800;
+          color: #64748b;
+        }
+        .cobrand-dot {
+          font-size: 14px;
+          color: #94a3b8;
+        }
+        .cobrand-club {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 11px;
+          font-weight: 900;
+          color: #0b1a4a;
+          letter-spacing: 0.06em;
+        }
 
         /* Tablet 900–1099px */
-        @media (max-width: 1099px) {
-          .h-editorial-card { width: 230px !important; }
+        @media (max-width: 1160px) {
+          .h-cobranding-pill { display: none !important; }
           .runner-container { left: 32% !important; width: 54% !important; }
         }
 

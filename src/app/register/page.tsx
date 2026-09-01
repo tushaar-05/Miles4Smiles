@@ -1008,8 +1008,16 @@ export default function RegisterPage() {
               <Link href="/" className="back-link">
                 <ArrowLeft size={16} /> Back to Homepage
               </Link>
-              <div className="tag-row">
+              <div className="tag-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 <div className="tag-pill">#RUNFORCHARITY • SEP 05, 2026</div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.95)', padding: '5px 12px', borderRadius: '999px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+                  <Image src="/images/nstlogo.png" alt="NST Logo" width={60} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
+                  <span style={{ color: '#64748b', fontSize: '11px', fontWeight: 800 }}>×</span>
+                  <Image src="/images/adypu logo.png" alt="ADYPU Logo" width={60} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
+                  <span style={{ color: '#94a3b8', fontSize: '12px' }}>•</span>
+                  <Image src="/images/SETU Logo.png" alt="SETU Logo" width={18} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
+                  <span style={{ fontSize: '10px', fontWeight: 900, color: '#0b1a4a' }}>SETU</span>
+                </div>
               </div>
               <h1 className="hero-title display">5K Charity Run — Registration</h1>
               <p className="hero-sub">Secure your official BIB number and support pediatric healthcare for children in need.</p>
