@@ -1153,17 +1153,17 @@ export default function RegisterPage() {
                 {/* Race Day Schedule Strip */}
                 <div className="pass-schedule-strip">
                   <div className="sched-item">
-                    <span className="sched-time">8:00 AM</span>
+                    <span className="sched-time">5:30 AM</span>
                     <span className="sched-desc">Reporting & Check-In</span>
                   </div>
                   <div className="sched-sep">✦</div>
                   <div className="sched-item">
-                    <span className="sched-time">9:00 AM</span>
+                    <span className="sched-time">6:00 AM</span>
                     <span className="sched-desc">Zumba & Warmup</span>
                   </div>
                   <div className="sched-sep">✦</div>
                   <div className="sched-item">
-                    <span className="sched-time">9:30 AM</span>
+                    <span className="sched-time">6:30 AM</span>
                     <span className="sched-desc">Race Flag-Off</span>
                   </div>
                 </div>
