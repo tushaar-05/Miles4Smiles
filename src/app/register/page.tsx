@@ -43,7 +43,6 @@ const YEARS = Array.from({ length: 75 }, (_, i) => String(2018 - i));
 
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 const TSHIRT_SIZES = [
-  { code: 'XS', label: 'XS (34")' },
   { code: 'S', label: 'S (36")' },
   { code: 'M', label: 'M (38")' },
   { code: 'L', label: 'L (40")' },
@@ -1010,13 +1009,16 @@ export default function RegisterPage() {
               </Link>
               <div className="tag-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 <div className="tag-pill">#RUNFORCHARITY • SEP 05, 2026</div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.95)', padding: '5px 12px', borderRadius: '999px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.95)', padding: '5px 14px', borderRadius: '999px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
                   <Image src="/images/nstlogo.png" alt="NST Logo" width={60} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
                   <span style={{ color: '#64748b', fontSize: '11px', fontWeight: 800 }}>×</span>
                   <Image src="/images/adypu logo.png" alt="ADYPU Logo" width={60} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
                   <span style={{ color: '#94a3b8', fontSize: '12px' }}>•</span>
                   <Image src="/images/SETU Logo.png" alt="SETU Logo" width={18} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
                   <span style={{ fontSize: '10px', fontWeight: 900, color: '#0b1a4a' }}>SETU</span>
+                  <span style={{ color: '#64748b', fontSize: '10px', fontWeight: 800 }}>&</span>
+                  <Image src="/images/SPORTSCLUBLOGOG.png" alt="Sports Club Logo" width={18} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
+                  <span style={{ fontSize: '10px', fontWeight: 900, color: '#0b1a4a' }}>SPORTS</span>
                 </div>
               </div>
               <h1 className="hero-title display">5K Charity Run — Registration</h1>

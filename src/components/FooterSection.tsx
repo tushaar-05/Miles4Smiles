@@ -186,6 +186,17 @@ export default function FooterSection() {
                 />
                 <span className="setu-club-title">CLUB SETU</span>
               </div>
+              <span className="org-cross">&</span>
+              <div className="org-logo-card setu-card">
+                <Image
+                  src="/images/SPORTSCLUBLOGOG.png"
+                  alt="Sports Club Logo"
+                  width={38}
+                  height={38}
+                  style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
+                />
+                <span className="setu-club-title">SPORTS CLUB</span>
+              </div>
             </div>
           </div>
         </div>

@@ -26,13 +26,13 @@ export default function RouteSection() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1.2fr 0.8fr',
+            gridTemplateColumns: '1.35fr 0.65fr',
             alignItems: 'center',
-            gap: 'clamp(32px, 5vw, 64px)',
+            gap: 'clamp(32px, 5vw, 60px)',
           }}
           className="route-grid"
         >
-          {/* ─── LEFT: MAP IMAGE ─── */}
+          {/* ─── LEFT: MAP IMAGE (16:9 WIDESCREEN) ─── */}
           <div
             style={{
               position: 'relative',
@@ -42,12 +42,12 @@ export default function RouteSection() {
               justifyContent: 'center',
             }}
           >
-            <div style={{ position: 'relative', width: '100%', aspectRatio: '1.4/1', maxWidth: '680px' }}>
+            <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', maxWidth: '840px' }}>
               <Image
-                src="/images/route.png"
+                src="/images/newRoute.png"
                 alt="Miles for Smiles Running Tracks Map"
                 fill
-                sizes="(max-width: 768px) 100vw, 55vw"
+                sizes="(max-width: 768px) 100vw, 65vw"
                 style={{ objectFit: 'contain' }}
                 priority
               />

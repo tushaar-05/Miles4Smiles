@@ -232,13 +232,16 @@ export default function HeroSection() {
 
         {/* Drawer Bottom Details */}
         <div className="drawer-footer">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#ffffff', padding: '7px 12px', borderRadius: '12px', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#ffffff', padding: '7px 12px', borderRadius: '12px', marginBottom: '14px', flexWrap: 'wrap' }}>
             <Image src="/images/nstlogo.png" alt="NST Logo" width={65} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
             <span style={{ color: '#64748b', fontSize: '11px', fontWeight: 800 }}>×</span>
             <Image src="/images/adypu logo.png" alt="ADYPU Logo" width={65} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
             <span style={{ color: '#94a3b8', fontSize: '12px' }}>•</span>
             <Image src="/images/SETU Logo.png" alt="SETU Logo" width={18} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
             <span style={{ fontSize: '10px', fontWeight: 900, color: '#0b1a4a' }}>SETU</span>
+            <span style={{ color: '#64748b', fontSize: '10px', fontWeight: 800 }}>&</span>
+            <Image src="/images/SPORTSCLUBLOGOG.png" alt="Sports Club Logo" width={18} height={18} style={{ height: '16px', width: 'auto', objectFit: 'contain' }} />
+            <span style={{ fontSize: '10px', fontWeight: 900, color: '#0b1a4a' }}>SPORTS</span>
           </div>
           <div className="drawer-event-pill">
             <span style={{ color: '#C8FF3D' }}>✦</span> SEP 05, 2026 • 6:30 AM
@@ -299,67 +302,35 @@ export default function HeroSection() {
               gap: '12px',
             }}
           >
-            {/* Logo + Co-Branding Lockup */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexShrink: 0 }}>
-              <Link
-                href="/"
-                aria-label="Miles for Smiles"
-                style={{ flexShrink: 0, lineHeight: 0, display: 'flex', alignItems: 'center' }}
-              >
-                <Image
-                  src="/images/logo.png"
-                  alt="Miles for Smiles Logo"
-                  width={150}
-                  height={40}
-                  style={{
-                    height: 'auto',
-                    maxHeight: '38px',
-                    width: 'auto',
-                    maxWidth: '160px',
-                    objectFit: 'contain',
-                  }}
-                  priority
-                />
-              </Link>
-
-              {/* Institution & Club Branding Pill */}
-              <div className="h-cobranding-pill">
-                <Image
-                  src="/images/nstlogo.png"
-                  alt="NST Logo"
-                  width={75}
-                  height={22}
-                  style={{ height: '18px', width: 'auto', objectFit: 'contain' }}
-                />
-                <span className="cobrand-x">×</span>
-                <Image
-                  src="/images/adypu logo.png"
-                  alt="ADYPU Logo"
-                  width={75}
-                  height={22}
-                  style={{ height: '18px', width: 'auto', objectFit: 'contain' }}
-                />
-                <span className="cobrand-dot">•</span>
-                <div className="cobrand-club">
-                  <Image
-                    src="/images/SETU Logo.png"
-                    alt="SETU Club Logo"
-                    width={22}
-                    height={22}
-                    style={{ height: '20px', width: 'auto', objectFit: 'contain' }}
-                  />
-                  <span>SETU</span>
-                </div>
-              </div>
-            </div>
+            {/* Logo */}
+            <Link
+              href="/"
+              aria-label="Miles for Smiles"
+              style={{ flexShrink: 0, lineHeight: 0, display: 'flex', alignItems: 'center' }}
+            >
+              <Image
+                src="/images/logo.png"
+                alt="Miles for Smiles Logo"
+                width={160}
+                height={42}
+                style={{
+                  height: 'auto',
+                  maxHeight: '40px',
+                  width: 'auto',
+                  maxWidth: '180px',
+                  objectFit: 'contain',
+                }}
+                priority
+              />
+            </Link>
 
             {/* Desktop nav */}
             <nav
               className="h-desktop-nav"
-              style={{ display: 'flex', alignItems: 'center', gap: '18px', flex: 1, marginLeft: '36px' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1, marginLeft: '36px' }}
             >
               {NAV_LINKS.map((link, i) => (
-                <span key={link.href} style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+                <span key={link.href} style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                   <a
                     href={link.href}
                     onClick={(e) => handleNavClick(e, link.href)}
@@ -383,62 +354,64 @@ export default function HeroSection() {
               ))}
             </nav>
 
-            {/* Register button */}
-            <Link
-              href="/register"
-              id="hero-register-btn"
-              className="h-register-btn"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'stretch',
-                borderRadius: '7px',
-                overflow: 'hidden',
-                textDecoration: 'none',
-                border: '1.5px solid rgba(255,255,255,0.25)',
-                flexShrink: 0,
-              }}
-            >
-              <span
+            {/* Right Column: Register CTA & Mobile Toggle */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+              <Link
+                href="/register"
+                id="hero-register-btn"
+                className="h-register-btn"
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: '#C8FF3D',
-                  padding: '8px 11px',
+                  display: 'inline-flex',
+                  alignItems: 'stretch',
+                  borderRadius: '7px',
+                  overflow: 'hidden',
+                  textDecoration: 'none',
+                  border: '1.5px solid rgba(255,255,255,0.25)',
+                  flexShrink: 0,
                 }}
               >
-                <Calendar size={15} strokeWidth={2} color="#0b1a4a" />
-              </span>
-              <span
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '8px 16px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  letterSpacing: '0.13em',
-                  color: '#111',
-                  textTransform: 'uppercase',
-                  background: '#ffffff',
-                }}
-              >
-                REGISTER
-              </span>
-            </Link>
+                <span
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#C8FF3D',
+                    padding: '8px 11px',
+                  }}
+                >
+                  <Calendar size={15} strokeWidth={2} color="#0b1a4a" />
+                </span>
+                <span
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8px 16px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    letterSpacing: '0.13em',
+                    color: '#111',
+                    textTransform: 'uppercase',
+                    background: '#ffffff',
+                  }}
+                >
+                  REGISTER
+                </span>
+              </Link>
 
-            {/* Mobile toggle */}
-            <button
-              id="mobile-menu-toggle"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="h-mobile-toggle"
-              style={{
-                background: 'none', border: 'none', color: '#fff',
-                cursor: 'pointer', padding: '4px', display: 'none',
-              }}
-              aria-label="Toggle navigation"
-            >
-              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
+              {/* Mobile toggle */}
+              <button
+                id="mobile-menu-toggle"
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="h-mobile-toggle"
+                style={{
+                  background: 'none', border: 'none', color: '#fff',
+                  cursor: 'pointer', padding: '4px', display: 'none',
+                }}
+                aria-label="Toggle navigation"
+              >
+                {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+            </div>
           </div>
 
           {/* Hairline divider */}
@@ -569,9 +542,73 @@ export default function HeroSection() {
               justifyContent: 'flex-end',
               paddingBottom: '24px',
               pointerEvents: 'none',
-              filter: 'url(#rough-text-texture) drop-shadow(0 4px 24px rgba(0, 0, 0, 0.4))',
             }}
           >
+            {/* ══ CO-BRANDING INSTITUTIONS & CLUBS (2 DISTINCT ROWS · NO TEXTURE FILTER) ══ */}
+            <div
+              className="fade-in-up hero-cobrand-strip"
+              style={{
+                paddingLeft: '28px',
+                marginBottom: '16px',
+                pointerEvents: 'auto',
+                display: 'inline-flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: '8px',
+              }}
+            >
+              {/* Row 1: Larger NST x ADYPU in crisp solid card */}
+              <div className="hero-inst-card">
+                <Image
+                  src="/images/nstlogo.png"
+                  alt="Newton School of Technology"
+                  width={160}
+                  height={50}
+                  style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
+                  priority
+                />
+                <span className="inst-x">×</span>
+                <Image
+                  src="/images/adypu logo.png"
+                  alt="Ajeenkya DY Patil University"
+                  width={160}
+                  height={50}
+                  style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
+                  priority
+                />
+              </div>
+
+              {/* Row 2: Organizing Clubs on sleek dark bar with white logo boxes */}
+              <div className="hero-clubs-row">
+                <span className="clubs-label">ORGANIZED BY</span>
+                <div className="club-badge-item">
+                  <div className="club-logo-white-box">
+                    <Image
+                      src="/images/SETU Logo.png"
+                      alt="SETU Club Logo"
+                      width={30}
+                      height={30}
+                      style={{ height: '22px', width: 'auto', objectFit: 'contain' }}
+                    />
+                  </div>
+                  <span>CLUB SETU</span>
+                </div>
+                <span className="clubs-and">&</span>
+                <div className="club-badge-item">
+                  <div className="club-logo-white-box">
+                    <Image
+                      src="/images/SPORTSCLUBLOGOG.png"
+                      alt="Sports Club Logo"
+                      width={30}
+                      height={30}
+                      style={{ height: '22px', width: 'auto', objectFit: 'contain' }}
+                    />
+                  </div>
+                  <span>SPORTS CLUB</span>
+                </div>
+              </div>
+            </div>
+
             {/* Line 0: MILES FOR SMILES */}
             <div
               className="fade-in-up hero-typo-line0"
@@ -657,8 +694,8 @@ export default function HeroSection() {
               position: 'absolute',
               top: '0px',
               bottom: '0px',
-              left: '38%',
-              width: '48%',
+              left: '46%',
+              width: '52%',
               zIndex: 30,
               pointerEvents: 'none',
               display: 'flex',
@@ -669,13 +706,13 @@ export default function HeroSection() {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/runner-cutout.png"
-              alt="Runner - Charity 5K Run"
+              src="/images/heroSecImg.png"
+              alt="Runners - Charity 5K Run"
               style={{
-                height: '188%',
+                height: '145%',
                 width: 'auto',
                 maxWidth: 'none',
-                objectFit: 'cover',
+                objectFit: 'contain',
                 objectPosition: 'top center',
               }}
             />
@@ -753,44 +790,81 @@ export default function HeroSection() {
         .h-desktop-nav   { display: flex !important; }
         .h-register-btn  { display: inline-flex !important; }
         .h-mobile-toggle { display: none !important; }
-        .h-cobranding-pill {
+        .hero-cobrand-strip {
+          position: relative;
+          z-index: 30;
+          filter: none !important;
+        }
+
+        .hero-inst-card {
           display: inline-flex;
           align-items: center;
-          gap: 10px;
-          background: rgba(255, 255, 255, 0.96);
-          padding: 6px 14px;
-          border-radius: 9999px;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+          gap: 16px;
+          background: #ffffff;
+          padding: 8px 22px;
+          border-radius: 14px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+          border: 1.5px solid rgba(255, 255, 255, 0.85);
+          filter: none !important;
         }
-        .cobrand-x {
+        .hero-inst-card .inst-x {
+          font-size: 18px;
+          font-weight: 900;
+          color: #475569;
+        }
+
+        .hero-clubs-row {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          background: rgba(11, 26, 74, 0.9);
+          backdrop-filter: blur(10px);
+          padding: 6px 16px;
+          border-radius: 9999px;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.22);
+          filter: none !important;
+        }
+        .hero-clubs-row .clubs-label {
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.12em;
+          color: #C8FF3D;
+          text-transform: uppercase;
+        }
+        .hero-clubs-row .clubs-and {
           font-size: 13px;
           font-weight: 800;
-          color: #64748b;
+          color: rgba(255, 255, 255, 0.5);
         }
-        .cobrand-dot {
-          font-size: 14px;
-          color: #94a3b8;
-        }
-        .cobrand-club {
+        .hero-clubs-row .club-badge-item {
           display: inline-flex;
           align-items: center;
-          gap: 5px;
-          font-size: 11px;
+          gap: 8px;
+          font-size: 11.5px;
           font-weight: 900;
-          color: #0b1a4a;
-          letter-spacing: 0.06em;
+          color: #ffffff;
+          letter-spacing: 0.05em;
+        }
+        .club-logo-white-box {
+          background: #ffffff;
+          border-radius: 6px;
+          padding: 2px 5px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
 
         /* Tablet 900–1099px */
-        @media (max-width: 1160px) {
-          .h-cobranding-pill { display: none !important; }
-          .runner-container { left: 32% !important; width: 54% !important; }
+        @media (max-width: 1099px) {
+          .runner-container { left: 42% !important; width: 56% !important; }
         }
 
         /* Small tablet 768–899px */
         @media (max-width: 899px) {
           .h-editorial-card { display: none !important; }
-          .runner-container { left: 26% !important; width: 60% !important; }
+          .runner-container { left: 38% !important; width: 60% !important; }
         }
 
         /* Mobile < 768px */
@@ -832,6 +906,50 @@ export default function HeroSection() {
             padding-bottom: 22px !important;
           }
 
+          .hero-cobrand-strip {
+            padding-left: 14px !important;
+            margin-bottom: 12px !important;
+            gap: 6px !important;
+          }
+
+          .hero-inst-card {
+            padding: 6px 14px !important;
+            gap: 10px !important;
+          }
+
+          .hero-inst-card img {
+            height: 26px !important;
+            width: auto !important;
+          }
+
+          .hero-inst-card .inst-x {
+            font-size: 14px !important;
+          }
+
+          .hero-clubs-row {
+            padding: 4px 10px !important;
+            gap: 6px !important;
+          }
+
+          .club-logo-white-box {
+            padding: 1.5px 4px !important;
+            border-radius: 4px !important;
+          }
+
+          .club-logo-white-box img {
+            height: 18px !important;
+            width: auto !important;
+          }
+
+          .hero-clubs-row .clubs-label {
+            font-size: 8.5px !important;
+          }
+
+          .hero-clubs-row .club-badge-item span {
+            font-size: 9.5px !important;
+            color: #ffffff !important;
+          }
+
           .hero-typo-line0 span {
             font-size: clamp(1rem, 3.8vw, 1.4rem) !important;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85) !important;
@@ -860,10 +978,10 @@ export default function HeroSection() {
 
           /* Runner properly scaled & tucked into marquee */
           .runner-container {
-            left: 54% !important;
+            left: 58% !important;
             transform: translateX(-50%) !important;
-            width: 82% !important;
-            max-width: 340px !important;
+            width: 86% !important;
+            max-width: 360px !important;
             top: 12px !important;
             bottom: -30px !important;
             z-index: 20 !important;

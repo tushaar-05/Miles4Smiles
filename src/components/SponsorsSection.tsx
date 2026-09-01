@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Zap, HeartHandshake, ArrowUpRight, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
+import Image from 'next/image';
+import { Zap, HeartHandshake, ArrowUpRight, Sparkles, CheckCircle2, ShieldCheck, MapPin, Stethoscope } from 'lucide-react';
 
 const SPONSOR_PERKS = [
   'Logo on 400+ Official Runner Bibs',
@@ -29,8 +30,61 @@ export default function SponsorsSection() {
           </h2>
 
           <p className="sp-sub">
-            Join industry leaders and wellness champions who power the <strong>Miles for Smiles 5K Charity Run</strong> — connecting your brand with 400+ active participants while transforming children&rsquo;s lives.
+            Proudly supported by our official event partners and wellness champions who power the <strong>Miles for Smiles 5K Charity Run</strong> — connecting your brand with 400+ active participants while transforming children&rsquo;s lives.
           </p>
+        </div>
+
+        {/* ─── OFFICIAL PARTNERS SHOWCASE ─── */}
+        <div className="partners-showcase-wrap">
+          <div className="partners-tag">
+            <Sparkles size={13} /> OFFICIAL EVENT PARTNERS
+          </div>
+
+          <div className="partners-grid">
+            
+            {/* Partner 1: Pharmacy Partner (A-One) */}
+            <div className="partner-card">
+              <div className="partner-category-pill">
+                <Stethoscope size={12} />
+                <span>PHARMACY PARTNER</span>
+              </div>
+              <div className="partner-logo-box">
+                <Image
+                  src="/images/sponsors/A-one.png"
+                  alt="A-one - Official Pharmacy Partner"
+                  width={240}
+                  height={90}
+                  style={{ maxHeight: '80px', width: 'auto', objectFit: 'contain' }}
+                />
+              </div>
+              <div className="partner-info">
+                <h4 className="partner-name">A-One</h4>
+                <p className="partner-role">Official Pharmacy Partner</p>
+              </div>
+            </div>
+
+            {/* Partner 2: Venue Partner (Club Charoli) */}
+            <div className="partner-card">
+              <div className="partner-category-pill venue-pill">
+                <MapPin size={12} />
+                <span>VENUE PARTNER</span>
+              </div>
+              <div className="partner-logo-box">
+                <Image
+                  src="/images/sponsors/ClubCharoli.png"
+                  alt="Club Charoli - Official Venue Partner"
+                  width={240}
+                  height={90}
+                  style={{ maxHeight: '80px', width: 'auto', objectFit: 'contain' }}
+                />
+              </div>
+              <div className="partner-info">
+                <h4 className="partner-name">Club Charoli</h4>
+                <p className="partner-role">Official Venue Partner</p>
+              </div>
+            </div>
+
+          </div>
         </div>
 
         {/* ─── SCOREBOARD STAT STRIP ─── */}
@@ -149,7 +203,7 @@ export default function SponsorsSection() {
 
         .sp-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
 
-        .sp-header { text-align: center; max-width: 760px; margin: 0 auto 50px; }
+        .sp-header { text-align: center; max-width: 760px; margin: 0 auto 40px; }
         .ribbon {
           position: relative;
           display: inline-flex;
@@ -173,6 +227,88 @@ export default function SponsorsSection() {
 
         .sp-sub { font-size: 16px; color: var(--slate); line-height: 1.6; margin: 0; }
         .sp-sub strong { color: var(--ink); }
+
+        /* Partners Showcase */
+        .partners-showcase-wrap {
+          margin-bottom: 50px;
+          text-align: center;
+        }
+        .partners-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          font-size: 11.5px;
+          font-weight: 800;
+          letter-spacing: 0.16em;
+          color: var(--navy-2);
+          text-transform: uppercase;
+          margin-bottom: 26px;
+        }
+        .partners-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 30px;
+          max-width: 840px;
+          margin: 0 auto;
+        }
+        .partner-card {
+          background: #ffffff;
+          border: 1.5px solid var(--line);
+          border-radius: 24px;
+          padding: 36px 28px 28px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          box-shadow: 0 12px 36px rgba(11, 26, 74, 0.06);
+          position: relative;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .partner-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 18px 45px rgba(11, 26, 74, 0.12);
+        }
+        .partner-category-pill {
+          position: absolute;
+          top: -13px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: var(--lime);
+          color: var(--navy);
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          padding: 5px 16px;
+          border-radius: 9999px;
+          box-shadow: 0 4px 14px rgba(200, 255, 61, 0.45);
+          text-transform: uppercase;
+        }
+        .partner-category-pill.venue-pill {
+          background: var(--navy);
+          color: var(--lime);
+          box-shadow: 0 4px 14px rgba(11, 26, 74, 0.3);
+        }
+        .partner-logo-box {
+          height: 90px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 14px;
+          width: 100%;
+        }
+        .partner-name {
+          font-size: 20px;
+          font-weight: 800;
+          color: var(--navy);
+          margin: 0 0 3px;
+        }
+        .partner-role {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--slate);
+          margin: 0;
+        }
 
         /* Scoreboard */
         .scoreboard {
@@ -273,8 +409,9 @@ export default function SponsorsSection() {
           .perks-grid { grid-template-columns: 1fr; }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 680px) {
           .sp { padding: 70px 16px 70px; }
+          .partners-grid { grid-template-columns: 1fr; gap: 32px; }
           .scoreboard { grid-template-columns: 1fr; }
           .score-cell { border-right: none; border-bottom: 1px solid var(--line); padding: 22px 16px; }
           .score-cell:last-child { border-bottom: none; }
