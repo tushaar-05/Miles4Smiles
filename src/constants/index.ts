@@ -21,9 +21,9 @@ export const EVENT_DETAILS = {
     },
     {
       id: 'adult',
-      label: 'Adult Category (5KM)',
+      label: 'Senior Adult Category (5KM)',
       ageRange: 'Age: 40+ Years',
-      description: 'Competitive 5K for Adult & Master runners (40+ Yrs)',
+      description: 'Competitive 5K for Senior Adult & Master runners (40+ Yrs)',
     },
   ],
   prizes: {

@@ -34,7 +34,7 @@ export function calculateRegistrationFee(
  * College Gateway Configuration
  */
 export const COLLEGE_GATEWAY_CONFIG = {
-  url: process.env.COLLEGE_GATEWAY_URL || 'https://easebuzz.in/link/W3PNM',
+  url: process.env.COLLEGE_GATEWAY_URL || 'https://easebuzz.in/link/WO6Z5',
   merchantId: process.env.COLLEGE_GATEWAY_MERCHANT_ID || 'COLLEGE_M4S_MERCHANT',
   secretKey: process.env.COLLEGE_GATEWAY_SECRET_KEY || 'college_gateway_secret_demo',
   callbackUrl: process.env.COLLEGE_GATEWAY_CALLBACK_URL || '/api/payment/callback',

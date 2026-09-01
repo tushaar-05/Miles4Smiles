@@ -14,7 +14,7 @@ export default function CountdownTickerSection() {
   });
 
   useEffect(() => {
-    const targetDate = new Date('2026-09-05T06:30:00+05:30').getTime();
+    const targetDate = new Date('2026-09-05T09:30:00+05:30').getTime();
 
     const updateTimer = () => {
       const now = new Date().getTime();

@@ -97,11 +97,11 @@ export default function CategoriesSection() {
               </div>
             </div>
 
-            {/* Adult Division */}
+            {/* Senior Adult Division */}
             <div className="prize-podium-card">
               <div className="podium-header">
                 <span className="podium-gender">
-                  <Award size={16} className="podium-icon" /> Adult Category
+                  <Award size={16} className="podium-icon" /> Senior Adult Category
                 </span>
                 <span className="podium-badge" style={{ background: 'rgba(200, 255, 61, 0.25)', color: '#C8FF3D' }}>Age: 40+ Yrs</span>
               </div>
@@ -135,7 +135,7 @@ export default function CategoriesSection() {
             </div>
             <div className="bonus-text-wrap">
               <h4>Plus Official Event T-Shirts to Top 10 Winners in Each Category</h4>
-              <p>Top 10 finishers in Male, Female, and Adult divisions each receive an exclusive high-performance event jersey.</p>
+              <p>Top 10 finishers in Male, Female, and Senior Adult divisions each receive an exclusive high-performance event jersey.</p>
             </div>
           </div>
         </div>
@@ -243,7 +243,7 @@ export default function CategoriesSection() {
               </div>
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon lime-icon" />
-                <span>Eligible for <strong>₹30,000 Cash Prize</strong> (Top 3 in Male, Female, Adult)</span>
+                <span>Eligible for <strong>₹30,000 Cash Prize</strong> (Top 3 in Male, Female, Senior Adult)</span>
               </div>
               <div className="perk-item">
                 <CheckCircle2 size={16} className="perk-icon lime-icon" />

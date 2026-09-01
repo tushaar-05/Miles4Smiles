@@ -233,7 +233,7 @@ export default function HeroSection() {
         {/* Drawer Bottom Details */}
         <div className="drawer-footer">
           <div className="drawer-event-pill">
-            <span style={{ color: '#C8FF3D' }}>✦</span> SEP 05, 2026 • 6:30 AM
+            <span style={{ color: '#C8FF3D' }}>✦</span> SEP 05, 2026 • 9:30 AM
           </div>
           <div className="drawer-contact-line">
             <a href="mailto:setunst@gmail.com">setunst@gmail.com</a>

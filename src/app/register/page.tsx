@@ -143,7 +143,7 @@ export default function RegisterPage() {
       }
 
       // 3. Redirect participant directly to Easebuzz payment portal
-      const targetGatewayUrl = initData.gatewayUrl || 'https://easebuzz.in/link/W3PNM';
+      const targetGatewayUrl = initData.gatewayUrl || 'https://easebuzz.in/link/WO6Z5';
       window.location.href = targetGatewayUrl;
     } catch (err: unknown) {
       console.error('Registration/Payment Error:', err);
@@ -1145,17 +1145,17 @@ export default function RegisterPage() {
                 {/* Race Day Schedule Strip */}
                 <div className="pass-schedule-strip">
                   <div className="sched-item">
-                    <span className="sched-time">5:30 AM</span>
-                    <span className="sched-desc">Reporting & Kit Collection</span>
+                    <span className="sched-time">8:00 AM</span>
+                    <span className="sched-desc">Reporting & Check-In</span>
                   </div>
                   <div className="sched-sep">✦</div>
                   <div className="sched-item">
-                    <span className="sched-time">6:10 AM</span>
+                    <span className="sched-time">9:00 AM</span>
                     <span className="sched-desc">Zumba & Warmup</span>
                   </div>
                   <div className="sched-sep">✦</div>
                   <div className="sched-item">
-                    <span className="sched-time">6:30 AM</span>
+                    <span className="sched-time">9:30 AM</span>
                     <span className="sched-desc">Race Flag-Off</span>
                   </div>
                 </div>
@@ -1341,7 +1341,7 @@ export default function RegisterPage() {
                             </select>
                           </div>
                           <div className="field">
-                            <label>Date of Birth <span className="star">*</span> (Min Age: 10 Yrs)</label>
+                            <label>Date of Birth <span className="star">*</span> (Min Age: 10 Yrs | Senior Adult: 40+)</label>
                             <div className="dob-grid">
                               <select required value={formData.dobDay} onChange={e => handleChange('dobDay', e.target.value)}>
                                 <option value="">Day</option>

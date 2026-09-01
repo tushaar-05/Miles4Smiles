@@ -5,7 +5,7 @@ import { Clock, Flame, Flag, Music, Mic, UserCheck, Award, Heart, Sparkles, Zap,
 const SCHEDULE = [
   {
     step: '01',
-    time: '05:30 AM',
+    time: '08:00 AM',
     title: 'Reporting & Check-In',
     sub: 'BIB COLLECTION & RUNNER ASSEMBLY',
     desc: 'Gates open! Collect your running bib, meet fellow runners & assemble at the start arena.',
@@ -17,7 +17,7 @@ const SCHEDULE = [
   },
   {
     step: '02',
-    time: '06:00 - 06:10 AM',
+    time: '08:45 - 09:00 AM',
     title: 'Welcome & Dignitaries Intro',
     sub: 'CHARITY INSPIRATION & OPENING ADDRESS',
     desc: 'Opening address introducing chief guests, dignitaries & dedicating our run to children in need.',
@@ -29,10 +29,10 @@ const SCHEDULE = [
   },
   {
     step: '03',
-    time: '06:10 - 06:25 AM',
-    title: 'Zumba & Jives Party Warm-Up',
+    time: '09:00 - 09:15 AM',
+    title: 'Zumba & Warmup',
     sub: 'HIGH ENERGY MUSIC & MOVEMENT',
-    desc: 'Pumping beats & energetic Zumba routines led by top trainers to ignite your muscles!',
+    desc: 'Pumping beats & energetic Zumba warmup routines led by trainers to ignite your muscles!',
     icon: Music,
     badge: 'WARM-UP ZONE',
     color: '#fb7185',
@@ -41,7 +41,7 @@ const SCHEDULE = [
   },
   {
     step: '04',
-    time: '06:25 - 06:30 AM',
+    time: '09:15 - 09:30 AM',
     title: 'Torch Bearing Ceremony',
     sub: 'LIGHTING THE FLAME OF HOPE & UNITY',
     desc: 'Symbolic flame lighting ceremony inspiring hope, unity, and community spirit across all runners.',
@@ -53,7 +53,7 @@ const SCHEDULE = [
   },
   {
     step: '05',
-    time: '06:30 AM',
+    time: '09:30 AM',
     title: 'FLAG OFF — 5K RACE STARTS!',
     sub: 'THE BIG MOMENT · RUN FOR SMILES',
     desc: 'The official horn sounds! 400+ runners step onto the track together. Run, jog, or walk for a cause!',
@@ -65,7 +65,7 @@ const SCHEDULE = [
   },
   {
     step: '06',
-    time: '08:00 AM',
+    time: '10:45 AM',
     title: 'Podium & Celebration Wrap-Up',
     sub: 'FINISHER MEDALS, PHOTOS & REFRESHMENTS',
     desc: 'Cross the finish line to celebrate your finish, capture photos & applaud podium awards!',
@@ -178,7 +178,7 @@ export default function RaceOverviewSection() {
               margin: 0,
             }}
           >
-            Experience every electric moment of race morning — from bib check-in and high-octane Zumba warm-ups to the torch ceremony and 6:30 AM flag off!
+            Experience every electric moment of race morning — from bib check-in and high-octane Zumba warmup to the torch ceremony and 9:30 AM flag off!
           </p>
         </div>
 
@@ -518,75 +518,6 @@ export default function RaceOverviewSection() {
               </div>
             );
           })}
-        </div>
-
-        {/* ─── CHARITY & WRAP UP BANNER ─── */}
-        <div
-          className="wrapup-banner"
-          style={{
-            marginTop: '65px',
-            background: 'linear-gradient(135deg, rgba(18, 49, 139, 0.85) 0%, rgba(7, 15, 38, 0.95) 100%)',
-            border: '2px solid rgba(200, 255, 61, 0.35)',
-            borderRadius: '24px',
-            padding: '28px 36px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '20px',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4)',
-          }}
-        >
-          <div className="wrapup-left" style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-            <div
-              className="wrapup-icon-box"
-              style={{
-                width: '52px',
-                height: '52px',
-                minWidth: '52px',
-                maxWidth: '52px',
-                flexShrink: 0,
-                borderRadius: '16px',
-                background: 'rgba(200, 255, 61, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '1.5px solid rgba(200, 255, 61, 0.4)',
-              }}
-            >
-              <Heart size={26} color="#C8FF3D" fill="#C8FF3D" style={{ flexShrink: 0 }} />
-            </div>
-            <div>
-              <div className="wrapup-title" style={{ fontSize: '17px', fontWeight: 800, color: '#ffffff', marginBottom: '4px', lineHeight: 1.3 }}>
-                Full Event Wrap Up & Venue Clearance by 8:00 AM
-              </div>
-              <div className="wrapup-desc" style={{ fontSize: '13.5px', color: 'rgba(255, 255, 255, 0.75)', lineHeight: 1.5 }}>
-                100% of registration proceeds support Miles for Smiles charity initiatives.
-              </div>
-            </div>
-          </div>
-
-          <div
-            className="wrapup-badge"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              background: '#C8FF3D',
-              color: '#070f26',
-              padding: '13px 24px',
-              borderRadius: '14px',
-              fontSize: '13px',
-              fontWeight: 900,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              boxShadow: '0 8px 24px rgba(200, 255, 61, 0.3)',
-              flexShrink: 0,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <ShieldCheck size={18} /> Reporting: 5:30 AM Sharp
-          </div>
         </div>
 
       </div>

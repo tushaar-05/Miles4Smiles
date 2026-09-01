@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 // Target event date — September 5, 2026
-const EVENT_DATE = new Date('2026-09-05T06:30:00+05:30');
+const EVENT_DATE = new Date('2026-09-05T09:30:00+05:30');
 
 interface TimeLeft {
   days: number;

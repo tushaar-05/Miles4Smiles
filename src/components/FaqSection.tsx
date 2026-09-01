@@ -21,7 +21,7 @@ const FAQS: FAQItem[] = [
     id: 2,
     category: 'race',
     question: 'What time should I report on race day?',
-    answer: 'Reporting starts promptly at 5:30 AM. The warm-up session and Zumba jives begin at 6:10 AM, followed by the Torch Bearing ceremony at 6:25 AM. The official 5K race flag-off is at 6:30 AM sharp.',
+    answer: 'Reporting and bib check-in starts at 8:00 AM. The Zumba & warmup session begins prior to the race, followed by the Torch Bearing ceremony. The official 5K race flag-off is at 9:30 AM sharp.',
   },
   {
     id: 3,
