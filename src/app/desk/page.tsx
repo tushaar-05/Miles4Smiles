@@ -71,9 +71,9 @@ export default function DeskDashboardPage() {
     homeViews: number;
     bounceRate: number;
   }>({
-    totalViews: 59,
-    homeViews: 59,
-    bounceRate: 68,
+    totalViews: 105,
+    homeViews: 105,
+    bounceRate: 61,
   });
 
   // Search & Filters
