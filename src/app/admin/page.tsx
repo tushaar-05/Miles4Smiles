@@ -29,6 +29,7 @@ import {
   Award,
   Globe,
   ArrowUpRight,
+  BarChart3,
 } from 'lucide-react';
 
 interface RegistrationRecord {
@@ -900,6 +901,27 @@ export default function AdminDashboardPage() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Analytics Page Link */}
+          <Link
+            href="/admin/analytics"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              borderRadius: '8px',
+              background: 'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              color: '#38bdf8',
+              fontSize: '13px',
+              fontWeight: 800,
+              textDecoration: 'none',
+            }}
+          >
+            <BarChart3 size={15} />
+            <span>Traffic & Analytics</span>
+          </Link>
+
           {/* Add On-Spot Runner Button */}
           <button
             onClick={() => setIsAddingNew(true)}
@@ -1128,6 +1150,26 @@ export default function AdminDashboardPage() {
                 {pageViews.bounceRate}%
               </div>
             </div>
+
+            <Link
+              href="/admin/analytics"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                background: '#38bdf8',
+                color: '#081333',
+                padding: '9px 16px',
+                borderRadius: '10px',
+                fontSize: '12.5px',
+                fontWeight: 800,
+                textDecoration: 'none',
+                boxShadow: '0 4px 12px rgba(56, 189, 248, 0.3)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span>Full Analytics →</span>
+            </Link>
           </div>
         </div>
 
