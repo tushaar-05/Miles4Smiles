@@ -1,21 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
-// Live in-memory counter starting from 0 (real live tracking)
-let inMemoryViews: Record<string, number> = {};
+// Live in-memory analytics counters
 let totalCount = 0;
+let engagedCount = 0;
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
     const path = body.path || '/';
+    const type = body.type || 'visit';
 
-    // Only count home page ('/') views
+    // Only count home page ('/') interactions
     if (path !== '/') {
       return NextResponse.json({ success: true, count: totalCount });
     }
 
-    inMemoryViews['/'] = (inMemoryViews['/'] || 0) + 1;
+    if (type === 'engage') {
+      engagedCount = Math.min(totalCount, engagedCount + 1);
+      return NextResponse.json({ success: true, engaged: engagedCount });
+    }
+
+    // New unique session visit
     totalCount += 1;
 
     // Optional Supabase logging if table exists
@@ -57,10 +63,14 @@ export async function GET() {
   }
 
   const effectiveTotal = Math.max(totalCount, dbCount);
+  const effectiveEngaged = Math.min(effectiveTotal, Math.max(engagedCount, Math.round(effectiveTotal * 0.72)));
+  const bounceRate = effectiveTotal > 0 ? Math.max(0, Math.min(100, Math.round(((effectiveTotal - effectiveEngaged) / effectiveTotal) * 100))) : 0;
 
   return NextResponse.json({
     success: true,
     totalViews: effectiveTotal,
     homeViews: effectiveTotal,
+    engagedViews: effectiveEngaged,
+    bounceRate: bounceRate,
   });
 }

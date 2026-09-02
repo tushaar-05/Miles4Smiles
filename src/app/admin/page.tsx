@@ -69,12 +69,12 @@ export default function AdminDashboardPage() {
   // Website Views Analytics State
   const [pageViews, setPageViews] = useState<{
     totalViews: number;
-    todayViews: number;
-    breakdown: Record<string, number>;
+    homeViews: number;
+    bounceRate: number;
   }>({
     totalViews: 0,
-    todayViews: 0,
-    breakdown: {},
+    homeViews: 0,
+    bounceRate: 0,
   });
 
   // Filters & Search
@@ -131,9 +131,9 @@ export default function AdminDashboardPage() {
       const data = await res.json();
       if (data.success) {
         setPageViews({
-          totalViews: data.totalViews,
-          todayViews: data.todayViews,
-          breakdown: data.breakdown || {},
+          totalViews: data.totalViews || 0,
+          homeViews: data.homeViews || 0,
+          bounceRate: typeof data.bounceRate === 'number' ? data.bounceRate : 0,
         });
       }
     } catch (e) {
@@ -1116,9 +1116,16 @@ export default function AdminDashboardPage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '8px 18px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.15)' }}>
+            <div style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '8px 16px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.15)' }}>
               <div style={{ fontSize: '10.5px', color: 'rgba(255, 255, 255, 0.7)', fontWeight: 700, textTransform: 'uppercase' }}>Home Page Views</div>
-              <div style={{ fontSize: '22px', fontWeight: 900, color: '#38bdf8' }}>{pageViews.totalViews.toLocaleString()}</div>
+              <div style={{ fontSize: '20px', fontWeight: 900, color: '#38bdf8' }}>{pageViews.homeViews.toLocaleString()}</div>
+            </div>
+
+            <div style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '8px 16px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.15)' }}>
+              <div style={{ fontSize: '10.5px', color: 'rgba(255, 255, 255, 0.7)', fontWeight: 700, textTransform: 'uppercase' }}>Bounce Rate</div>
+              <div style={{ fontSize: '20px', fontWeight: 900, color: pageViews.bounceRate <= 40 ? '#4ade80' : '#f59e0b' }}>
+                {pageViews.bounceRate}%
+              </div>
             </div>
           </div>
         </div>
