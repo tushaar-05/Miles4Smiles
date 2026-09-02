@@ -1265,8 +1265,8 @@ export default function RegisterPage() {
                     <GraduationCap size={18} />
                   </div>
                   <div className="group-info">
-                    <h4>NST Student</h4>
-                    <p>Exclusive Google Form registration for NST students</p>
+                    <h4>NST Student / Faculty</h4>
+                    <p>Exclusive Google Form registration for NST students & faculty</p>
                   </div>
                 </div>
               </div>
