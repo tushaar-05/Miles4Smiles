@@ -22,8 +22,10 @@ import {
   Check,
   Sparkles,
   Layers,
-  ArrowUpRight,
-  TrendingUp,
+  Download,
+  BarChart3,
+  Activity,
+  Globe,
 } from 'lucide-react';
 
 interface RegistrationRecord {
@@ -61,6 +63,17 @@ export default function DeskDashboardPage() {
 
   const [registrations, setRegistrations] = useState<RegistrationRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Website Views Analytics State
+  const [pageViews, setPageViews] = useState<{
+    totalViews: number;
+    todayViews: number;
+    breakdown: Record<string, number>;
+  }>({
+    totalViews: 0,
+    todayViews: 0,
+    breakdown: {},
+  });
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -114,7 +127,24 @@ export default function DeskDashboardPage() {
       setPasscode(saved);
       verifyAndLoad(saved);
     }
+    fetchPageViews();
   }, []);
+
+  const fetchPageViews = async () => {
+    try {
+      const res = await fetch('/api/analytics/track');
+      const data = await res.json();
+      if (data.success) {
+        setPageViews({
+          totalViews: data.totalViews,
+          todayViews: data.todayViews,
+          breakdown: data.breakdown || {},
+        });
+      }
+    } catch (e) {
+      console.error('Error fetching views:', e);
+    }
+  };
 
   const verifyAndLoad = async (codeToVerify: string) => {
     setIsVerifying(true);
@@ -152,10 +182,13 @@ export default function DeskDashboardPage() {
     if (!passcode) return;
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/admin/registrations`, {
-        headers: { 'x-volunteer-passcode': passcode },
-      });
-      const data = await res.json();
+      const [regRes] = await Promise.all([
+        fetch(`/api/admin/registrations`, {
+          headers: { 'x-volunteer-passcode': passcode },
+        }),
+        fetchPageViews(),
+      ]);
+      const data = await regRes.json();
       if (data.success) {
         setRegistrations(data.registrations || []);
       }
@@ -164,6 +197,65 @@ export default function DeskDashboardPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // ─── Export to CSV ───
+  const exportToCSV = () => {
+    if (filteredRegistrations.length === 0) {
+      alert('No records available to export.');
+      return;
+    }
+
+    const headers = [
+      'BIB Number',
+      'Chest Number',
+      'First Name',
+      'Last Name',
+      'Gender',
+      'DOB',
+      'Blood Group',
+      'T-Shirt Size',
+      'Email',
+      'Phone',
+      'City',
+      'Division Category',
+      'Race Type',
+      'Amount Paid (INR)',
+      'Payment Status',
+      'Emergency Name',
+      'Emergency Phone',
+      'Registered At',
+    ];
+
+    const rows = filteredRegistrations.map(r => [
+      `"${r.bib_number || ''}"`,
+      `"${r.chest_number || ''}"`,
+      `"${r.first_name || ''}"`,
+      `"${r.last_name || ''}"`,
+      `"${r.gender || ''}"`,
+      `"${r.dob || ''}"`,
+      `"${r.blood_group || ''}"`,
+      `"${r.t_shirt_size || ''}"`,
+      `"${r.email || ''}"`,
+      `"${r.phone || ''}"`,
+      `"${r.city || ''}"`,
+      `"${r.category || ''}"`,
+      `"${r.race_type || ''}"`,
+      `"${r.amount || 0}"`,
+      `"${r.payment_status || 'pending'}"`,
+      `"${r.emergency_name || ''}"`,
+      `"${r.emergency_phone || ''}"`,
+      `"${new Date(r.created_at).toLocaleString('en-IN')}"`,
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `miles4smiles_registrations_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // ─── Create New Runner (On-Spot) ───
@@ -440,7 +532,7 @@ export default function DeskDashboardPage() {
   }
 
   // ═════════════════════════════════════════════════════════════════════
-  // VIEW: Main Desk Portal (Executive UI with Rich Proportional Cards)
+  // VIEW: Main Desk Portal (Executive UI with CSV Export & Views Tracker)
   // ═════════════════════════════════════════════════════════════════════
   return (
     <div className="desk-container">
@@ -676,6 +768,28 @@ export default function DeskDashboardPage() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Export CSV Button */}
+          <button
+            onClick={exportToCSV}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 12px',
+              borderRadius: '10px',
+              background: 'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: '#ffffff',
+              fontSize: '12.5px',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+            title="Download CSV spreadsheet of registrations"
+          >
+            <Download size={14} />
+            <span>Export CSV</span>
+          </button>
+
           {/* Quick Add Button */}
           <button
             onClick={() => setIsAddingNew(true)}
@@ -741,7 +855,7 @@ export default function DeskDashboardPage() {
       <main style={{ maxWidth: '1360px', margin: '0 auto', padding: '20px 16px' }}>
 
         {/* ─── Modern Executive Metric Cards Grid ─── */}
-        <div className="metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '14px', marginBottom: '18px' }}>
+        <div className="metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '14px', marginBottom: '16px' }}>
           
           {/* Card 1: Total Registered */}
           <div className="exec-stat-card">
@@ -852,6 +966,36 @@ export default function DeskDashboardPage() {
             </div>
           </div>
 
+        </div>
+
+        {/* ─── Home Page Traffic & Views Live Analytics Bar ─── */}
+        <div style={{ background: 'linear-gradient(135deg, #0b1a4a 0%, #1e3a8a 100%)', borderRadius: '16px', padding: '16px 20px', color: '#ffffff', marginBottom: '18px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '14px', boxShadow: '0 4px 16px rgba(11, 26, 74, 0.15)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Globe size={20} />
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '13px', fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                  Home Page Traffic & Visitors
+                </span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(34, 197, 94, 0.25)', color: '#4ade80', padding: '2px 8px', borderRadius: '999px', fontSize: '10.5px', fontWeight: 800 }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80', animation: 'pulse 1.5s infinite' }} />
+                  Vercel Analytics Active
+                </span>
+              </div>
+              <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'rgba(255, 255, 255, 0.75)' }}>
+                Unique landing page visitors (deduplicated per browser session)
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '8px 18px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.15)' }}>
+              <div style={{ fontSize: '10.5px', color: 'rgba(255, 255, 255, 0.7)', fontWeight: 700, textTransform: 'uppercase' }}>Home Page Views</div>
+              <div style={{ fontSize: '22px', fontWeight: 900, color: '#38bdf8' }}>{pageViews.totalViews.toLocaleString()}</div>
+            </div>
+          </div>
         </div>
 
         {/* ─── Search & Filters Bar ─── */}

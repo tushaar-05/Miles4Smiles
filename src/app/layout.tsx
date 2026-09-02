@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
+import { Analytics } from "@vercel/analytics/next";
+import PageViewTracker from "@/components/PageViewTracker";
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -32,6 +34,8 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <body className="antialiased overflow-x-hidden" style={{ background: '#F5F5F2' }}>
         <SmoothScroll>{children}</SmoothScroll>
+        <PageViewTracker />
+        <Analytics />
       </body>
     </html>
   );
