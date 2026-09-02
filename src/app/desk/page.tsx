@@ -26,6 +26,7 @@ import {
   BarChart3,
   Activity,
   Globe,
+  ArrowUpRight,
 } from 'lucide-react';
 
 interface RegistrationRecord {
@@ -990,7 +991,7 @@ export default function DeskDashboardPage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '8px 16px', borderRadius: '10px', textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.15)' }}>
               <div style={{ fontSize: '10.5px', color: 'rgba(255, 255, 255, 0.7)', fontWeight: 700, textTransform: 'uppercase' }}>Home Page Views</div>
               <div style={{ fontSize: '20px', fontWeight: 900, color: '#38bdf8' }}>{pageViews.homeViews.toLocaleString()}</div>
@@ -1002,6 +1003,30 @@ export default function DeskDashboardPage() {
                 {pageViews.bounceRate}%
               </div>
             </div>
+
+            <a
+              href="https://vercel.com/analytics"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                background: 'rgba(255, 255, 255, 0.15)',
+                color: '#ffffff',
+                padding: '9px 14px',
+                borderRadius: '10px',
+                fontSize: '12px',
+                fontWeight: 700,
+                textDecoration: 'none',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                whiteSpace: 'nowrap',
+              }}
+              title="Open full Vercel Cloud Analytics with charts and graphs"
+            >
+              <span>Vercel Analytics</span>
+              <ArrowUpRight size={13} />
+            </a>
           </div>
         </div>
 
