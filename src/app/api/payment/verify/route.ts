@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
     // 5. Save registration record into Supabase PostgreSQL database
     if (supabase) {
       try {
-        const { error: dbError } = await supabase.from('registrations').insert({
+        const basePayload: Record<string, unknown> = {
           first_name: runnerData?.firstName || '',
           last_name: runnerData?.lastName || '',
           gender: runnerData?.gender || 'Male',
@@ -140,12 +140,29 @@ export async function POST(req: NextRequest) {
           razorpay_order_id: finalOrderId,
           razorpay_payment_id: finalPaymentId,
           payment_status: paymentStatus,
-        });
+        };
+
+        // Try inserting with race_type: 'Unknown'
+        const { error: dbError } = await supabase
+          .from('registrations')
+          .insert({ ...basePayload, race_type: 'Unknown' });
 
         if (dbError) {
-          console.error('❌ Supabase DB Insert Error:', dbError.message);
+          // If race_type column is not yet added in Supabase, fallback to base payload
+          if (dbError.code === 'PGRST204' || dbError.message.includes('race_type')) {
+            const { error: fallbackError } = await supabase
+              .from('registrations')
+              .insert(basePayload);
+            if (fallbackError) {
+              console.error('❌ Supabase DB Insert Error:', fallbackError.message);
+            } else {
+              console.log(`✅ Saved registration for ${runnerData?.firstName} ${runnerData?.lastName} (Category: ${categoryName}, BIB: ${bibNumber}, Status: ${paymentStatus})`);
+            }
+          } else {
+            console.error('❌ Supabase DB Insert Error:', dbError.message);
+          }
         } else {
-          console.log(`✅ Successfully saved registration for ${runnerData?.firstName} ${runnerData?.lastName} (Category: ${categoryName}, BIB: ${bibNumber}, Status: ${paymentStatus}) into Supabase!`);
+          console.log(`✅ Successfully saved registration for ${runnerData?.firstName} ${runnerData?.lastName} (Category: ${categoryName}, Race Type: Unknown, BIB: ${bibNumber}, Status: ${paymentStatus}) into Supabase!`);
         }
       } catch (dbErr) {
         console.error('Failed to insert record into Supabase:', dbErr);
