@@ -1128,30 +1128,6 @@ export default function AdminDashboardPage() {
                 {pageViews.bounceRate}%
               </div>
             </div>
-
-            <a
-              href="https://vercel.com/analytics"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                background: 'rgba(255, 255, 255, 0.15)',
-                color: '#ffffff',
-                padding: '9px 14px',
-                borderRadius: '10px',
-                fontSize: '12px',
-                fontWeight: 700,
-                textDecoration: 'none',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                whiteSpace: 'nowrap',
-              }}
-              title="Open full Vercel Cloud Analytics with charts and graphs"
-            >
-              <span>Vercel Analytics</span>
-              <ArrowUpRight size={13} />
-            </a>
           </div>
         </div>
 
