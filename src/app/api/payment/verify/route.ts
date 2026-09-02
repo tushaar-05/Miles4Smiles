@@ -116,16 +116,11 @@ export async function POST(req: NextRequest) {
     if (supabase) {
       try {
         const { error: dbError } = await supabase.from('registrations').insert({
-          participant_type: participantType,
-          urn: cleanUrn,
-          college_name: runnerData?.collegeName || (participantType === 'student' ? 'College of Engineering' : null),
           first_name: runnerData?.firstName || '',
           last_name: runnerData?.lastName || '',
           gender: runnerData?.gender || 'Male',
           blood_group: runnerData?.bloodGroup || 'O+',
           dob: dobString,
-          age: runnerAge,
-          age_category: ageCategory,
           weight: runnerData?.weight || '',
           height: runnerData?.height || '',
           t_shirt_size: runnerData?.tShirtSize || 'M',
@@ -138,17 +133,18 @@ export async function POST(req: NextRequest) {
           amount: amountPaid,
           chest_number: chestNumber,
           bib_number: bibNumber,
-          payment_gateway: 'college_gateway',
-          gateway_order_id: finalOrderId,
-          gateway_payment_id: finalPaymentId,
+          razorpay_order_id: finalOrderId,
+          razorpay_payment_id: finalPaymentId,
           payment_status: 'paid',
         });
 
         if (dbError) {
-          console.warn('Supabase DB Insert Warning:', dbError.message);
+          console.error('❌ Supabase DB Insert Error:', dbError.message);
+        } else {
+          console.log(`✅ Successfully saved registration for ${runnerData?.firstName} ${runnerData?.lastName} (BIB: ${bibNumber}) into Supabase!`);
         }
       } catch (dbErr) {
-        console.warn('Failed to insert record into Supabase:', dbErr);
+        console.error('Failed to insert record into Supabase:', dbErr);
       }
     }
 
