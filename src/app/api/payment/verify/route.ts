@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     // 2. Generate unique 3-digit Chest Number (100 - 999)
     const chestNumber = await generateUniqueChestNumber(supabase);
 
-    // 3. Calculate age on Race Day (September 5, 2026) & determine competition category
+    // 3. Calculate age on Race Day (September 5, 2026) & determine filter category
     const birthYear = Number(runnerData?.dobYear) || 2000;
     const birthMonth = Number(runnerData?.dobMonth) || 1;
     const birthDay = Number(runnerData?.dobDay) || 1;
@@ -94,23 +94,27 @@ export async function POST(req: NextRequest) {
       runnerAge--;
     }
 
-    // Determine age division: Adult (40+), Female (10-39), Male (10-39)
-    let ageCategory: 'adult' | 'female' | 'male' = 'male';
+    // Determine category: Senior Adult (40+), Female, or Male
+    let categoryName = 'Male';
+    let bibPrefix = 'M';
     if (runnerAge >= 40) {
-      ageCategory = 'adult';
-    } else if (String(runnerData?.gender).toLowerCase() === 'female') {
-      ageCategory = 'female';
+      categoryName = 'Senior Adult';
+      bibPrefix = 'SR';
+    } else if (String(runnerData?.gender).trim().toLowerCase() === 'female') {
+      categoryName = 'Female';
+      bibPrefix = 'F';
     } else {
-      ageCategory = 'male';
+      categoryName = 'Male';
+      bibPrefix = 'M';
     }
 
     // 4. Generate matching BIB format
-    const prefix = category === 'competitive' ? 'COMP' : 'JOY';
-    const bibNumber = `M4S-${prefix}-${chestNumber}`;
-    const amountPaid = calculateRegistrationFee(participantType, category);
+    const bibNumber = `M4S-${bibPrefix}-${chestNumber}`;
+    const amountPaid = 0; // Pricing/tier is chosen on the payment gateway
     const dobString = `${runnerData?.dobYear || '2000'}-${runnerData?.dobMonth || '01'}-${runnerData?.dobDay || '01'}`;
     const finalOrderId = gateway_order_id || `order_col_${Date.now()}`;
-    const finalPaymentId = gateway_payment_id || `pay_col_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    const finalPaymentId = gateway_payment_id || `easebuzz_${Date.now()}`;
+    const paymentStatus = gateway_status === 'paid' ? 'paid' : 'pending';
 
     // 5. Save registration record into Supabase PostgreSQL database
     if (supabase) {
@@ -129,19 +133,19 @@ export async function POST(req: NextRequest) {
           city: runnerData?.city || '',
           emergency_name: runnerData?.emergencyName || '',
           emergency_phone: runnerData?.emergencyPhone || '',
-          category: category,
+          category: categoryName,
           amount: amountPaid,
           chest_number: chestNumber,
           bib_number: bibNumber,
           razorpay_order_id: finalOrderId,
           razorpay_payment_id: finalPaymentId,
-          payment_status: 'paid',
+          payment_status: paymentStatus,
         });
 
         if (dbError) {
           console.error('❌ Supabase DB Insert Error:', dbError.message);
         } else {
-          console.log(`✅ Successfully saved registration for ${runnerData?.firstName} ${runnerData?.lastName} (BIB: ${bibNumber}) into Supabase!`);
+          console.log(`✅ Successfully saved registration for ${runnerData?.firstName} ${runnerData?.lastName} (Category: ${categoryName}, BIB: ${bibNumber}, Status: ${paymentStatus}) into Supabase!`);
         }
       } catch (dbErr) {
         console.error('Failed to insert record into Supabase:', dbErr);
@@ -150,7 +154,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Registration and payment processed successfully!',
+      message: 'Registration processed successfully!',
       chestNumber,
       bibNumber,
       orderId: finalOrderId,
@@ -158,7 +162,9 @@ export async function POST(req: NextRequest) {
       amount: amountPaid,
       participantType,
       urn: cleanUrn,
-      category,
+      category: categoryName,
+      age: runnerAge,
+      paymentStatus,
       runnerName: `${runnerData?.firstName || ''} ${runnerData?.lastName || ''}`.trim(),
     });
   } catch (error: unknown) {
