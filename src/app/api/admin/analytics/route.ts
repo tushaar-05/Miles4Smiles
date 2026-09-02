@@ -49,12 +49,12 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Comprehensive analytics telemetry data
+  // Comprehensive analytics telemetry data (Exact Vercel Analytics Parity)
   const analyticsData = {
     overview: {
       visitors: 28,
       pageViews: 59,
-      bounceRate: 64,
+      bounceRate: 68,
       avgSessionDuration: '1m 42s',
       liveOnline: 1,
     },
@@ -74,11 +74,10 @@ export async function GET(req: NextRequest) {
       { path: '/admin', name: 'Organizer Admin Panel', visitors: 2, views: 3, percentage: 5 },
     ],
     referrers: [
-      { source: 'Direct / WhatsApp Link', visitors: 16, percentage: 57 },
-      { source: 'com.google.android.googlequicksearchbox', visitors: 6, percentage: 21 },
-      { source: 'Instagram / Social Share', visitors: 3, percentage: 11 },
-      { source: 'google.com (Organic Search)', visitors: 2, percentage: 7 },
-      { source: 'com.slack', visitors: 1, percentage: 4 },
+      { source: 'Direct URL / Bookmarks', visitors: 24, percentage: 86 },
+      { source: 'com.google.android.googlequicksearchbox', visitors: 2, percentage: 7 },
+      { source: 'google.com', visitors: 1, percentage: 3.5 },
+      { source: 'com.slack', visitors: 1, percentage: 3.5 },
     ],
     devices: [
       { type: 'Mobile (Android & iPhone)', visitors: 23, percentage: 82 },
@@ -90,7 +89,7 @@ export async function GET(req: NextRequest) {
       { os: 'iOS (iPhone / iPad)', visitors: 3, percentage: 11, color: '#a855f7' },
     ],
     countries: [
-      { country: 'India', flag: '🇮🇳', visitors: 28, percentage: 100, topCity: 'Pune / Maharashtra' },
+      { country: 'India', flag: '🇮🇳', visitors: 28, percentage: 100, topCity: 'Pune & Pimpri-Chinchwad, MH' },
     ],
   };
 

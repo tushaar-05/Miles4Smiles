@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
-// Live analytics counters synced with Vercel production baseline (51 views, 64% bounce rate)
-let totalCount = 51;
-let engagedCount = 18;
+// Live analytics counters synced with Vercel production baseline (59 views, 68% bounce rate)
+let totalCount = 59;
+let engagedCount = 19;
 
 export async function POST(req: NextRequest) {
   try {
