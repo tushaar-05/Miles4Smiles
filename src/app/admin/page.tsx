@@ -1188,27 +1188,6 @@ export default function AdminDashboardPage() {
               </div>
             </div>
           </div>
-
-          {/* Card: T-Shirt Inventory */}
-          <div className="exec-stat-card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                T-Shirt Kit Summary
-              </span>
-              <div className="stat-icon-bubble" style={{ background: '#f1f5f9', color: '#475569' }}>
-                <Shirt size={15} />
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '2px' }}>
-              {Object.entries(metrics.tShirts).map(([sz, cnt]) => (
-                <div key={sz} style={{ flex: 1, background: '#f8fafc', border: '1px solid #e2e8f0', padding: '4px 2px', borderRadius: '8px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '9.5px', color: '#64748b', fontWeight: 700 }}>{sz}</div>
-                  <div style={{ fontSize: '14px', fontWeight: 900, color: '#0f172a' }}>{cnt}</div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* ─── Search & Filters Bar ─── */}
