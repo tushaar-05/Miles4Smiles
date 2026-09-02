@@ -1,24 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
-function verifyAdmin(req: NextRequest): boolean {
-  const configuredPasscode = process.env.ADMIN_PASSCODE || 'm4s@2026';
-  const providedPasscode =
+function getProvidedPasscode(req: NextRequest): string {
+  return (
     req.headers.get('x-admin-passcode') ||
+    req.headers.get('x-volunteer-passcode') ||
     req.nextUrl.searchParams.get('passcode') ||
-    '';
+    ''
+  );
+}
 
-  return providedPasscode === configuredPasscode;
+function verifyAdminStrict(req: NextRequest): boolean {
+  const adminPasscode = process.env.ADMIN_PASSCODE || 'm4s@2026';
+  const provided = getProvidedPasscode(req);
+  return provided === adminPasscode;
+}
+
+function verifyAdminOrVolunteer(req: NextRequest): boolean {
+  const adminPasscode = process.env.ADMIN_PASSCODE || 'm4s@2026';
+  const volunteerPasscode = process.env.VOLUNTEER_PASSCODE || 'desk2026';
+  const provided = getProvidedPasscode(req);
+
+  return provided === adminPasscode || provided === volunteerPasscode;
 }
 
 /**
  * GET /api/admin/registrations
- * Returns all registration rows from Supabase
+ * Returns all registration rows from Supabase (Accessible by Admin and Volunteer Desk)
  */
 export async function GET(req: NextRequest) {
-  if (!verifyAdmin(req)) {
+  if (!verifyAdminOrVolunteer(req)) {
     return NextResponse.json(
-      { success: false, error: 'Unauthorized: Invalid admin passcode' },
+      { success: false, error: 'Unauthorized: Invalid passcode' },
       { status: 401 }
     );
   }
@@ -38,7 +51,7 @@ export async function GET(req: NextRequest) {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Admin fetch error:', error);
+      console.error('Fetch error:', error);
       return NextResponse.json(
         { success: false, error: error.message },
         { status: 500 }
@@ -51,7 +64,7 @@ export async function GET(req: NextRequest) {
       registrations: data || [],
     });
   } catch (err: unknown) {
-    console.error('Admin API error:', err);
+    console.error('API error:', err);
     const msg = err instanceof Error ? err.message : 'Failed to fetch registrations';
     return NextResponse.json({ success: false, error: msg }, { status: 500 });
   }
@@ -59,12 +72,12 @@ export async function GET(req: NextRequest) {
 
 /**
  * POST /api/admin/registrations
- * Create a new manual / on-spot registration directly from admin panel
+ * Create a new manual / on-spot registration (Accessible by Admin and Volunteer Desk)
  */
 export async function POST(req: NextRequest) {
-  if (!verifyAdmin(req)) {
+  if (!verifyAdminOrVolunteer(req)) {
     return NextResponse.json(
-      { success: false, error: 'Unauthorized: Invalid admin passcode' },
+      { success: false, error: 'Unauthorized: Invalid passcode' },
       { status: 401 }
     );
   }
@@ -88,6 +101,10 @@ export async function POST(req: NextRequest) {
         : 'M';
     const bibNumber = body.bib_number || `M4S-${bibPrefix}-${chestNumber}`;
 
+    // Auto calculate price based on race tier to prevent manual tampering
+    const isComp = (body.race_type || '').toLowerCase().includes('comp');
+    const autoAmount = isComp ? 249 : 149;
+
     const newPayload: Record<string, unknown> = {
       first_name: body.first_name || '',
       last_name: body.last_name || '',
@@ -103,18 +120,18 @@ export async function POST(req: NextRequest) {
       emergency_name: body.emergency_name || '',
       emergency_phone: body.emergency_phone || '',
       category: body.category || 'Male',
-      amount: Number(body.amount) || 0,
+      amount: autoAmount,
       chest_number: chestNumber,
       bib_number: bibNumber,
-      razorpay_order_id: `manual_order_${Date.now()}`,
-      razorpay_payment_id: body.payment_id || `manual_pay_${Date.now()}`,
+      razorpay_order_id: `desk_order_${Date.now()}`,
+      razorpay_payment_id: body.payment_id || `desk_pay_${Date.now()}`,
       payment_status: body.payment_status || 'paid',
     };
 
     // Try inserting with race_type
     const { data, error } = await supabase
       .from('registrations')
-      .insert({ ...newPayload, race_type: body.race_type || 'Competitive 5K' })
+      .insert({ ...newPayload, race_type: body.race_type || (isComp ? 'Competitive 5K' : 'Non-Competitive 5K') })
       .select()
       .single();
 
@@ -136,7 +153,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, registration: data });
   } catch (err: unknown) {
-    console.error('Admin create error:', err);
+    console.error('Registration creation error:', err);
     const msg = err instanceof Error ? err.message : 'Failed to create registration';
     return NextResponse.json({ success: false, error: msg }, { status: 500 });
   }
@@ -144,13 +161,13 @@ export async function POST(req: NextRequest) {
 
 /**
  * PATCH /api/admin/registrations
- * Edit any user profile information & payment status
+ * Edit participant profile information (RESTRICTED: Admin Only)
  */
 export async function PATCH(req: NextRequest) {
-  if (!verifyAdmin(req)) {
+  if (!verifyAdminStrict(req)) {
     return NextResponse.json(
-      { success: false, error: 'Unauthorized: Invalid admin passcode' },
-      { status: 401 }
+      { success: false, error: 'Forbidden: Admin access required for editing' },
+      { status: 403 }
     );
   }
 
@@ -175,7 +192,6 @@ export async function PATCH(req: NextRequest) {
 
     const updatePayload: Record<string, unknown> = {};
 
-    // Allow updating all profile fields
     const allowedKeys = [
       'first_name',
       'last_name',
@@ -216,7 +232,6 @@ export async function PATCH(req: NextRequest) {
       .single();
 
     if (error) {
-      // If race_type column doesn't exist in Supabase yet, retry without race_type
       if (error.code === 'PGRST204' || error.message.includes('race_type')) {
         delete updatePayload.race_type;
         const { data: retryData, error: retryError } = await supabase
@@ -248,13 +263,13 @@ export async function PATCH(req: NextRequest) {
 
 /**
  * DELETE /api/admin/registrations
- * Delete a registration record (e.g. test rows)
+ * Delete a registration record (RESTRICTED: Admin Only)
  */
 export async function DELETE(req: NextRequest) {
-  if (!verifyAdmin(req)) {
+  if (!verifyAdminStrict(req)) {
     return NextResponse.json(
-      { success: false, error: 'Unauthorized: Invalid admin passcode' },
-      { status: 401 }
+      { success: false, error: 'Forbidden: Admin access required for deletion' },
+      { status: 403 }
     );
   }
 
