@@ -21,9 +21,9 @@ import {
   Copy,
   Check,
   Sparkles,
-  Activity,
-  Award,
-  CircleDot,
+  Layers,
+  ArrowUpRight,
+  TrendingUp,
 } from 'lucide-react';
 
 interface RegistrationRecord {
@@ -243,9 +243,6 @@ export default function DeskDashboardPage() {
     const joyCount = registrations.filter(r => (r.race_type || '').toLowerCase().includes('non') || (r.race_type || '').toLowerCase().includes('joy')).length;
 
     const paidRate = total > 0 ? Math.round((paidList.length / total) * 100) : 0;
-    const malePercent = total > 0 ? Math.round((maleCount / total) * 100) : 0;
-    const femalePercent = total > 0 ? Math.round((femaleCount / total) * 100) : 0;
-    const seniorPercent = total > 0 ? Math.round((seniorCount / total) * 100) : 0;
 
     return {
       total,
@@ -255,9 +252,6 @@ export default function DeskDashboardPage() {
       male: maleCount,
       female: femaleCount,
       senior: seniorCount,
-      malePercent,
-      femalePercent,
-      seniorPercent,
       competitive: compCount,
       joy: joyCount,
     };
@@ -446,16 +440,16 @@ export default function DeskDashboardPage() {
   }
 
   // ═════════════════════════════════════════════════════════════════════
-  // VIEW: Main Desk Portal (Bespoke Athletic Event Cards)
+  // VIEW: Main Desk Portal (Executive UI with Rich Proportional Cards)
   // ═════════════════════════════════════════════════════════════════════
   return (
     <div className="desk-container">
       <style>{`
         .desk-container {
           min-height: 100vh;
-          background: #f4f6fb;
+          background: #f8fafc;
           color: #0f172a;
-          font-family: 'Inter', system-ui, sans-serif;
+          font-family: 'Inter', system-ui, -apple-system, sans-serif;
           padding-bottom: 60px;
         }
 
@@ -473,31 +467,40 @@ export default function DeskDashboardPage() {
           box-shadow: 0 4px 20px rgba(11, 26, 74, 0.25);
         }
 
-        /* ─── Elevated Athletic Metric Cards ─── */
-        .stat-card-elevated {
+        /* ─── Executive Metric Card Styling ─── */
+        .exec-stat-card {
           background: #ffffff;
           border: 1px solid #e2e8f0;
-          border-radius: 18px;
-          padding: 18px 20px;
+          border-radius: 16px;
+          padding: 16px 18px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.02);
           transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
           position: relative;
-          overflow: hidden;
         }
-        .stat-card-elevated:hover {
+        .exec-stat-card:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+        }
+
+        .stat-icon-bubble {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
         }
 
         .table-shell {
           background: #ffffff;
           border: 1px solid #e2e8f0;
-          border-radius: 18px;
+          border-radius: 16px;
           overflow: hidden;
-          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         }
 
         .table-row-hover:hover {
@@ -570,7 +573,7 @@ export default function DeskDashboardPage() {
           max-width: 620px;
           background: #ffffff;
           border: 1px solid #cbd5e1;
-          border-radius: 22px;
+          border-radius: 20px;
           overflow: hidden;
           box-shadow: 0 25px 60px rgba(15, 23, 42, 0.35);
           display: flex;
@@ -642,9 +645,9 @@ export default function DeskDashboardPage() {
             gap: 12px;
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 16px;
+            border-radius: 14px;
             padding: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
           }
           .desk-nav {
             padding: 10px 16px;
@@ -737,132 +740,122 @@ export default function DeskDashboardPage() {
       {/* ─── Main Content Container ─── */}
       <main style={{ maxWidth: '1360px', margin: '0 auto', padding: '20px 16px' }}>
 
-        {/* ─── Custom Athletic Stat Cards ─── */}
-        <div className="metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '14px', marginBottom: '20px' }}>
+        {/* ─── Modern Executive Metric Cards Grid ─── */}
+        <div className="metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '14px', marginBottom: '18px' }}>
           
           {/* Card 1: Total Registered */}
-          <div className="stat-card-elevated" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div className="exec-stat-card">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                   Total Registrations
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#eff6ff', color: '#2563eb', padding: '2px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700 }}>
-                  <Users size={11} /> Live
-                </span>
+                <div style={{ fontSize: '28px', fontWeight: 900, color: '#0b1a4a', letterSpacing: '-0.03em', lineHeight: 1.1, marginTop: '4px' }}>
+                  {metrics.total}
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                <span style={{ fontSize: '34px', fontWeight: 900, color: '#0b1a4a', letterSpacing: '-0.03em', lineHeight: 1 }}>
-                  {metrics.total}
-                </span>
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#94a3b8' }}>
-                  runners
-                </span>
+              <div className="stat-icon-bubble" style={{ background: '#eff6ff', color: '#2563eb' }}>
+                <Users size={16} />
               </div>
             </div>
 
-            <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11.5px', color: '#64748b' }}>
-              <span>Competitive: <strong style={{ color: '#0b1a4a' }}>{metrics.competitive}</strong></span>
-              <span>Joy: <strong style={{ color: '#0b1a4a' }}>{metrics.joy}</strong></span>
+            <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', background: '#eff6ff', color: '#1d4ed8', padding: '2px 7px', borderRadius: '6px', fontSize: '11px', fontWeight: 700 }}>
+                <Sparkles size={11} /> Live DB
+              </span>
+              <span style={{ fontSize: '11.5px', color: '#64748b' }}>
+                General Runners
+              </span>
             </div>
           </div>
 
           {/* Card 2: Confirmed Paid */}
-          <div className="stat-card-elevated" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%)', borderColor: '#bbf7d0' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div className="exec-stat-card">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: '#166534', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                   Confirmed Paid
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#dcfce7', color: '#15803d', padding: '2px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 800 }}>
-                  <CheckCircle2 size={11} /> {metrics.paidRate}%
-                </span>
+                <div style={{ fontSize: '28px', fontWeight: 900, color: '#16a34a', letterSpacing: '-0.03em', lineHeight: 1.1, marginTop: '4px' }}>
+                  {metrics.paid}
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                <span style={{ fontSize: '34px', fontWeight: 900, color: '#16a34a', letterSpacing: '-0.03em', lineHeight: 1 }}>
-                  {metrics.paid}
-                </span>
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#86efac' }}>
-                  verified
-                </span>
+              <div className="stat-icon-bubble" style={{ background: '#dcfce7', color: '#16a34a' }}>
+                <CheckCircle2 size={16} />
               </div>
             </div>
 
-            <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid rgba(187, 247, 208, 0.6)' }}>
-              {/* Sleek Progress Bar */}
-              <div style={{ height: '6px', width: '100%', background: '#dcfce7', borderRadius: '999px', overflow: 'hidden' }}>
-                <div style={{ width: `${Math.max(metrics.paidRate, 4)}%`, height: '100%', background: '#16a34a', borderRadius: '999px' }} />
-              </div>
+            <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', background: '#dcfce7', color: '#15803d', padding: '2px 7px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 }}>
+                {metrics.paidRate}% Verified
+              </span>
+              <span style={{ fontSize: '11.5px', color: '#64748b' }}>
+                Ready for Pickup
+              </span>
             </div>
           </div>
 
           {/* Card 3: Pending Verification */}
-          <div className="stat-card-elevated" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fffbeb 100%)', borderColor: '#fde68a' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div className="exec-stat-card">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: '#92400e', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                   Pending Verification
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#fef3c7', color: '#b45309', padding: '2px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 800 }}>
-                  <Clock size={11} /> Action
-                </span>
+                <div style={{ fontSize: '28px', fontWeight: 900, color: '#d97706', letterSpacing: '-0.03em', lineHeight: 1.1, marginTop: '4px' }}>
+                  {metrics.pending}
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                <span style={{ fontSize: '34px', fontWeight: 900, color: '#d97706', letterSpacing: '-0.03em', lineHeight: 1 }}>
-                  {metrics.pending}
-                </span>
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#fcd34d' }}>
-                  awaiting
-                </span>
+              <div className="stat-icon-bubble" style={{ background: '#fef3c7', color: '#d97706' }}>
+                <Clock size={16} />
               </div>
             </div>
 
-            <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid rgba(253, 230, 138, 0.6)', fontSize: '11.5px', color: '#92400e' }}>
-              Awaiting spot payment or gateway webhook
+            <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', background: '#fef3c7', color: '#b45309', padding: '2px 7px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 }}>
+                Action Req
+              </span>
+              <span style={{ fontSize: '11.5px', color: '#64748b' }}>
+                Awaiting Spot Pay
+              </span>
             </div>
           </div>
 
-          {/* Card 4: Demographic Ratio Visualizer */}
-          <div className="stat-card-elevated" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                  Demographic Ratio
-                </span>
-                <span style={{ fontSize: '11px', fontWeight: 800, color: '#0b1a4a' }}>
-                  3 Categories
-                </span>
-              </div>
-
-              {/* Segmented Distribution Bar */}
-              <div style={{ height: '10px', width: '100%', background: '#e2e8f0', borderRadius: '999px', overflow: 'hidden', display: 'flex', margin: '8px 0 12px' }}>
-                <div style={{ width: `${metrics.malePercent}%`, background: '#2563eb', transition: 'width 0.3s' }} title={`Male: ${metrics.male}`} />
-                <div style={{ width: `${metrics.femalePercent}%`, background: '#db2777', transition: 'width 0.3s' }} title={`Female: ${metrics.female}`} />
-                <div style={{ width: `${metrics.seniorPercent}%`, background: '#d97706', transition: 'width 0.3s' }} title={`Senior: ${metrics.senior}`} />
+          {/* Card 4: Divisions Micro-Grid */}
+          <div className="exec-stat-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                Category Divisions
+              </span>
+              <div className="stat-icon-bubble" style={{ background: '#f1f5f9', color: '#475569' }}>
+                <Layers size={15} />
               </div>
             </div>
 
-            {/* Metric Pills */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px', fontSize: '11px', fontWeight: 700 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', color: '#2563eb' }}>
-                <CircleDot size={9} /> {metrics.male} Male
-              </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', color: '#db2777' }}>
-                <CircleDot size={9} /> {metrics.female} Female
-              </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', color: '#d97706' }}>
-                <CircleDot size={9} /> {metrics.senior} Senior
-              </span>
+            {/* 3 Proportional Micro Stat Boxes */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginTop: '2px' }}>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '5px 4px', textAlign: 'center' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>MALE</div>
+                <div style={{ fontSize: '15px', fontWeight: 900, color: '#2563eb' }}>{metrics.male}</div>
+              </div>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '5px 4px', textAlign: 'center' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>FEMALE</div>
+                <div style={{ fontSize: '15px', fontWeight: 900, color: '#db2777' }}>{metrics.female}</div>
+              </div>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '5px 4px', textAlign: 'center' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>SENIOR</div>
+                <div style={{ fontSize: '15px', fontWeight: 900, color: '#d97706' }}>{metrics.senior}</div>
+              </div>
             </div>
           </div>
 
         </div>
 
         {/* ─── Search & Filters Bar ─── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '14px 16px', marginBottom: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '14px 16px', marginBottom: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ position: 'relative', flex: '1 1 260px', minWidth: '220px' }}>
               <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
@@ -1107,7 +1100,7 @@ export default function DeskDashboardPage() {
         {/* ─── 2. Mobile & Tablet Card List View (< 840px) ─── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {filteredRegistrations.length === 0 ? (
-            <div style={{ padding: '36px', textAlign: 'center', background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', color: '#94a3b8' }}>
+            <div style={{ padding: '36px', textAlign: 'center', background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', color: '#94a3b8' }}>
               No participants match your search criteria.
             </div>
           ) : (

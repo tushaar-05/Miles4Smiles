@@ -26,6 +26,7 @@ import {
   Copy,
   Check,
   Save,
+  Award,
 } from 'lucide-react';
 
 interface RegistrationRecord {
@@ -650,23 +651,32 @@ export default function AdminDashboardPage() {
           box-shadow: 0 4px 20px rgba(11, 26, 74, 0.25);
         }
 
-        /* ─── Elevated Athletic Metric Cards ─── */
-        .stat-card-elevated {
+        /* ─── Executive Metric Card Styling ─── */
+        .exec-stat-card {
           background: #ffffff;
           border: 1px solid #e2e8f0;
-          border-radius: 18px;
-          padding: 18px 20px;
+          border-radius: 16px;
+          padding: 16px 18px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.02);
           transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
           position: relative;
-          overflow: hidden;
         }
-        .stat-card-elevated:hover {
+        .exec-stat-card:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+        }
+
+        .stat-icon-bubble {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
         }
 
         .metric-card {
@@ -940,188 +950,192 @@ export default function AdminDashboardPage() {
       {/* ─── Main Content Container (Light Theme) ─── */}
       <main style={{ maxWidth: '1360px', margin: '0 auto', padding: '24px 20px' }}>
 
-        {/* ─── Executive Metric KPI Grid (Bespoke Athletic Design) ─── */}
-        <div className="metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '14px', marginBottom: '20px' }}>
+        {/* ─── Executive Metric KPI Grid ─── */}
+        <div className="metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '14px', marginBottom: '18px' }}>
           {/* Card 1: Total Registered */}
-          <div className="stat-card-elevated" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div className="exec-stat-card">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                   Total Registrations
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#eff6ff', color: '#2563eb', padding: '2px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700 }}>
-                  <Users size={11} /> Live
-                </span>
+                <div style={{ fontSize: '28px', fontWeight: 900, color: '#0b1a4a', letterSpacing: '-0.03em', lineHeight: 1.1, marginTop: '4px' }}>
+                  {metrics.total}
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                <span style={{ fontSize: '34px', fontWeight: 900, color: '#0b1a4a', letterSpacing: '-0.03em', lineHeight: 1 }}>
-                  {metrics.total}
-                </span>
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#94a3b8' }}>
-                  runners
-                </span>
+              <div className="stat-icon-bubble" style={{ background: '#eff6ff', color: '#2563eb' }}>
+                <Users size={16} />
               </div>
             </div>
 
-            <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11.5px', color: '#64748b' }}>
-              <span>Competitive: <strong style={{ color: '#0b1a4a' }}>{metrics.competitive}</strong></span>
-              <span>Joy: <strong style={{ color: '#0b1a4a' }}>{metrics.joy}</strong></span>
+            <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', background: '#eff6ff', color: '#1d4ed8', padding: '2px 7px', borderRadius: '6px', fontSize: '11px', fontWeight: 700 }}>
+                Live DB
+              </span>
+              <span style={{ fontSize: '11.5px', color: '#64748b' }}>
+                General Participants
+              </span>
             </div>
           </div>
 
           {/* Card 2: Confirmed Paid */}
-          <div className="stat-card-elevated" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%)', borderColor: '#bbf7d0' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div className="exec-stat-card">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: '#166534', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                   Confirmed Paid
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#dcfce7', color: '#15803d', padding: '2px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 800 }}>
-                  <CheckCircle2 size={11} /> {metrics.paidRate}%
-                </span>
+                <div style={{ fontSize: '28px', fontWeight: 900, color: '#16a34a', letterSpacing: '-0.03em', lineHeight: 1.1, marginTop: '4px' }}>
+                  {metrics.paid}
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                <span style={{ fontSize: '34px', fontWeight: 900, color: '#16a34a', letterSpacing: '-0.03em', lineHeight: 1 }}>
-                  {metrics.paid}
-                </span>
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#86efac' }}>
-                  verified
-                </span>
+              <div className="stat-icon-bubble" style={{ background: '#dcfce7', color: '#16a34a' }}>
+                <CheckCircle2 size={16} />
               </div>
             </div>
 
-            <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid rgba(187, 247, 208, 0.6)' }}>
-              <div style={{ height: '6px', width: '100%', background: '#dcfce7', borderRadius: '999px', overflow: 'hidden' }}>
-                <div style={{ width: `${Math.max(metrics.paidRate, 4)}%`, height: '100%', background: '#16a34a', borderRadius: '999px' }} />
-              </div>
+            <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', background: '#dcfce7', color: '#15803d', padding: '2px 7px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 }}>
+                {metrics.paidRate}% Verified
+              </span>
+              <span style={{ fontSize: '11.5px', color: '#64748b' }}>
+                Ready for Pickup
+              </span>
             </div>
           </div>
 
           {/* Card 3: Pending Payment */}
-          <div className="stat-card-elevated" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fffbeb 100%)', borderColor: '#fde68a' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div className="exec-stat-card">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div>
                 <span style={{ fontSize: '11px', fontWeight: 800, color: '#92400e', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                   Pending Payment
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#fef3c7', color: '#b45309', padding: '2px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 800 }}>
-                  <Clock size={11} /> Gateway
-                </span>
+                <div style={{ fontSize: '28px', fontWeight: 900, color: '#d97706', letterSpacing: '-0.03em', lineHeight: 1.1, marginTop: '4px' }}>
+                  {metrics.pending}
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                <span style={{ fontSize: '34px', fontWeight: 900, color: '#d97706', letterSpacing: '-0.03em', lineHeight: 1 }}>
-                  {metrics.pending}
-                </span>
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#fcd34d' }}>
-                  awaiting
-                </span>
+              <div className="stat-icon-bubble" style={{ background: '#fef3c7', color: '#d97706' }}>
+                <Clock size={16} />
               </div>
             </div>
 
-            <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid rgba(253, 230, 138, 0.6)', fontSize: '11.5px', color: '#92400e' }}>
-              Awaiting gateway callback or cash check-in
+            <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', background: '#fef3c7', color: '#b45309', padding: '2px 7px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 }}>
+                Gateway / Spot
+              </span>
+              <span style={{ fontSize: '11.5px', color: '#64748b' }}>
+                Awaiting Payment
+              </span>
             </div>
           </div>
 
           {/* Card 4: Total Revenue */}
-          <div className="stat-card-elevated" style={{ background: 'linear-gradient(135deg, #0b1a4a 0%, #173b9e 100%)', borderColor: '#0b1a4a', color: '#ffffff' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 800, color: '#C8FF3D', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+          <div className="exec-stat-card">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div>
+                <span style={{ fontSize: '11px', fontWeight: 800, color: '#0b1a4a', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                   Total Revenue
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(200, 255, 61, 0.2)', color: '#C8FF3D', padding: '2px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 800 }}>
-                  ₹ INR
-                </span>
+                <div style={{ fontSize: '28px', fontWeight: 900, color: '#0b1a4a', letterSpacing: '-0.03em', lineHeight: 1.1, marginTop: '4px' }}>
+                  ₹{metrics.revenue.toLocaleString()}
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                <span style={{ fontSize: '34px', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.03em', lineHeight: 1 }}>
-                  ₹{metrics.revenue.toLocaleString()}
-                </span>
+              <div className="stat-icon-bubble" style={{ background: '#eff6ff', color: '#0b1a4a' }}>
+                <IndianRupee size={16} />
               </div>
             </div>
 
-            <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.15)', fontSize: '11.5px', color: 'rgba(255, 255, 255, 0.75)' }}>
-              From verified paid participants
+            <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', background: '#f1f5f9', color: '#0f172a', padding: '2px 7px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 }}>
+                Verified
+              </span>
+              <span style={{ fontSize: '11.5px', color: '#64748b' }}>
+                Paid Collections
+              </span>
             </div>
           </div>
         </div>
 
         {/* ─── Breakdown Row (Divisions, Race Types, T-Shirt Sizes) ─── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '14px', marginBottom: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px', marginBottom: '18px' }}>
           
-          {/* Card: Demographic Ratio */}
-          <div className="stat-card-elevated" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                  Category Divisions
-                </span>
-                <span style={{ fontSize: '11px', fontWeight: 800, color: '#0b1a4a' }}>
-                  {metrics.total} Total
-                </span>
-              </div>
-
-              {/* Segmented Distribution Bar */}
-              <div style={{ height: '8px', width: '100%', background: '#e2e8f0', borderRadius: '999px', overflow: 'hidden', display: 'flex', margin: '8px 0 10px' }}>
-                <div style={{ width: `${metrics.malePercent}%`, background: '#2563eb' }} title={`Male: ${metrics.male}`} />
-                <div style={{ width: `${metrics.femalePercent}%`, background: '#db2777' }} title={`Female: ${metrics.female}`} />
-                <div style={{ width: `${metrics.seniorPercent}%`, background: '#d97706' }} title={`Senior: ${metrics.senior}`} />
+          {/* Card: Demographic Divisions */}
+          <div className="exec-stat-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                Category Divisions
+              </span>
+              <div className="stat-icon-bubble" style={{ background: '#f1f5f9', color: '#475569' }}>
+                <Users size={15} />
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px', fontSize: '11px', fontWeight: 700 }}>
-              <span style={{ color: '#2563eb' }}>● {metrics.male} Male</span>
-              <span style={{ color: '#db2777' }}>● {metrics.female} Female</span>
-              <span style={{ color: '#d97706' }}>● {metrics.senior} Senior (40+)</span>
+            {/* 3 Proportional Micro Stat Boxes */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginTop: '2px' }}>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '5px 4px', textAlign: 'center' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>MALE</div>
+                <div style={{ fontSize: '15px', fontWeight: 900, color: '#2563eb' }}>{metrics.male}</div>
+              </div>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '5px 4px', textAlign: 'center' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>FEMALE</div>
+                <div style={{ fontSize: '15px', fontWeight: 900, color: '#db2777' }}>{metrics.female}</div>
+              </div>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '5px 4px', textAlign: 'center' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>SENIOR</div>
+                <div style={{ fontSize: '15px', fontWeight: 900, color: '#d97706' }}>{metrics.senior}</div>
+              </div>
             </div>
           </div>
 
           {/* Card: Race Tier Breakdown */}
-          <div className="stat-card-elevated" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                  Race Tier Selected
-                </span>
-                <span style={{ fontSize: '11px', fontWeight: 800, color: '#0b1a4a' }}>
-                  5K Events
-                </span>
-              </div>
-
-              {/* Segmented Distribution Bar */}
-              <div style={{ height: '8px', width: '100%', background: '#e2e8f0', borderRadius: '999px', overflow: 'hidden', display: 'flex', margin: '8px 0 10px' }}>
-                <div style={{ width: `${metrics.compPercent}%`, background: '#16a34a' }} title={`Competitive: ${metrics.competitive}`} />
-                <div style={{ width: `${metrics.joyPercent}%`, background: '#0284c7' }} title={`Non-Comp: ${metrics.joy}`} />
+          <div className="exec-stat-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                Race Tier Selected
+              </span>
+              <div className="stat-icon-bubble" style={{ background: '#f1f5f9', color: '#475569' }}>
+                <Award size={15} />
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px', fontSize: '11px', fontWeight: 700 }}>
-              <span style={{ color: '#16a34a' }}>● {metrics.competitive} Competitive (₹249)</span>
-              <span style={{ color: '#0284c7' }}>● {metrics.joy} Non-Comp (₹149)</span>
+            {/* 3 Proportional Micro Stat Boxes */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginTop: '2px' }}>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '5px 4px', textAlign: 'center' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>COMP</div>
+                <div style={{ fontSize: '15px', fontWeight: 900, color: '#16a34a' }}>{metrics.competitive}</div>
+              </div>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '5px 4px', textAlign: 'center' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>JOY</div>
+                <div style={{ fontSize: '15px', fontWeight: 900, color: '#0284c7' }}>{metrics.joy}</div>
+              </div>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '5px 4px', textAlign: 'center' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>OTHER</div>
+                <div style={{ fontSize: '15px', fontWeight: 900, color: '#64748b' }}>{metrics.unknownRaceType}</div>
+              </div>
             </div>
           </div>
 
           {/* Card: T-Shirt Inventory */}
-          <div className="stat-card-elevated" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                  T-Shirt Kit Summary
-                </span>
-                <Shirt size={14} color="#0b1a4a" />
+          <div className="exec-stat-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                T-Shirt Kit Summary
+              </span>
+              <div className="stat-icon-bubble" style={{ background: '#f1f5f9', color: '#475569' }}>
+                <Shirt size={15} />
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '2px' }}>
               {Object.entries(metrics.tShirts).map(([sz, cnt]) => (
-                <div key={sz} style={{ flex: 1, background: '#f1f5f9', padding: '6px 2px', borderRadius: '8px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>{sz}</div>
-                  <div style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a' }}>{cnt}</div>
+                <div key={sz} style={{ flex: 1, background: '#f8fafc', border: '1px solid #e2e8f0', padding: '4px 2px', borderRadius: '8px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '9.5px', color: '#64748b', fontWeight: 700 }}>{sz}</div>
+                  <div style={{ fontSize: '14px', fontWeight: 900, color: '#0f172a' }}>{cnt}</div>
                 </div>
               ))}
             </div>
