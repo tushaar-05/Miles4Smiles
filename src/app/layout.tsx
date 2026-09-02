@@ -13,6 +13,14 @@ export const metadata: Metadata = {
   title: "Miles for Smiles 5K | September 05, 2026",
   description:
     "Official Miles for Smiles 5K Charity Marathon — Join the run, bring smiles, and support pediatric health. September 05, 2026.",
+  icons: {
+    icon: [
+      { url: '/images/logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/images/logo.png', sizes: '192x192', type: 'image/png' },
+    ],
+    shortcut: '/images/logo.png',
+    apple: '/images/logo.png',
+  },
 };
 
 export default function RootLayout({
