@@ -68,6 +68,7 @@ export default function AdminPage() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'pending'>('all');
   const [yearFilter, setYearFilter] = useState<'all' | '1st' | '2nd'>('all');
   const [raceTypeFilter, setRaceTypeFilter] = useState<'all' | 'competitive' | 'non-competitive' | 'pending'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'male' | 'female' | 'senior'>('all');
 
   // Gateway Sync Modal
   const [showSyncModal, setShowSyncModal] = useState(false);
@@ -327,6 +328,35 @@ export default function AdminPage() {
     return { total, paid: paidList.length, pending: pendingList.length, firstYear, secondYear, competitive, joy, unassigned, revenue };
   }, [nstRegistrations]);
 
+  // Helper to calculate exact age from DOB
+  const calculateAge = (dobString?: string) => {
+    if (!dobString || dobString === '—') return '—';
+    const num = parseInt(dobString);
+    if (!isNaN(num) && num > 0 && num < 120 && !dobString.includes('-')) return `${num} yrs`;
+    const birthDate = new Date(dobString);
+    if (isNaN(birthDate.getTime())) return '—';
+    const eventDate = new Date('2026-09-05');
+    let age = eventDate.getFullYear() - birthDate.getFullYear();
+    const m = eventDate.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && eventDate.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age > 0 && age < 120 ? `${age} yrs` : '—';
+  };
+
+  // Helper to categorize General Public runner
+  const getGeneralCategory = (runner: RegistrationRecord) => {
+    const ageStr = calculateAge(runner.dob);
+    const ageNum = parseInt(ageStr);
+    if ((ageNum && ageNum >= 50) || (runner.category || '').toLowerCase().includes('senior')) {
+      return 'Senior Adult (50+)';
+    }
+    if ((runner.gender || '').toLowerCase() === 'female' || (runner.category || '').toLowerCase().includes('female')) {
+      return 'Female';
+    }
+    return 'Male';
+  };
+
   const generalMetrics = useMemo(() => {
     const total = generalRegistrations.length;
     const paidList = generalRegistrations.filter(r => r.payment_status === 'paid');
@@ -334,10 +364,12 @@ export default function AdminPage() {
     const revenue = paidList.reduce((acc, c) => acc + (Number(c.amount) || 0), 0);
     const competitive = generalRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('comp') && !(r.race_type || '').toLowerCase().includes('non')).length;
     const joy = generalRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('joy') || (r.race_type || '').toLowerCase().includes('non')).length;
-    const male = generalRegistrations.filter(r => (r.gender || '').toLowerCase() === 'male').length;
-    const female = total - male;
+    
+    const senior = generalRegistrations.filter(r => getGeneralCategory(r) === 'Senior Adult (50+)').length;
+    const female = generalRegistrations.filter(r => getGeneralCategory(r) === 'Female').length;
+    const male = generalRegistrations.filter(r => getGeneralCategory(r) === 'Male').length;
 
-    return { total, paid: paidList.length, pending: pendingList.length, revenue, competitive, joy, male, female };
+    return { total, paid: paidList.length, pending: pendingList.length, revenue, competitive, joy, male, female, senior };
   }, [generalRegistrations]);
 
   // Helper to extract URN and Year from NST record
@@ -389,6 +421,7 @@ export default function AdminPage() {
   const filteredGeneral = useMemo(() => {
     return generalRegistrations.filter(r => {
       const q = searchQuery.toLowerCase().trim();
+      const genCat = getGeneralCategory(r);
       const matchSearch =
         !q ||
         r.first_name.toLowerCase().includes(q) ||
@@ -396,7 +429,8 @@ export default function AdminPage() {
         r.email.toLowerCase().includes(q) ||
         r.phone.includes(q) ||
         (r.bib_number && r.bib_number.toLowerCase().includes(q)) ||
-        r.city.toLowerCase().includes(q);
+        r.city.toLowerCase().includes(q) ||
+        genCat.toLowerCase().includes(q);
 
       const matchStatus = statusFilter === 'all' || r.payment_status === statusFilter;
       const matchRaceType =
@@ -404,9 +438,15 @@ export default function AdminPage() {
         (raceTypeFilter === 'competitive' && (r.race_type || '').toLowerCase().includes('comp') && !(r.race_type || '').toLowerCase().includes('non')) ||
         (raceTypeFilter === 'non-competitive' && ((r.race_type || '').toLowerCase().includes('non') || (r.race_type || '').toLowerCase().includes('joy')));
 
-      return matchSearch && matchStatus && matchRaceType;
+      const matchCategory =
+        categoryFilter === 'all' ||
+        (categoryFilter === 'male' && genCat === 'Male') ||
+        (categoryFilter === 'female' && genCat === 'Female') ||
+        (categoryFilter === 'senior' && genCat === 'Senior Adult (50+)');
+
+      return matchSearch && matchStatus && matchRaceType && matchCategory;
     });
-  }, [generalRegistrations, searchQuery, statusFilter, raceTypeFilter]);
+  }, [generalRegistrations, searchQuery, statusFilter, raceTypeFilter, categoryFilter]);
 
   // ─── CSV Export for NST ───
   const exportNSTCSV = () => {
@@ -1094,18 +1134,23 @@ export default function AdminPage() {
 
               <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Gender Demographics</span>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Category Demographics</span>
                   <Users size={18} color="#64748b" />
                 </div>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '4px' }}>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '4px', flexWrap: 'wrap' }}>
                   <div>
                     <span style={{ fontSize: '11px', color: '#64748b' }}>Male: </span>
-                    <strong style={{ fontSize: '18px', color: '#0f172a' }}>{generalMetrics.male}</strong>
+                    <strong style={{ fontSize: '16px', color: '#0f172a' }}>{generalMetrics.male}</strong>
                   </div>
-                  <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
+                  <div style={{ width: '1px', height: '20px', background: '#e2e8f0' }} />
                   <div>
                     <span style={{ fontSize: '11px', color: '#64748b' }}>Female: </span>
-                    <strong style={{ fontSize: '18px', color: '#0f172a' }}>{generalMetrics.female}</strong>
+                    <strong style={{ fontSize: '16px', color: '#db2777' }}>{generalMetrics.female}</strong>
+                  </div>
+                  <div style={{ width: '1px', height: '20px', background: '#e2e8f0' }} />
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Senior (50+): </span>
+                    <strong style={{ fontSize: '16px', color: '#d97706' }}>{generalMetrics.senior}</strong>
                   </div>
                 </div>
               </div>
@@ -1123,7 +1168,7 @@ export default function AdminPage() {
             {/* General Public Search & Action Bar */}
             <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '16px', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flex: 1, minWidth: '280px' }}>
-                <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
+                <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
                   <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     type="text"
@@ -1152,6 +1197,22 @@ export default function AdminPage() {
 
                 <div style={{ width: '1px', height: '20px', background: '#e2e8f0', margin: '0 4px' }} />
 
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Category:</span>
+                <button className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`} onClick={() => setCategoryFilter('all')}>
+                  All ({generalMetrics.total})
+                </button>
+                <button className={`filter-btn ${categoryFilter === 'male' ? 'active' : ''}`} onClick={() => setCategoryFilter('male')}>
+                  Male ({generalMetrics.male})
+                </button>
+                <button className={`filter-btn ${categoryFilter === 'female' ? 'active' : ''}`} onClick={() => setCategoryFilter('female')}>
+                  Female ({generalMetrics.female})
+                </button>
+                <button className={`filter-btn ${categoryFilter === 'senior' ? 'active' : ''}`} onClick={() => setCategoryFilter('senior')}>
+                  Senior ({generalMetrics.senior})
+                </button>
+
+                <div style={{ width: '1px', height: '20px', background: '#e2e8f0', margin: '0 4px' }} />
+
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Tier:</span>
                 <button className={`filter-btn ${raceTypeFilter === 'all' ? 'active' : ''}`} onClick={() => setRaceTypeFilter('all')}>
                   All ({generalMetrics.total})
@@ -1176,11 +1237,13 @@ export default function AdminPage() {
 
             {/* General Public Table */}
             <div className="table-shell" style={{ overflowX: 'auto', background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-              <table style={{ width: '100%', minWidth: '1400px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+              <table style={{ width: '100%', minWidth: '1450px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.06em' }}>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>BIB / Chest</th>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Participant Name</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Category</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Age</th>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>City & Location</th>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Contact (Phone / WA)</th>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Race Tier</th>
@@ -1195,143 +1258,174 @@ export default function AdminPage() {
                 <tbody>
                   {filteredGeneral.length === 0 ? (
                     <tr>
-                      <td colSpan={11} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>
+                      <td colSpan={13} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>
                         No general participants matched your search criteria.
                       </td>
                     </tr>
                   ) : (
-                    filteredGeneral.map((runner, idx) => (
-                      <tr key={runner.id || idx} style={{ borderBottom: '1px solid #f1f5f9' }} className="table-row-hover">
-                        {/* BIB & Chest */}
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <span style={{ fontWeight: 800, color: '#0284c7', fontSize: '13.5px' }}>
-                            {runner.bib_number || `M4S-GEN-${101 + idx}`}
-                          </span>
-                          <div style={{ fontSize: '11px', color: '#64748b' }}>Chest #{runner.chest_number || (101 + idx)}</div>
-                        </td>
+                    filteredGeneral.map((runner, idx) => {
+                      const genCat = getGeneralCategory(runner);
+                      const runnerAge = calculateAge(runner.dob);
+                      return (
+                        <tr key={runner.id || idx} style={{ borderBottom: '1px solid #f1f5f9' }} className="table-row-hover">
+                          {/* BIB & Chest */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <span style={{ fontWeight: 800, color: '#0284c7', fontSize: '13.5px' }}>
+                              {runner.bib_number || `M4S-GEN-${101 + idx}`}
+                            </span>
+                            <div style={{ fontSize: '11px', color: '#64748b' }}>Chest #{runner.chest_number || (101 + idx)}</div>
+                          </td>
 
-                        {/* Participant Name */}
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>
-                            {runner.first_name} {runner.last_name}
-                          </div>
-                          <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            {runner.gender || 'Male'} • DOB: {runner.dob || '—'}
-                          </div>
-                        </td>
+                          {/* Participant Name */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>
+                              {runner.first_name} {runner.last_name}
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#64748b' }}>
+                              {runner.gender || 'Male'}
+                            </div>
+                          </td>
 
-                        {/* City & Location */}
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <span style={{ background: '#eff6ff', color: '#1d4ed8', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, fontSize: '12px', border: '1px solid #bfdbfe' }}>
-                            {runner.city || 'Pune'}
-                          </span>
-                          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
-                            Emerg: {runner.emergency_phone || '—'}
-                          </div>
-                        </td>
+                          {/* Category Badge */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <span
+                              style={{
+                                background: genCat === 'Senior Adult (50+)' ? '#fef3c7' : genCat === 'Female' ? '#fce7f3' : '#e0f2fe',
+                                color: genCat === 'Senior Adult (50+)' ? '#b45309' : genCat === 'Female' ? '#be185d' : '#0369a1',
+                                border: genCat === 'Senior Adult (50+)' ? '1px solid #fde68a' : genCat === 'Female' ? '1px solid #fbcfe8' : '1px solid #bae6fd',
+                                padding: '3px 8px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 800,
+                              }}
+                            >
+                              {genCat}
+                            </span>
+                          </td>
 
-                        {/* Contact (Phone / WA) */}
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <a href={`tel:${runner.phone}`} style={{ color: '#0f172a', textDecoration: 'none', fontWeight: 600 }}>
-                              {runner.phone && runner.phone !== '—' ? runner.phone : 'Not Provided'}
-                            </a>
-                            {runner.phone && runner.phone !== '—' && (
-                              <a
-                                href={`https://wa.me/91${runner.phone.replace(/[^0-9]/g, '').slice(-10)}?text=${encodeURIComponent(`Hi ${runner.first_name}, regarding your Miles for Smiles registration (BIB: ${runner.bib_number}).`)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{ background: '#dcfce7', color: '#15803d', padding: '2px 6px', borderRadius: '4px', fontSize: '10.5px', fontWeight: 700, textDecoration: 'none' }}
-                              >
-                                WA
+                          {/* Age */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '13px' }}>
+                              {runnerAge}
+                            </span>
+                            <div style={{ fontSize: '10.5px', color: '#64748b' }}>
+                              {runner.dob && runner.dob !== '—' ? runner.dob : 'DOB: —'}
+                            </div>
+                          </td>
+
+                          {/* City & Location */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <span style={{ background: '#eff6ff', color: '#1d4ed8', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, fontSize: '12px', border: '1px solid #bfdbfe' }}>
+                              {runner.city || 'Pune'}
+                            </span>
+                            <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                              Emerg: {runner.emergency_phone || '—'}
+                            </div>
+                          </td>
+
+                          {/* Contact (Phone / WA) */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <a href={`tel:${runner.phone}`} style={{ color: '#0f172a', textDecoration: 'none', fontWeight: 600 }}>
+                                {runner.phone && runner.phone !== '—' ? runner.phone : 'Not Provided'}
                               </a>
-                            )}
-                          </div>
-                          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{runner.email}</div>
-                        </td>
+                              {runner.phone && runner.phone !== '—' && (
+                                <a
+                                  href={`https://wa.me/91${runner.phone.replace(/[^0-9]/g, '').slice(-10)}?text=${encodeURIComponent(`Hi ${runner.first_name}, regarding your Miles for Smiles registration (BIB: ${runner.bib_number}).`)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ background: '#dcfce7', color: '#15803d', padding: '2px 6px', borderRadius: '4px', fontSize: '10.5px', fontWeight: 700, textDecoration: 'none' }}
+                                >
+                                  WA
+                                </a>
+                              )}
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{runner.email}</div>
+                          </td>
 
-                        {/* Race Tier */}
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <span
-                            style={{
-                              background: (runner.race_type || '').toLowerCase().includes('comp') ? '#dcfce7' : '#e0f2fe',
-                              color: (runner.race_type || '').toLowerCase().includes('comp') ? '#15803d' : '#0369a1',
-                              padding: '3px 8px',
-                              borderRadius: '6px',
-                              fontSize: '11px',
-                              fontWeight: 800,
-                            }}
-                          >
-                            {runner.race_type || 'Competitive 5K'}
-                          </span>
-                        </td>
+                          {/* Race Tier */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <span
+                              style={{
+                                background: (runner.race_type || '').toLowerCase().includes('comp') ? '#dcfce7' : '#e0f2fe',
+                                color: (runner.race_type || '').toLowerCase().includes('comp') ? '#15803d' : '#0369a1',
+                                padding: '3px 8px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 800,
+                              }}
+                            >
+                              {runner.race_type || 'Competitive 5K'}
+                            </span>
+                          </td>
 
-                        {/* T-Shirt Size */}
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <span style={{ background: '#0b1a4a', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontWeight: 900, fontSize: '13px' }}>
-                            {runner.t_shirt_size || 'M'}
-                          </span>
-                          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
-                            Blood: {runner.blood_group || '—'}
-                          </div>
-                        </td>
+                          {/* T-Shirt Size */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <span style={{ background: '#0b1a4a', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontWeight: 900, fontSize: '13px' }}>
+                              {runner.t_shirt_size || 'M'}
+                            </span>
+                            <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                              Blood: {runner.blood_group || '—'}
+                            </div>
+                          </td>
 
-                        {/* Weight */}
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <span style={{ fontWeight: 600, color: runner.weight ? '#0f172a' : '#94a3b8' }}>
-                            {runner.weight ? (runner.weight.toString().toLowerCase().includes('kg') ? runner.weight : `${runner.weight} kg`) : '—'}
-                          </span>
-                        </td>
+                          {/* Weight */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <span style={{ fontWeight: 600, color: runner.weight ? '#0f172a' : '#94a3b8' }}>
+                              {runner.weight ? (runner.weight.toString().toLowerCase().includes('kg') ? runner.weight : `${runner.weight} kg`) : '—'}
+                            </span>
+                          </td>
 
-                        {/* Height */}
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <span style={{ fontWeight: 600, color: runner.height ? '#0f172a' : '#94a3b8' }}>
-                            {runner.height || '—'}
-                          </span>
-                        </td>
+                          {/* Height */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <span style={{ fontWeight: 600, color: runner.height ? '#0f172a' : '#94a3b8' }}>
+                              {runner.height || '—'}
+                            </span>
+                          </td>
 
-                        {/* Gateway Ref */}
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            Cust: <strong style={{ color: '#0f172a' }}>{runner.razorpay_order_id && runner.razorpay_order_id !== 'unknown' ? runner.razorpay_order_id : '—'}</strong>
-                          </div>
-                          <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            Txn: <strong style={{ color: '#0f172a' }}>{runner.razorpay_payment_id && runner.razorpay_payment_id !== 'unknown' ? runner.razorpay_payment_id : '—'}</strong>
-                          </div>
-                        </td>
+                          {/* Gateway Ref */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <div style={{ fontSize: '11px', color: '#64748b' }}>
+                              Cust: <strong style={{ color: '#0f172a' }}>{runner.razorpay_order_id && runner.razorpay_order_id !== 'unknown' ? runner.razorpay_order_id : '—'}</strong>
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#64748b' }}>
+                              Txn: <strong style={{ color: '#0f172a' }}>{runner.razorpay_payment_id && runner.razorpay_payment_id !== 'unknown' ? runner.razorpay_payment_id : '—'}</strong>
+                            </div>
+                          </td>
 
-                        {/* Status */}
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <button
-                            onClick={() => handleStatusToggle(runner.id, runner.payment_status)}
-                            disabled={updatingId === runner.id}
-                            style={{
-                              background: runner.payment_status === 'paid' ? '#dcfce7' : '#fee2e2',
-                              color: runner.payment_status === 'paid' ? '#15803d' : '#b91c1c',
-                              border: '1px solid transparent',
-                              padding: '4px 10px',
-                              borderRadius: '6px',
-                              fontSize: '11px',
-                              fontWeight: 800,
-                              cursor: 'pointer',
-                            }}
-                          >
-                            {runner.payment_status === 'paid' ? `PAID (₹${runner.amount || 249})` : 'PENDING'}
-                          </button>
-                        </td>
+                          {/* Status */}
+                          <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                            <button
+                              onClick={() => handleStatusToggle(runner.id, runner.payment_status)}
+                              disabled={updatingId === runner.id}
+                              style={{
+                                background: runner.payment_status === 'paid' ? '#dcfce7' : '#fee2e2',
+                                color: runner.payment_status === 'paid' ? '#15803d' : '#b91c1c',
+                                border: '1px solid transparent',
+                                padding: '4px 10px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {runner.payment_status === 'paid' ? `PAID (₹${runner.amount || 249})` : 'PENDING'}
+                            </button>
+                          </td>
 
-                        {/* Actions */}
-                        <td style={{ padding: '12px 16px', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                          <button
-                            onClick={() => handleDeleteRecord(runner.id, `${runner.first_name} ${runner.last_name}`)}
-                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
-                            title="Delete Record"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                          {/* Actions */}
+                          <td style={{ padding: '12px 16px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                            <button
+                              onClick={() => handleDeleteRecord(runner.id, `${runner.first_name} ${runner.last_name}`)}
+                              style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                              title="Delete Record"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
