@@ -221,6 +221,8 @@ export default function DeskDashboardPage() {
       'City',
       'Division Category',
       'Race Type',
+      'Customer ID',
+      'Transaction ID',
       'Amount Paid (INR)',
       'Payment Status',
       'Emergency Name',
@@ -242,7 +244,9 @@ export default function DeskDashboardPage() {
       `"${r.city || ''}"`,
       `"${r.category || ''}"`,
       `"${r.race_type || ''}"`,
-      `"${r.amount || 0}"`,
+      `"${r.razorpay_order_id && !r.razorpay_order_id.startsWith('order_general') && r.razorpay_order_id !== 'unknown' ? r.razorpay_order_id : 'unknown'}"`,
+      `"${r.razorpay_payment_id && !r.razorpay_payment_id.startsWith('easebuzz_') && r.razorpay_payment_id !== 'unknown' ? r.razorpay_payment_id : 'unknown'}"`,
+      r.amount || 0,
       `"${r.payment_status || 'pending'}"`,
       `"${r.emergency_name || ''}"`,
       `"${r.emergency_phone || ''}"`,
@@ -1078,150 +1082,176 @@ export default function DeskDashboardPage() {
         </div>
 
         {/* ─── 1. Desktop Table View (Large Screens) ─── */}
-        <div className="table-shell desktop-table-view">
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
-              <thead>
-                <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.08em' }}>
-                  <th style={{ padding: '14px 16px' }}>BIB / Chest</th>
-                  <th style={{ padding: '14px 16px' }}>Runner Details</th>
-                  <th style={{ padding: '14px 16px' }}>Contact</th>
-                  <th style={{ padding: '14px 16px' }}>Category & Kit</th>
-                  <th style={{ padding: '14px 16px' }}>Race Tier</th>
-                  <th style={{ padding: '14px 16px' }}>Status</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'right' }}>View Profile</th>
+        <div className="table-shell desktop-table-view" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', minWidth: '1300px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.08em' }}>
+                <th style={{ padding: '14px 16px', whiteSpace: 'nowrap', width: '130px' }}>BIB / Chest</th>
+                <th style={{ padding: '14px 16px', whiteSpace: 'nowrap', minWidth: '160px' }}>Runner Details</th>
+                <th style={{ padding: '14px 16px', whiteSpace: 'nowrap', minWidth: '190px' }}>Contact</th>
+                <th style={{ padding: '14px 16px', whiteSpace: 'nowrap', minWidth: '130px' }}>Category & Kit</th>
+                <th style={{ padding: '14px 16px', whiteSpace: 'nowrap', minWidth: '150px' }}>Race Tier</th>
+                <th style={{ padding: '14px 16px', whiteSpace: 'nowrap', minWidth: '120px' }}>Customer ID</th>
+                <th style={{ padding: '14px 16px', whiteSpace: 'nowrap', minWidth: '130px' }}>Transaction ID</th>
+                <th style={{ padding: '14px 16px', whiteSpace: 'nowrap', minWidth: '105px' }}>Status</th>
+                <th style={{ padding: '14px 16px', textAlign: 'right', whiteSpace: 'nowrap', minWidth: '120px' }}>View Profile</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredRegistrations.length === 0 ? (
+                <tr>
+                  <td colSpan={9} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>
+                    No participants match your search criteria.
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredRegistrations.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>
-                      No participants match your search criteria.
+              ) : (
+                filteredRegistrations.map((runner, index) => (
+                  <tr
+                    key={runner.id || index}
+                    className="table-row-hover"
+                    style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.15s' }}
+                  >
+                    {/* BIB & Chest */}
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ fontWeight: 800, color: '#0b1a4a', fontSize: '13.5px', letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
+                          {runner.bib_number || 'Pending'}
+                        </span>
+                        {runner.bib_number && (
+                          <button
+                            onClick={() => copyToClipboard(runner.bib_number, `bib_${runner.id}`)}
+                            style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0 }}
+                            title="Copy BIB"
+                          >
+                            {copiedId === `bib_${runner.id}` ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
+                          </button>
+                        )}
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                        Chest #{runner.chest_number || '—'}
+                      </div>
                     </td>
-                  </tr>
-                ) : (
-                  filteredRegistrations.map((runner, index) => (
-                    <tr
-                      key={runner.id || index}
-                      className="table-row-hover"
-                      style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.15s' }}
-                    >
-                      {/* BIB & Chest */}
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ fontWeight: 800, color: '#0b1a4a', fontSize: '13.5px' }}>
-                            {runner.bib_number || 'Pending'}
-                          </span>
-                          {runner.bib_number && (
-                            <button
-                              onClick={() => copyToClipboard(runner.bib_number, `bib_${runner.id}`)}
-                              style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0 }}
-                              title="Copy BIB"
-                            >
-                              {copiedId === `bib_${runner.id}` ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
-                            </button>
-                          )}
-                        </div>
-                        <div style={{ fontSize: '11px', color: '#64748b' }}>
-                          Chest #{runner.chest_number || '—'}
-                        </div>
-                      </td>
 
-                      {/* Runner Name & Gender */}
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>
-                          {runner.first_name} {runner.last_name}
-                        </div>
-                        <div style={{ fontSize: '11.5px', color: '#64748b' }}>
-                          {runner.gender} • DOB: {runner.dob || '—'}
-                        </div>
-                      </td>
+                    {/* Runner Name & Gender */}
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '14px', whiteSpace: 'nowrap' }}>
+                        {runner.first_name} {runner.last_name}
+                      </div>
+                      <div style={{ fontSize: '11.5px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                        {runner.gender} • DOB: {runner.dob || '—'}
+                      </div>
+                    </td>
 
-                      {/* Contact Info & WhatsApp shortcut */}
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <a
-                            href={`tel:${runner.phone}`}
-                            style={{ color: '#0f172a', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}
-                          >
-                            <Phone size={12} color="#0b1a4a" />
-                            <span>{runner.phone}</span>
-                          </a>
-
-                          <a
-                            href={`https://wa.me/91${runner.phone.replace(/[^0-9]/g, '').slice(-10)}?text=${encodeURIComponent(`Hi ${runner.first_name}, regarding your Miles for Smiles 5K Run registration (BIB: ${runner.bib_number || 'Pending'}).`)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              background: '#dcfce7',
-                              color: '#15803d',
-                              border: '1px solid #bbf7d0',
-                              borderRadius: '4px',
-                              padding: '2px 5px',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              textDecoration: 'none',
-                              fontSize: '10.5px',
-                              fontWeight: 700,
-                            }}
-                            title="Chat on WhatsApp"
-                          >
-                            <MessageCircle size={10} style={{ marginRight: '2px' }} /> WA
-                          </a>
-                        </div>
-                        <div style={{ color: '#64748b', fontSize: '11.5px', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
-                          <Mail size={12} />
-                          <span style={{ maxWidth: '170px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {runner.email}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Category & Kit */}
-                      <td style={{ padding: '12px 16px' }}>
-                        <div style={{ fontWeight: 700, color: '#2563eb' }}>
-                          {runner.category || 'General'}
-                        </div>
-                        <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
-                          T-Shirt: <strong style={{ color: '#0f172a' }}>{runner.t_shirt_size || 'M'}</strong> | Blood: {runner.blood_group || '—'}
-                        </div>
-                      </td>
-
-                      {/* Race Type */}
-                      <td style={{ padding: '12px 16px' }}>
-                        <span
-                          style={{
-                            padding: '3px 8px',
-                            borderRadius: '6px',
-                            fontSize: '11.5px',
-                            fontWeight: 700,
-                            background:
-                              (runner.race_type || '').includes('Comp')
-                                ? '#dcfce7'
-                                : '#e0f2fe',
-                            color:
-                              (runner.race_type || '').includes('Comp') ? '#15803d' : '#0369a1',
-                            border: '1px solid #cbd5e1',
-                          }}
+                    {/* Contact Info & WhatsApp shortcut */}
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
+                        <a
+                          href={`tel:${runner.phone}`}
+                          style={{ color: '#0f172a', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600, whiteSpace: 'nowrap' }}
                         >
-                          {runner.race_type || '5K Run'}
-                        </span>
-                      </td>
+                          <Phone size={12} color="#0b1a4a" />
+                          <span>{runner.phone}</span>
+                        </a>
 
-                      {/* Status */}
-                      <td style={{ padding: '12px 16px' }}>
-                        <span className={`status-badge ${runner.payment_status === 'paid' ? 'status-paid' : 'status-pending'}`}>
-                          {runner.payment_status === 'paid' ? (
-                            <>
-                              <CheckCircle2 size={12} /> PAID
-                            </>
-                          ) : (
-                            <>
-                              <Clock size={12} /> PENDING
-                            </>
-                          )}
+                        <a
+                          href={`https://wa.me/91${runner.phone.replace(/[^0-9]/g, '').slice(-10)}?text=${encodeURIComponent(`Hi ${runner.first_name}, regarding your Miles for Smiles 5K Run registration (BIB: ${runner.bib_number || 'Pending'}).`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            background: '#dcfce7',
+                            color: '#15803d',
+                            border: '1px solid #bbf7d0',
+                            borderRadius: '4px',
+                            padding: '2px 6px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            textDecoration: 'none',
+                            fontSize: '10.5px',
+                            fontWeight: 700,
+                            whiteSpace: 'nowrap',
+                          }}
+                          title="Chat on WhatsApp"
+                        >
+                          <MessageCircle size={10} style={{ marginRight: '2px' }} /> WA
+                        </a>
+                      </div>
+                      <div style={{ color: '#64748b', fontSize: '11.5px', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px', whiteSpace: 'nowrap' }}>
+                        <Mail size={12} />
+                        <span style={{ maxWidth: '170px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {runner.email}
                         </span>
-                      </td>
+                      </div>
+                    </td>
+
+                    {/* Category & Kit */}
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontWeight: 700, color: '#2563eb', whiteSpace: 'nowrap' }}>
+                        {runner.category || 'General'}
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px', whiteSpace: 'nowrap' }}>
+                        T-Shirt: <strong style={{ color: '#0f172a' }}>{runner.t_shirt_size || 'M'}</strong> | Blood: {runner.blood_group || '—'}
+                      </div>
+                    </td>
+
+                    {/* Race Type */}
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                      <span
+                        style={{
+                          padding: '4px 9px',
+                          borderRadius: '6px',
+                          fontSize: '11.5px',
+                          fontWeight: 700,
+                          whiteSpace: 'nowrap',
+                          display: 'inline-block',
+                          background:
+                            (runner.race_type || '').includes('Comp') && !(runner.race_type || '').includes('Non')
+                              ? '#dcfce7'
+                              : '#e0f2fe',
+                          color:
+                            (runner.race_type || '').includes('Comp') && !(runner.race_type || '').includes('Non') ? '#15803d' : '#0369a1',
+                          border: '1px solid #cbd5e1',
+                        }}
+                      >
+                        {runner.race_type || '5K Run'}
+                      </span>
+                    </td>
+
+                    {/* Customer ID */}
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                      {runner.razorpay_order_id && !runner.razorpay_order_id.startsWith('order_general') && runner.razorpay_order_id !== 'unknown' ? (
+                        <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '12px', color: '#0f172a', background: '#f1f5f9', padding: '3px 7px', borderRadius: '4px', border: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>
+                          {runner.razorpay_order_id}
+                        </span>
+                      ) : (
+                        <span style={{ color: '#94a3b8', fontSize: '12px', fontStyle: 'italic', whiteSpace: 'nowrap' }}>unknown</span>
+                      )}
+                    </td>
+
+                    {/* Transaction ID */}
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                      {runner.razorpay_payment_id && !runner.razorpay_payment_id.startsWith('easebuzz_') && runner.razorpay_payment_id !== 'unknown' ? (
+                        <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '12px', color: '#0369a1', background: '#e0f2fe', padding: '3px 7px', borderRadius: '4px', border: '1px solid #bae6fd', whiteSpace: 'nowrap' }}>
+                          {runner.razorpay_payment_id}
+                        </span>
+                      ) : (
+                        <span style={{ color: '#94a3b8', fontSize: '12px', fontStyle: 'italic', whiteSpace: 'nowrap' }}>unknown</span>
+                      )}
+                    </td>
+
+                    {/* Status */}
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                      <span className={`status-badge ${runner.payment_status === 'paid' ? 'status-paid' : 'status-pending'}`} style={{ whiteSpace: 'nowrap' }}>
+                        {runner.payment_status === 'paid' ? (
+                          <>
+                            <CheckCircle2 size={12} /> PAID
+                          </>
+                        ) : (
+                          <>
+                            <Clock size={12} /> PENDING
+                          </>
+                        )}
+                      </span>
+                    </td>
 
                       {/* View Details Only */}
                       <td style={{ padding: '12px 16px', textAlign: 'right' }}>
@@ -1246,7 +1276,6 @@ export default function DeskDashboardPage() {
                 )}
               </tbody>
             </table>
-          </div>
         </div>
 
         {/* ─── 2. Mobile & Tablet Card List View (< 840px) ─── */}
