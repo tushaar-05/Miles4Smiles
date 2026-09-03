@@ -31,8 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="antialiased overflow-x-hidden" style={{ background: '#F5F5F2' }}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <body className="antialiased overflow-x-hidden" style={{ background: '#F5F5F2' }} suppressHydrationWarning>
         <SmoothScroll>{children}</SmoothScroll>
         <PageViewTracker />
         <Analytics />
