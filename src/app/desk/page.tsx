@@ -75,6 +75,25 @@ export default function VolunteerDeskPage() {
     }
   }, []);
 
+  // ⚡ 100% Automated Background Live Sync (Every 20 seconds)
+  useEffect(() => {
+    if (!isAuthenticated || !passcode) return;
+    const interval = setInterval(() => {
+      fetch('/api/admin/registrations', {
+        headers: { 'x-volunteer-passcode': passcode },
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success && data.registrations) {
+            setRegistrations(data.registrations);
+          }
+        })
+        .catch(err => console.error('Silent desk auto-sync notice:', err));
+    }, 20000);
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated, passcode]);
+
   const verifyAndLoad = async (codeToVerify: string) => {
     setIsVerifying(true);
     setAuthError('');

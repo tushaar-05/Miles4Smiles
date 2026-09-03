@@ -83,6 +83,25 @@ export default function AdminPage() {
     }
   }, []);
 
+  // ⚡ 100% Automated Background Live Sync (Every 20 seconds)
+  useEffect(() => {
+    if (!isAuthenticated || !passcode) return;
+    const interval = setInterval(() => {
+      fetch('/api/admin/registrations', {
+        headers: { 'x-admin-passcode': passcode },
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success && data.registrations) {
+            setRegistrations(data.registrations);
+          }
+        })
+        .catch(err => console.error('Silent auto-sync notice:', err));
+    }, 20000);
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated, passcode]);
+
   const verifyAndLoad = async (codeToVerify: string) => {
     setIsVerifying(true);
     setAuthError('');
@@ -573,25 +592,23 @@ export default function AdminPage() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button
-              onClick={() => { setShowSyncModal(true); setSyncResult(null); }}
+            <div
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                background: '#0b1a4a',
-                color: '#ffffff',
-                border: 'none',
-                padding: '8px 14px',
+                background: '#ecfdf5',
+                color: '#065f46',
+                border: '1px solid #a7f3d0',
+                padding: '6px 12px',
                 borderRadius: '8px',
-                fontSize: '12px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                boxShadow: '0 2px 6px rgba(11,26,74,0.25)',
+                fontSize: '11px',
+                fontWeight: 800,
               }}
             >
-              <Download size={14} /> Sync Gateway Data
-            </button>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+              Live Sheets Auto-Sync (20s)
+            </div>
 
             <button
               onClick={handleRefresh}

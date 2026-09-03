@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
+import { syncLiveGoogleSheets } from '@/lib/sheetsSync';
 
 function getProvidedPasscode(req: NextRequest): string {
   return (
@@ -27,6 +28,7 @@ function verifyAdminOrVolunteer(req: NextRequest): boolean {
 /**
  * GET /api/admin/registrations
  * Returns all registration rows from Supabase (Accessible by Admin and Volunteer Desk)
+ * Automatically syncs with live Google Sheets feeds
  */
 export async function GET(req: NextRequest) {
   if (!verifyAdminOrVolunteer(req)) {
@@ -45,6 +47,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    // ⚡ Silently auto-sync live Google Sheet feeds in background
+    await syncLiveGoogleSheets().catch(err => console.error('Background sheet sync notice:', err));
+
     const { data, error } = await supabase
       .from('registrations')
       .select('*')
