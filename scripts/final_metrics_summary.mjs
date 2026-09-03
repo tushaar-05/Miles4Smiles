@@ -1,0 +1,33 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  'https://keaxuybyexjmmcmnoboc.supabase.co',
+  'sb_publishable_ZryYcsj4MBD7Bm_amC6KSw_Gon5Flzl'
+);
+
+const { data: all } = await supabase.from('registrations').select('*');
+
+const nst = all.filter(r => (r.category || '').toLowerCase().includes('nst'));
+const gen = all.filter(r => !(r.category || '').toLowerCase().includes('nst'));
+
+console.log('==============================================');
+console.log('📊 MASTER METRICS SUMMARY');
+console.log('==============================================');
+
+console.log(`\n🎓 NST STUDENTS & FACULTY:`);
+console.log(`- Total: ${nst.length}`);
+console.log(`- Paid: ${nst.filter(r => r.payment_status === 'paid').length}`);
+console.log(`- Pending: ${nst.filter(r => r.payment_status === 'pending').length}`);
+console.log(`- Revenue: ₹${nst.filter(r => r.payment_status === 'paid').reduce((a, c) => a + (Number(c.amount) || 0), 0).toLocaleString('en-IN')}`);
+
+console.log(`\n🌍 GENERAL PUBLIC AUDIENCE:`);
+console.log(`- Total Registered: ${gen.length}`);
+console.log(`- Paid in Gateway: ${gen.filter(r => r.payment_status === 'paid').length}`);
+console.log(`- Pending: ${gen.filter(r => r.payment_status === 'pending').length}`);
+console.log(`- Revenue: ₹${gen.filter(r => r.payment_status === 'paid').reduce((a, c) => a + (Number(c.amount) || 0), 0).toLocaleString('en-IN')}`);
+
+console.log('\n--- Paid General Public Runners ---');
+gen.filter(r => r.payment_status === 'paid').forEach((g, i) => {
+  console.log(`[${i+1}] ${g.bib_number} | ${g.first_name} ${g.last_name} | ${g.email} | ${g.phone} | ₹${g.amount} | ${g.race_type} | Cust: ${g.razorpay_order_id} | Txn: ${g.razorpay_payment_id}`);
+});
+
