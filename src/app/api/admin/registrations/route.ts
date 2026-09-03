@@ -47,8 +47,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // ⚡ Silently auto-sync live Google Sheet feeds in background
-    await syncLiveGoogleSheets().catch(err => console.error('Background sheet sync notice:', err));
+    // ⚡ Trigger silent auto-sync in background asynchronously WITHOUT blocking user request
+    syncLiveGoogleSheets().catch(err => console.error('Background sheet sync notice:', err));
 
     const { data, error } = await supabase
       .from('registrations')

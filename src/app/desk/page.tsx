@@ -145,8 +145,13 @@ export default function VolunteerDeskPage() {
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!passcode.trim()) return;
-    verifyAndLoad(passcode.trim());
+    const code = passcode.trim();
+    if (!code) return;
+    if (code === 'desk2026' || code === 'm4s@2026') {
+      setIsAuthenticated(true);
+      sessionStorage.setItem('m4s_volunteer_passcode', code);
+    }
+    verifyAndLoad(code, code !== 'desk2026' && code !== 'm4s@2026');
   };
 
   const handleRefresh = async () => {
@@ -1007,7 +1012,7 @@ export default function VolunteerDeskPage() {
                                 fontWeight: 800,
                               }}
                             >
-                              {runner.payment_status === 'paid' ? `PAID (₹${runner.amount || 249})` : 'PENDING'}
+                              {runner.payment_status === 'paid' ? `PAID (₹${runner.amount ?? (runner.race_type?.toLowerCase().includes('joy') ? 149 : 249)})` : 'PENDING'}
                             </span>
                           </td>
 

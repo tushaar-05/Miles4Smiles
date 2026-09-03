@@ -174,11 +174,11 @@ export async function syncLiveGoogleSheets() {
         const contactNo = gw['Contact No'] || '';
         const custId = gw['Customer ID'] || 'GATEWAY';
         const txnId = gw['Transaction ID'] || 'GATEWAY';
-        const amount = parseFloat(gw['Total Amount Transferred'] || '0') || 149;
-        const cat = gw['Category'] || 'Competitive 5K';
-        const race = cat.toLowerCase().includes('non') || cat.toLowerCase().includes('joy')
-          ? 'Non-Competitive Joy 5K'
-          : 'Competitive 5K';
+        const rawAmount = parseFloat(gw['Total Amount Transferred'] || gw['Amount'] || '0');
+        const amount = isNaN(rawAmount) ? 0 : rawAmount;
+        const cat = gw['Ticket Category'] || gw['Category'] || '';
+        const isJoy = cat.toLowerCase().includes('non') || cat.toLowerCase().includes('joy') || amount === 0;
+        const race = isJoy ? 'Non-Competitive Joy 5K' : 'Competitive 5K';
 
         const isNst =
           email.endsWith('@adypu.edu.in') ||
@@ -192,15 +192,53 @@ export async function syncLiveGoogleSheets() {
             (n.email && n.email.toLowerCase().trim() === email) ||
             `${n.first_name} ${n.last_name}`.toLowerCase().trim().replace(/\s+/g, ' ') === name.toLowerCase().replace(/\s+/g, ' ')
           );
-          if (nstMatch && nstMatch.payment_status !== 'paid') {
-            await supabase.from('registrations').update({
-              payment_status: 'paid',
+
+          if (nstMatch) {
+            // Update if pending or if gateway confirms specific payment
+            if (nstMatch.payment_status !== 'paid' || (amount > 0 && nstMatch.amount === 0)) {
+              await supabase.from('registrations').update({
+                payment_status: 'paid',
+                amount: amount,
+                race_type: race,
+                razorpay_order_id: custId,
+                razorpay_payment_id: txnId,
+                phone: contactNo || nstMatch.phone,
+              }).eq('id', nstMatch.id);
+            }
+          } else if (email || name) {
+            // New NST Student registered directly on gateway
+            const totalNst = existingNst.length + 1;
+            const nameParts = name.split(' ');
+            const firstName = nameParts[0] || 'Student';
+            const lastName = nameParts.slice(1).join(' ') || '';
+            const urn = email.includes('@adypu.edu.in') ? email.split('@')[0].toUpperCase() : '—';
+            const year = email.includes('e25') ? '2nd' : '1st';
+
+            await supabase.from('registrations').insert({
+              first_name: firstName,
+              last_name: lastName,
+              gender: 'Male',
+              blood_group: 'O+',
+              dob: `${year} Year`,
+              weight: '—',
+              height: '—',
+              t_shirt_size: 'M',
+              email: email,
+              phone: contactNo || '—',
+              city: `NST ADYPU • ${year} Year • URN: ${urn}`,
+              emergency_name: 'GATEWAY_FREE_TIER',
+              emergency_phone: '—',
+              category: 'NST Student',
+              race_type: race,
               amount: amount,
-              race_type: amount >= 149 ? 'Competitive 5K' : 'Non-Competitive Joy 5K',
+              chest_number: `NST-${100 + totalNst}`,
+              bib_number: `M4S-NST-${100 + totalNst}`,
               razorpay_order_id: custId,
               razorpay_payment_id: txnId,
-              phone: contactNo || nstMatch.phone,
-            }).eq('id', nstMatch.id);
+              payment_status: 'paid',
+            });
+            nstEmailSet.add(email);
+            nstNameSet.add(name.toLowerCase().replace(/\s+/g, ' '));
           }
         } else if (email || name || contactNo) {
           const genMatch = existingGeneral.find(g =>
@@ -208,15 +246,48 @@ export async function syncLiveGoogleSheets() {
             (contactNo && g.phone && g.phone.replace(/[^0-9]/g, '').slice(-10) === contactNo.slice(-10)) ||
             `${g.first_name} ${g.last_name}`.toLowerCase().trim().replace(/\s+/g, ' ') === name.toLowerCase().replace(/\s+/g, ' ')
           );
-          if (genMatch && genMatch.payment_status !== 'paid') {
-            await supabase.from('registrations').update({
-              payment_status: 'paid',
-              amount: amount,
+
+          if (genMatch) {
+            if (genMatch.payment_status !== 'paid') {
+              await supabase.from('registrations').update({
+                payment_status: 'paid',
+                amount: amount || 249,
+                race_type: race,
+                razorpay_order_id: custId,
+                razorpay_payment_id: txnId,
+                phone: contactNo || genMatch.phone,
+              }).eq('id', genMatch.id);
+            }
+          } else {
+            // New General Runner registered on Gateway
+            const totalGen = existingGeneral.length + 1;
+            const nameParts = name.split(' ');
+            const firstName = nameParts[0] || 'Runner';
+            const lastName = nameParts.slice(1).join(' ') || '';
+
+            await supabase.from('registrations').insert({
+              first_name: firstName,
+              last_name: lastName,
+              gender: 'Male',
+              blood_group: 'O+',
+              dob: '—',
+              weight: '—',
+              height: '—',
+              t_shirt_size: 'M',
+              email: email,
+              phone: contactNo || '—',
+              city: 'Pune',
+              emergency_name: 'GATEWAY',
+              emergency_phone: '—',
+              category: 'General Public',
               race_type: race,
+              amount: amount || (isJoy ? 149 : 249),
+              chest_number: `${100 + totalGen}`,
+              bib_number: `M4S-GEN-${100 + totalGen}`,
               razorpay_order_id: custId,
               razorpay_payment_id: txnId,
-              phone: contactNo || genMatch.phone,
-            }).eq('id', genMatch.id);
+              payment_status: 'paid',
+            });
           }
         }
       }
