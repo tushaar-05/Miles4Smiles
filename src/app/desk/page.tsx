@@ -49,6 +49,7 @@ export default function VolunteerDeskPage() {
   const [authError, setAuthError] = useState('');
   const [showPasscode, setShowPasscode] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   // Active Desk Section: 'nst' | 'general'
   const [activeSection, setActiveSection] = useState<'nst' | 'general'>('nst');
@@ -66,12 +67,30 @@ export default function VolunteerDeskPage() {
   // Modals & States
   const [selectedRunner, setSelectedRunner] = useState<RegistrationRecord | null>(null);
 
-  // Auto-authenticate with session storage
+  // Auto-authenticate with session storage & instant cache hydration
   useEffect(() => {
-    const saved = sessionStorage.getItem('m4s_volunteer_passcode');
-    if (saved) {
-      setPasscode(saved);
-      verifyAndLoad(saved);
+    try {
+      const saved = sessionStorage.getItem('m4s_volunteer_passcode');
+      const cachedData = sessionStorage.getItem('m4s_desk_cached_regs');
+      
+      if (saved) {
+        setPasscode(saved);
+        if (cachedData) {
+          try {
+            const parsed = JSON.parse(cachedData);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setRegistrations(parsed);
+              setIsAuthenticated(true);
+              setIsCheckingAuth(false);
+            }
+          } catch {}
+        }
+        verifyAndLoad(saved, !cachedData);
+      } else {
+        setIsCheckingAuth(false);
+      }
+    } catch {
+      setIsCheckingAuth(false);
     }
   }, []);
 
@@ -86,6 +105,7 @@ export default function VolunteerDeskPage() {
         .then(data => {
           if (data.success && data.registrations) {
             setRegistrations(data.registrations);
+            try { sessionStorage.setItem('m4s_desk_cached_regs', JSON.stringify(data.registrations)); } catch {}
           }
         })
         .catch(err => console.error('Silent desk auto-sync notice:', err));
@@ -94,8 +114,8 @@ export default function VolunteerDeskPage() {
     return () => clearInterval(interval);
   }, [isAuthenticated, passcode]);
 
-  const verifyAndLoad = async (codeToVerify: string) => {
-    setIsVerifying(true);
+  const verifyAndLoad = async (codeToVerify: string, showSpinner = true) => {
+    if (showSpinner) setIsVerifying(true);
     setAuthError('');
     try {
       const res = await fetch('/api/admin/registrations', {
@@ -106,16 +126,19 @@ export default function VolunteerDeskPage() {
         setAuthError(data.error || 'Invalid passcode. Access denied.');
         setIsAuthenticated(false);
         sessionStorage.removeItem('m4s_volunteer_passcode');
+        sessionStorage.removeItem('m4s_desk_cached_regs');
       } else {
         setIsAuthenticated(true);
         sessionStorage.setItem('m4s_volunteer_passcode', codeToVerify);
         setRegistrations(data.registrations || []);
+        try { sessionStorage.setItem('m4s_desk_cached_regs', JSON.stringify(data.registrations || [])); } catch {}
       }
     } catch (err) {
       console.error(err);
-      setAuthError('Failed to connect to server. Please try again.');
+      if (showSpinner) setAuthError('Failed to connect to server. Please try again.');
     } finally {
       setIsVerifying(false);
+      setIsCheckingAuth(false);
     }
   };
 
@@ -288,6 +311,21 @@ export default function VolunteerDeskPage() {
     link.click();
     document.body.removeChild(link);
   };
+
+  // ─── Loading Screen during Initial Session Check ───
+  if (isCheckingAuth && !isAuthenticated) {
+    return (
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #070d1e 0%, #0369a1 50%, #081333 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', fontFamily: 'var(--font-heading)' }}>
+        <div style={{ background: 'rgba(255,255,255,0.06)', padding: '12px 24px', borderRadius: '16px', display: 'inline-flex', alignItems: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <Image src="/images/logo.png" alt="Miles for Smiles" width={160} height={40} style={{ height: '36px', width: 'auto', objectFit: 'contain' }} priority />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#94a3b8', fontSize: '13px', fontWeight: 700 }}>
+          <RefreshCw size={16} className="animate-spin" style={{ color: '#00d2ff' }} />
+          Loading Desk Console...
+        </div>
+      </div>
+    );
+  }
 
   // ─── Unauthenticated Login Screen ───
   if (!isAuthenticated) {
