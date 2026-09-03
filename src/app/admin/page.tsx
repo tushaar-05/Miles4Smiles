@@ -891,7 +891,7 @@ export default function AdminPage() {
                   Comp ({nstMetrics.competitive})
                 </button>
                 <button className={`filter-btn ${raceTypeFilter === 'non-competitive' ? 'active' : ''}`} onClick={() => setRaceTypeFilter('non-competitive')}>
-                  Joy ({nstMetrics.joy})
+                  Non-Comp ({nstMetrics.joy})
                 </button>
 
                 <div style={{ width: '1px', height: '20px', background: '#e2e8f0', margin: '0 4px' }} />

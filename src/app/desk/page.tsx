@@ -633,6 +633,32 @@ export default function VolunteerDeskPage() {
               </div>
 
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Tier:</span>
+                <button className={`filter-btn ${raceTypeFilter === 'all' ? 'active' : ''}`} onClick={() => setRaceTypeFilter('all')}>
+                  All ({nstMetrics.total})
+                </button>
+                <button className={`filter-btn ${raceTypeFilter === 'competitive' ? 'active' : ''}`} onClick={() => setRaceTypeFilter('competitive')}>
+                  Comp ({nstMetrics.competitive})
+                </button>
+                <button className={`filter-btn ${raceTypeFilter === 'non-competitive' ? 'active' : ''}`} onClick={() => setRaceTypeFilter('non-competitive')}>
+                  Non-Comp ({nstMetrics.joy})
+                </button>
+
+                <div style={{ width: '1px', height: '20px', background: '#e2e8f0', margin: '0 4px' }} />
+
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Batch:</span>
+                <button className={`filter-btn ${yearFilter === 'all' ? 'active' : ''}`} onClick={() => setYearFilter('all')}>
+                  All
+                </button>
+                <button className={`filter-btn ${yearFilter === '1st' ? 'active' : ''}`} onClick={() => setYearFilter('1st')}>
+                  1st Yr ({nstMetrics.firstYear})
+                </button>
+                <button className={`filter-btn ${yearFilter === '2nd' ? 'active' : ''}`} onClick={() => setYearFilter('2nd')}>
+                  2nd Yr ({nstMetrics.secondYear})
+                </button>
+
+                <div style={{ width: '1px', height: '20px', background: '#e2e8f0', margin: '0 4px' }} />
+
                 <button
                   onClick={exportDeskCSV}
                   style={{ background: '#b45309', color: '#fff', border: 'none', padding: '8px 14px', borderRadius: '8px', fontSize: '12.5px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
@@ -854,18 +880,44 @@ export default function VolunteerDeskPage() {
               </div>
 
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Status:</span>
+                <button className={`filter-btn ${statusFilter === 'all' ? 'active' : ''}`} onClick={() => setStatusFilter('all')}>
+                  All ({generalMetrics.total})
+                </button>
+                <button className={`filter-btn ${statusFilter === 'paid' ? 'active' : ''}`} onClick={() => setStatusFilter('paid')}>
+                  Paid ({generalMetrics.paid})
+                </button>
+                <button className={`filter-btn ${statusFilter === 'pending' ? 'active' : ''}`} onClick={() => setStatusFilter('pending')}>
+                  Unpaid ({generalMetrics.pending})
+                </button>
+
+                <div style={{ width: '1px', height: '20px', background: '#e2e8f0', margin: '0 4px' }} />
+
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Category:</span>
                 <button className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`} onClick={() => setCategoryFilter('all')}>
                   All
                 </button>
                 <button className={`filter-btn ${categoryFilter === 'male' ? 'active' : ''}`} onClick={() => setCategoryFilter('male')}>
-                  Male
+                  Male ({generalMetrics.male})
                 </button>
                 <button className={`filter-btn ${categoryFilter === 'female' ? 'active' : ''}`} onClick={() => setCategoryFilter('female')}>
-                  Female
+                  Female ({generalMetrics.female})
                 </button>
                 <button className={`filter-btn ${categoryFilter === 'senior' ? 'active' : ''}`} onClick={() => setCategoryFilter('senior')}>
-                  Senior
+                  Senior ({generalMetrics.senior})
+                </button>
+
+                <div style={{ width: '1px', height: '20px', background: '#e2e8f0', margin: '0 4px' }} />
+
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Tier:</span>
+                <button className={`filter-btn ${raceTypeFilter === 'all' ? 'active' : ''}`} onClick={() => setRaceTypeFilter('all')}>
+                  All
+                </button>
+                <button className={`filter-btn ${raceTypeFilter === 'competitive' ? 'active' : ''}`} onClick={() => setRaceTypeFilter('competitive')}>
+                  Comp ({generalMetrics.competitive})
+                </button>
+                <button className={`filter-btn ${raceTypeFilter === 'non-competitive' ? 'active' : ''}`} onClick={() => setRaceTypeFilter('non-competitive')}>
+                  Joy ({generalMetrics.joy})
                 </button>
 
                 <div style={{ width: '1px', height: '20px', background: '#e2e8f0', margin: '0 4px' }} />
