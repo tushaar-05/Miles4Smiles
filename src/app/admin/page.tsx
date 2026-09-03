@@ -333,9 +333,11 @@ export default function AdminPage() {
     const pendingList = generalRegistrations.filter(r => r.payment_status === 'pending');
     const revenue = paidList.reduce((acc, c) => acc + (Number(c.amount) || 0), 0);
     const competitive = generalRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('comp') && !(r.race_type || '').toLowerCase().includes('non')).length;
-    const joy = total - competitive;
+    const joy = generalRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('joy') || (r.race_type || '').toLowerCase().includes('non')).length;
+    const male = generalRegistrations.filter(r => (r.gender || '').toLowerCase() === 'male').length;
+    const female = total - male;
 
-    return { total, paid: paidList.length, pending: pendingList.length, revenue, competitive, joy };
+    return { total, paid: paidList.length, pending: pendingList.length, revenue, competitive, joy, male, female };
   }, [generalRegistrations]);
 
   // Helper to extract URN and Year from NST record
@@ -1062,30 +1064,48 @@ export default function AdminPage() {
         {activeSection === 'general' && (
           <div>
             {/* Top Stat Overview Cards for General Public */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '20px' }}>
               <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #bfdbfe', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, color: '#1d4ed8', textTransform: 'uppercase' }}>General Registrations</span>
-                  <Users size={18} color="#1d4ed8" />
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: '#0284c7', textTransform: 'uppercase' }}>Public Queue</span>
+                  <Users size={18} color="#0284c7" />
                 </div>
-                <div style={{ fontSize: '26px', fontWeight: 900, color: '#0b1a4a' }}>{generalMetrics.total}</div>
-                <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>Public web registrations</div>
+                <div style={{ fontSize: '26px', fontWeight: 900, color: '#0284c7' }}>{generalMetrics.total}</div>
+                <div style={{ fontSize: '12px', color: '#0369a1', marginTop: '4px' }}>{generalMetrics.paid} Paid • {generalMetrics.pending} Pending</div>
               </div>
 
               <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Race Tier Selection</span>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Race Tier (Competitive vs Joy)</span>
                   <Award size={18} color="#64748b" />
                 </div>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '4px' }}>
                   <div>
-                    <span style={{ fontSize: '11px', color: '#64748b' }}>Competitive: </span>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Comp (₹249): </span>
                     <strong style={{ fontSize: '18px', color: '#16a34a' }}>{generalMetrics.competitive}</strong>
                   </div>
                   <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
                   <div>
-                    <span style={{ fontSize: '11px', color: '#64748b' }}>Joy Run: </span>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Joy (₹149): </span>
                     <strong style={{ fontSize: '18px', color: '#0284c7' }}>{generalMetrics.joy}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Gender Demographics</span>
+                  <Users size={18} color="#64748b" />
+                </div>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '4px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Male: </span>
+                    <strong style={{ fontSize: '18px', color: '#0f172a' }}>{generalMetrics.male}</strong>
+                  </div>
+                  <div style={{ width: '1px', height: '24px', background: '#e2e8f0' }} />
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Female: </span>
+                    <strong style={{ fontSize: '18px', color: '#0f172a' }}>{generalMetrics.female}</strong>
                   </div>
                 </div>
               </div>
@@ -1096,11 +1116,11 @@ export default function AdminPage() {
                   <IndianRupee size={18} color="#16a34a" />
                 </div>
                 <div style={{ fontSize: '24px', fontWeight: 900, color: '#16a34a' }}>₹{generalMetrics.revenue.toLocaleString('en-IN')}</div>
-                <div style={{ fontSize: '12px', color: '#15803d', marginTop: '4px' }}>{generalMetrics.paid} Paid • {generalMetrics.pending} Pending</div>
+                <div style={{ fontSize: '12px', color: '#15803d', marginTop: '4px' }}>{generalMetrics.paid} Confirmed Payments</div>
               </div>
             </div>
 
-            {/* General Public Search & Filters */}
+            {/* General Public Search & Action Bar */}
             <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '16px', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flex: 1, minWidth: '280px' }}>
                 <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
@@ -1132,9 +1152,22 @@ export default function AdminPage() {
 
                 <div style={{ width: '1px', height: '20px', background: '#e2e8f0', margin: '0 4px' }} />
 
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Tier:</span>
+                <button className={`filter-btn ${raceTypeFilter === 'all' ? 'active' : ''}`} onClick={() => setRaceTypeFilter('all')}>
+                  All ({generalMetrics.total})
+                </button>
+                <button className={`filter-btn ${raceTypeFilter === 'competitive' ? 'active' : ''}`} onClick={() => setRaceTypeFilter('competitive')}>
+                  Comp ({generalMetrics.competitive})
+                </button>
+                <button className={`filter-btn ${raceTypeFilter === 'non-competitive' ? 'active' : ''}`} onClick={() => setRaceTypeFilter('non-competitive')}>
+                  Joy ({generalMetrics.joy})
+                </button>
+
+                <div style={{ width: '1px', height: '20px', background: '#e2e8f0', margin: '0 4px' }} />
+
                 <button
                   onClick={exportGeneralCSV}
-                  style={{ background: '#0b1a4a', color: '#fff', border: 'none', padding: '8px 14px', borderRadius: '8px', fontSize: '12.5px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+                  style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '8px 14px', borderRadius: '8px', fontSize: '12.5px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
                 >
                   <Download size={13} /> Export General CSV
                 </button>
@@ -1143,24 +1176,26 @@ export default function AdminPage() {
 
             {/* General Public Table */}
             <div className="table-shell" style={{ overflowX: 'auto', background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-              <table style={{ width: '100%', minWidth: '1300px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+              <table style={{ width: '100%', minWidth: '1400px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.06em' }}>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>BIB / Chest</th>
-                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Runner Details</th>
-                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Contact</th>
-                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Location & Emergency</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Participant Name</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>City & Location</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Contact (Phone / WA)</th>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Race Tier</th>
-                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Kit Size</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>T-Shirt Size</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Weight</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Height</th>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Gateway Ref</th>
-                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Amount & Status</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Payment Status</th>
                     <th style={{ padding: '14px 16px', textAlign: 'right', whiteSpace: 'nowrap' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredGeneral.length === 0 ? (
                     <tr>
-                      <td colSpan={9} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>
+                      <td colSpan={11} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>
                         No general participants matched your search criteria.
                       </td>
                     </tr>
@@ -1169,46 +1204,50 @@ export default function AdminPage() {
                       <tr key={runner.id || idx} style={{ borderBottom: '1px solid #f1f5f9' }} className="table-row-hover">
                         {/* BIB & Chest */}
                         <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <span style={{ fontWeight: 800, color: '#0b1a4a', fontSize: '13.5px' }}>
+                          <span style={{ fontWeight: 800, color: '#0284c7', fontSize: '13.5px' }}>
                             {runner.bib_number || `M4S-GEN-${101 + idx}`}
                           </span>
                           <div style={{ fontSize: '11px', color: '#64748b' }}>Chest #{runner.chest_number || (101 + idx)}</div>
                         </td>
 
-                        {/* Runner Name */}
+                        {/* Participant Name */}
                         <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
                           <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>
                             {runner.first_name} {runner.last_name}
                           </div>
                           <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            {runner.gender} • DOB: {runner.dob || '—'}
+                            {runner.gender || 'Male'} • DOB: {runner.dob || '—'}
                           </div>
                         </td>
 
-                        {/* Contact */}
+                        {/* City & Location */}
+                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                          <span style={{ background: '#eff6ff', color: '#1d4ed8', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, fontSize: '12px', border: '1px solid #bfdbfe' }}>
+                            {runner.city || 'Pune'}
+                          </span>
+                          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                            Emerg: {runner.emergency_phone || '—'}
+                          </div>
+                        </td>
+
+                        {/* Contact (Phone / WA) */}
                         <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <a href={`tel:${runner.phone}`} style={{ color: '#0f172a', textDecoration: 'none', fontWeight: 600 }}>
-                              {runner.phone}
+                              {runner.phone && runner.phone !== '—' ? runner.phone : 'Not Provided'}
                             </a>
-                            <a
-                              href={`https://wa.me/91${runner.phone.replace(/[^0-9]/g, '').slice(-10)}?text=${encodeURIComponent(`Hi ${runner.first_name}, regarding your Miles for Smiles registration (BIB: ${runner.bib_number}).`)}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ background: '#dcfce7', color: '#15803d', padding: '2px 6px', borderRadius: '4px', fontSize: '10.5px', fontWeight: 700, textDecoration: 'none' }}
-                            >
-                              WA
-                            </a>
+                            {runner.phone && runner.phone !== '—' && (
+                              <a
+                                href={`https://wa.me/91${runner.phone.replace(/[^0-9]/g, '').slice(-10)}?text=${encodeURIComponent(`Hi ${runner.first_name}, regarding your Miles for Smiles registration (BIB: ${runner.bib_number}).`)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ background: '#dcfce7', color: '#15803d', padding: '2px 6px', borderRadius: '4px', fontSize: '10.5px', fontWeight: 700, textDecoration: 'none' }}
+                              >
+                                WA
+                              </a>
+                            )}
                           </div>
                           <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{runner.email}</div>
-                        </td>
-
-                        {/* Location */}
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <div style={{ fontWeight: 600, color: '#0f172a' }}>{runner.city || 'Pune'}</div>
-                          <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            Emerg: {runner.emergency_phone || '—'}
-                          </div>
                         </td>
 
                         {/* Race Tier */}
@@ -1227,14 +1266,28 @@ export default function AdminPage() {
                           </span>
                         </td>
 
-                        {/* Kit Size */}
+                        {/* T-Shirt Size */}
                         <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <span style={{ background: '#f1f5f9', color: '#0f172a', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, fontSize: '12px' }}>
-                            Size: {runner.t_shirt_size || 'M'}
+                          <span style={{ background: '#0b1a4a', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontWeight: 900, fontSize: '13px' }}>
+                            {runner.t_shirt_size || 'M'}
                           </span>
                           <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
                             Blood: {runner.blood_group || '—'}
                           </div>
+                        </td>
+
+                        {/* Weight */}
+                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontWeight: 600, color: runner.weight ? '#0f172a' : '#94a3b8' }}>
+                            {runner.weight ? (runner.weight.toString().toLowerCase().includes('kg') ? runner.weight : `${runner.weight} kg`) : '—'}
+                          </span>
+                        </td>
+
+                        {/* Height */}
+                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontWeight: 600, color: runner.height ? '#0f172a' : '#94a3b8' }}>
+                            {runner.height || '—'}
+                          </span>
                         </td>
 
                         {/* Gateway Ref */}
@@ -1286,89 +1339,7 @@ export default function AdminPage() {
           </div>
         )}
       </main>
-
-      {/* ─── Gateway Data Sync Modal ─── */}
-      {showSyncModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-          <div style={{ background: '#fff', borderRadius: '20px', maxWidth: '640px', width: '100%', padding: '28px', boxShadow: '0 25px 50px rgba(0,0,0,0.25)', border: '1px solid #e2e8f0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-              <div>
-                <span style={{ fontSize: '11px', fontWeight: 800, color: '#0b1a4a', textTransform: 'uppercase' }}>Live Payment Gateway Sync</span>
-                <h3 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', margin: '4px 0 0 0' }}>Paste Google Sheet / CSV Rows</h3>
-              </div>
-              <button
-                onClick={() => { setShowSyncModal(false); setSyncResult(null); }}
-                style={{ background: '#f1f5f9', border: 'none', borderRadius: '8px', padding: '6px 10px', color: '#64748b', cursor: 'pointer', fontWeight: 700 }}
-              >
-                ✕
-              </button>
-            </div>
-
-            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '12px' }}>
-              In your Google Sheet, select all rows (including headers) and press <strong>Cmd + C / Ctrl + C</strong>, then paste below. NST students are automatically filtered and protected.
-            </p>
-
-            <textarea
-              value={syncRawText}
-              onChange={e => setSyncRawText(e.target.value)}
-              placeholder="Paste Google Sheet data or CSV here... (e.g. Email Received Date, Customer ID, Transaction ID, Buyer Name, Email ID, Contact No...)"
-              rows={8}
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '12px',
-                border: '1.5px solid #cbd5e1',
-                fontSize: '12px',
-                fontFamily: 'monospace',
-                outline: 'none',
-                background: '#f8fafc',
-                marginBottom: '16px',
-                resize: 'vertical',
-              }}
-            />
-
-            {syncResult && (
-              <div style={{ background: '#dcfce7', border: '1px solid #bbf7d0', color: '#15803d', padding: '10px 14px', borderRadius: '10px', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
-                ✅ {syncResult}
-              </div>
-            )}
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-              <button
-                type="button"
-                onClick={() => { setShowSyncModal(false); setSyncResult(null); }}
-                disabled={isSyncingGateway}
-                style={{ background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1', padding: '10px 18px', borderRadius: '10px', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={handleGatewaySync}
-                disabled={isSyncingGateway || !syncRawText.trim()}
-                style={{
-                  background: '#0b1a4a',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '10px 20px',
-                  borderRadius: '10px',
-                  fontWeight: 800,
-                  fontSize: '13px',
-                  cursor: isSyncingGateway ? 'not-allowed' : 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  boxShadow: '0 4px 12px rgba(11,26,74,0.3)',
-                }}
-              >
-                {isSyncingGateway ? <RefreshCw size={15} className="animate-spin" /> : <Download size={15} />}
-                {isSyncingGateway ? 'Processing & Syncing...' : 'Sync & Reconcile Now'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
+

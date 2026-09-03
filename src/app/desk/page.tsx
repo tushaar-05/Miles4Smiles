@@ -210,9 +210,11 @@ export default function VolunteerDeskPage() {
     const paidList = generalRegistrations.filter(r => r.payment_status === 'paid');
     const pendingList = generalRegistrations.filter(r => r.payment_status === 'pending');
     const competitive = generalRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('comp') && !(r.race_type || '').toLowerCase().includes('non')).length;
-    const joy = total - competitive;
+    const joy = generalRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('joy') || (r.race_type || '').toLowerCase().includes('non')).length;
+    const male = generalRegistrations.filter(r => (r.gender || '').toLowerCase() === 'male').length;
+    const female = total - male;
 
-    return { total, paid: paidList.length, pending: pendingList.length, competitive, joy };
+    return { total, paid: paidList.length, pending: pendingList.length, competitive, joy, male, female };
   }, [generalRegistrations]);
 
   // Helper to extract URN and Year from NST record
@@ -734,25 +736,48 @@ export default function VolunteerDeskPage() {
         {activeSection === 'general' && (
           <div>
             {/* Top Stat Summary for Desk Volunteers */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '20px' }}>
               <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #bfdbfe' }}>
                 <div style={{ fontSize: '11px', fontWeight: 800, color: '#0284c7', textTransform: 'uppercase' }}>GENERAL QUEUE</div>
                 <div style={{ fontSize: '26px', fontWeight: 900, color: '#0284c7', marginTop: '4px' }}>{generalMetrics.total}</div>
-                <div style={{ fontSize: '12px', color: '#475569' }}>{generalMetrics.paid} Paid • {generalMetrics.pending} Pending</div>
+                <div style={{ fontSize: '12px', color: '#0369a1' }}>{generalMetrics.paid} Paid • {generalMetrics.pending} Pending</div>
               </div>
 
               <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
                 <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>RACE TIERS</div>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '6px' }}>
                   <div>
-                    <span style={{ fontSize: '11px', color: '#64748b' }}>Comp 5K: </span>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Comp (₹249): </span>
                     <strong style={{ fontSize: '16px', color: '#16a34a' }}>{generalMetrics.competitive}</strong>
                   </div>
                   <div style={{ width: '1px', height: '20px', background: '#e2e8f0' }} />
                   <div>
-                    <span style={{ fontSize: '11px', color: '#64748b' }}>Joy Run: </span>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Joy (₹149): </span>
                     <strong style={{ fontSize: '16px', color: '#0284c7' }}>{generalMetrics.joy}</strong>
                   </div>
+                </div>
+              </div>
+
+              <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>GENDER DEMOGRAPHICS</div>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '6px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Male: </span>
+                    <strong style={{ fontSize: '16px', color: '#0f172a' }}>{generalMetrics.male}</strong>
+                  </div>
+                  <div style={{ width: '1px', height: '20px', background: '#e2e8f0' }} />
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Female: </span>
+                    <strong style={{ fontSize: '16px', color: '#0f172a' }}>{generalMetrics.female}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>KIT DISPATCH READY</div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '6px' }}>
+                  <div style={{ fontSize: '20px', fontWeight: 900, color: '#16a34a' }}>{generalMetrics.paid}</div>
+                  <span style={{ fontSize: '12px', color: '#64748b' }}>Eligible Runners</span>
                 </div>
               </div>
             </div>
@@ -787,15 +812,17 @@ export default function VolunteerDeskPage() {
 
             {/* General Table */}
             <div className="table-shell" style={{ overflowX: 'auto', background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-              <table style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+              <table style={{ width: '100%', minWidth: '1300px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.06em' }}>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>BIB / Chest</th>
-                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Runner Details</th>
-                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Contact</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Participant Name</th>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>City / Location</th>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Race Tier</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Contact (Phone)</th>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>T-Shirt Bag Size</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Weight</th>
+                    <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Height</th>
                     <th style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>Status</th>
                     <th style={{ padding: '14px 16px', textAlign: 'right', whiteSpace: 'nowrap' }}>Profile</th>
                   </tr>
@@ -803,7 +830,7 @@ export default function VolunteerDeskPage() {
                 <tbody>
                   {filteredGeneral.length === 0 ? (
                     <tr>
-                      <td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>
+                      <td colSpan={10} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8' }}>
                         No general participants found matching your search.
                       </td>
                     </tr>
@@ -811,7 +838,7 @@ export default function VolunteerDeskPage() {
                     filteredGeneral.map((runner, idx) => (
                       <tr key={runner.id || idx} style={{ borderBottom: '1px solid #f1f5f9' }} className="table-row-hover">
                         <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <span style={{ fontWeight: 800, color: '#0b1a4a', fontSize: '14px' }}>
+                          <span style={{ fontWeight: 800, color: '#0284c7', fontSize: '14px' }}>
                             {runner.bib_number || `M4S-GEN-${101 + idx}`}
                           </span>
                           <div style={{ fontSize: '11px', color: '#64748b' }}>Chest #{runner.chest_number || (101 + idx)}</div>
@@ -822,18 +849,14 @@ export default function VolunteerDeskPage() {
                             {runner.first_name} {runner.last_name}
                           </div>
                           <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            {runner.gender} • DOB: {runner.dob || '—'}
+                            {runner.gender || 'Male'} • DOB: {runner.dob || '—'}
                           </div>
                         </td>
 
                         <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <div style={{ fontWeight: 600, color: '#0f172a' }}>{runner.phone}</div>
-                          <div style={{ fontSize: '11px', color: '#64748b' }}>{runner.email}</div>
-                        </td>
-
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                          <div style={{ fontWeight: 600, color: '#0f172a' }}>{runner.city || 'Pune'}</div>
-                          <div style={{ fontSize: '11px', color: '#64748b' }}>Emerg: {runner.emergency_phone || '—'}</div>
+                          <span style={{ background: '#eff6ff', color: '#1d4ed8', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, fontSize: '12px', border: '1px solid #bfdbfe' }}>
+                            {runner.city || 'Pune'}
+                          </span>
                         </td>
 
                         <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
@@ -852,8 +875,28 @@ export default function VolunteerDeskPage() {
                         </td>
 
                         <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontWeight: 600, color: runner.phone && runner.phone !== '—' ? '#0f172a' : '#94a3b8' }}>{runner.phone && runner.phone !== '—' ? runner.phone : 'Not Provided'}</div>
+                          <div style={{ fontSize: '11px', color: '#64748b' }}>{runner.email}</div>
+                        </td>
+
+                        {/* T-Shirt Size */}
+                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
                           <span style={{ background: '#0b1a4a', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontWeight: 900, fontSize: '13px' }}>
                             {runner.t_shirt_size || 'M'}
+                          </span>
+                        </td>
+
+                        {/* Weight */}
+                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontWeight: 600, color: runner.weight ? '#0f172a' : '#94a3b8' }}>
+                            {runner.weight ? (runner.weight.toString().toLowerCase().includes('kg') ? runner.weight : `${runner.weight} kg`) : '—'}
+                          </span>
+                        </td>
+
+                        {/* Height */}
+                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontWeight: 600, color: runner.height ? '#0f172a' : '#94a3b8' }}>
+                            {runner.height || '—'}
                           </span>
                         </td>
 
@@ -862,13 +905,13 @@ export default function VolunteerDeskPage() {
                             style={{
                               background: runner.payment_status === 'paid' ? '#dcfce7' : '#fee2e2',
                               color: runner.payment_status === 'paid' ? '#15803d' : '#b91c1c',
-                              padding: '3px 8px',
+                              padding: '4px 10px',
                               borderRadius: '6px',
                               fontSize: '11px',
                               fontWeight: 800,
                             }}
                           >
-                            {runner.payment_status === 'paid' ? 'PAID' : 'PENDING'}
+                            {runner.payment_status === 'paid' ? `PAID (₹${runner.amount || 249})` : 'PENDING'}
                           </span>
                         </td>
 
