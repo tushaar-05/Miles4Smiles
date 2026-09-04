@@ -51,8 +51,8 @@ export default function VolunteerDeskPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  // Active Desk Section: 'nst' | 'general'
-  const [activeSection, setActiveSection] = useState<'nst' | 'general'>('nst');
+  // Active Desk Section: 'all' | 'nst' | 'general'
+  const [activeSection, setActiveSection] = useState<'all' | 'nst' | 'general'>('all');
 
   const [registrations, setRegistrations] = useState<RegistrationRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,6 +60,7 @@ export default function VolunteerDeskPage() {
 
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'nst' | 'general'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'pending'>('all');
   const [yearFilter, setYearFilter] = useState<'all' | '1st' | '2nd'>('all');
   const [raceTypeFilter, setRaceTypeFilter] = useState<'all' | 'competitive' | 'non-competitive' | 'pending'>('all');
@@ -209,9 +210,14 @@ export default function VolunteerDeskPage() {
     return str;
   };
 
+  // ─── Only Valid Confirmed Paid Registrations ───
+  const validPaidRegistrations = useMemo(() => {
+    return registrations.filter(r => (r.payment_status || '').toLowerCase() === 'paid');
+  }, [registrations]);
+
   // ─── Data Splitting: NST Students vs General Audience ───
   const nstRegistrations = useMemo(() => {
-    return registrations.filter(r => 
+    return validPaidRegistrations.filter(r => 
       (r.category || '').toLowerCase().includes('nst') || 
       (r.category || '').toLowerCase().includes('student') ||
       (r.email || '').toLowerCase().includes('@adypu.edu.in') ||
@@ -220,10 +226,10 @@ export default function VolunteerDeskPage() {
       (r.city || '').toLowerCase().includes('urn') ||
       (r.emergency_name || '').toLowerCase().includes('drive.google.com')
     );
-  }, [registrations]);
+  }, [validPaidRegistrations]);
 
   const generalRegistrations = useMemo(() => {
-    return registrations.filter(r => 
+    return validPaidRegistrations.filter(r => 
       !(r.category || '').toLowerCase().includes('nst') && 
       !(r.category || '').toLowerCase().includes('student') &&
       !(r.email || '').toLowerCase().includes('@adypu.edu.in') &&
@@ -232,20 +238,18 @@ export default function VolunteerDeskPage() {
       !(r.city || '').toLowerCase().includes('urn') &&
       !(r.emergency_name || '').toLowerCase().includes('drive.google.com')
     );
-  }, [registrations]);
+  }, [validPaidRegistrations]);
 
   // ─── Metrics ───
   const nstMetrics = useMemo(() => {
     const total = nstRegistrations.length;
-    const paidList = nstRegistrations.filter(r => r.payment_status === 'paid');
-    const pendingList = nstRegistrations.filter(r => r.payment_status === 'pending');
     const firstYear = nstRegistrations.filter(r => (r.city || '').includes('1st') || (r.dob || '').includes('1st')).length;
     const secondYear = total - firstYear;
     const competitive = nstRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('comp') && !(r.race_type || '').toLowerCase().includes('non')).length;
     const joy = nstRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('joy') || (r.race_type || '').toLowerCase().includes('non')).length;
     const unassigned = total - competitive - joy;
 
-    return { total, paid: paidList.length, pending: pendingList.length, firstYear, secondYear, competitive, joy, unassigned };
+    return { total, paid: total, pending: 0, firstYear, secondYear, competitive, joy, unassigned };
   }, [nstRegistrations]);
 
   // Helper to calculate exact age from DOB
@@ -281,16 +285,25 @@ export default function VolunteerDeskPage() {
 
   const generalMetrics = useMemo(() => {
     const total = generalRegistrations.length;
-    const paidList = generalRegistrations.filter(r => r.payment_status === 'paid');
-    const pendingList = generalRegistrations.filter(r => r.payment_status === 'pending');
     const competitive = generalRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('comp') && !(r.race_type || '').toLowerCase().includes('non')).length;
     const joy = generalRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('joy') || (r.race_type || '').toLowerCase().includes('non')).length;
     const senior = generalRegistrations.filter(r => getGeneralCategory(r) === 'Senior Adult (50+)').length;
     const female = generalRegistrations.filter(r => getGeneralCategory(r) === 'Female').length;
     const male = generalRegistrations.filter(r => getGeneralCategory(r) === 'Male').length;
 
-    return { total, paid: paidList.length, pending: pendingList.length, competitive, joy, male, female, senior };
+    return { total, paid: total, pending: 0, competitive, joy, male, female, senior };
   }, [generalRegistrations]);
+
+  // ─── All Metrics for Desk ───
+  const allMetrics = useMemo(() => {
+    const total = validPaidRegistrations.length;
+    const nstCount = nstRegistrations.length;
+    const generalCount = generalRegistrations.length;
+    const competitive = validPaidRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('comp') && !(r.race_type || '').toLowerCase().includes('non')).length;
+    const joy = validPaidRegistrations.filter(r => (r.race_type || '').toLowerCase().includes('joy') || (r.race_type || '').toLowerCase().includes('non')).length;
+
+    return { total, paid: total, pending: 0, nstCount, generalCount, competitive, joy };
+  }, [validPaidRegistrations, nstRegistrations, generalRegistrations]);
 
   // Helper to extract URN and Year from NST record
   const getStudentURN = (runner: RegistrationRecord) => {
@@ -304,6 +317,46 @@ export default function VolunteerDeskPage() {
     if ((runner.city || '').includes('2nd') || (runner.email || '').startsWith('e25')) return '2nd Year';
     return '1st Year';
   };
+
+  // ─── Filtered ALL List for Desk ───
+  const filteredAll = useMemo(() => {
+    return validPaidRegistrations.filter(r => {
+      const q = searchQuery.toLowerCase().trim();
+      const isNst = (
+        (r.category || '').toLowerCase().includes('nst') || 
+        (r.category || '').toLowerCase().includes('student') ||
+        (r.email || '').toLowerCase().includes('@adypu.edu.in') ||
+        (r.email || '').toLowerCase().startsWith('e2') ||
+        (r.city || '').toLowerCase().includes('nst') ||
+        (r.city || '').toLowerCase().includes('urn') ||
+        (r.emergency_name || '').toLowerCase().includes('drive.google.com')
+      );
+      const urn = isNst ? getStudentURN(r).toLowerCase() : '';
+
+      const matchSearch =
+        !q ||
+        r.first_name.toLowerCase().includes(q) ||
+        r.last_name.toLowerCase().includes(q) ||
+        r.email.toLowerCase().includes(q) ||
+        r.phone.includes(q) ||
+        (r.bib_number && r.bib_number.toLowerCase().includes(q)) ||
+        (r.chest_number && r.chest_number.toLowerCase().includes(q)) ||
+        (r.city && r.city.toLowerCase().includes(q)) ||
+        urn.includes(q);
+
+      const matchType =
+        typeFilter === 'all' ||
+        (typeFilter === 'nst' && isNst) ||
+        (typeFilter === 'general' && !isNst);
+
+      const matchRaceType =
+        raceTypeFilter === 'all' ||
+        (raceTypeFilter === 'competitive' && (r.race_type || '').toLowerCase().includes('comp') && !(r.race_type || '').toLowerCase().includes('non')) ||
+        (raceTypeFilter === 'non-competitive' && ((r.race_type || '').toLowerCase().includes('non') || (r.race_type || '').toLowerCase().includes('joy')));
+
+      return matchSearch && matchType && matchRaceType;
+    });
+  }, [validPaidRegistrations, searchQuery, typeFilter, raceTypeFilter]);
 
   // ─── Filtered NST List ───
   const filteredNST = useMemo(() => {
@@ -325,17 +378,14 @@ export default function VolunteerDeskPage() {
         (yearFilter === '1st' && yr === '1st Year') ||
         (yearFilter === '2nd' && yr === '2nd Year');
 
-      const matchStatus = statusFilter === 'all' || r.payment_status === statusFilter;
-
       const matchRaceType =
         raceTypeFilter === 'all' ||
         (raceTypeFilter === 'competitive' && (r.race_type || '').toLowerCase().includes('comp') && !(r.race_type || '').toLowerCase().includes('non')) ||
-        (raceTypeFilter === 'non-competitive' && ((r.race_type || '').toLowerCase().includes('non') || (r.race_type || '').toLowerCase().includes('joy'))) ||
-        (raceTypeFilter === 'pending' && (r.race_type || '').toLowerCase().includes('pending'));
+        (raceTypeFilter === 'non-competitive' && ((r.race_type || '').toLowerCase().includes('non') || (r.race_type || '').toLowerCase().includes('joy')));
 
-      return matchSearch && matchYear && matchStatus && matchRaceType;
+      return matchSearch && matchYear && matchRaceType;
     });
-  }, [nstRegistrations, searchQuery, yearFilter, statusFilter, raceTypeFilter]);
+  }, [nstRegistrations, searchQuery, yearFilter, raceTypeFilter]);
 
   // ─── Filtered General List ───
   const filteredGeneral = useMemo(() => {
@@ -352,7 +402,6 @@ export default function VolunteerDeskPage() {
         r.city.toLowerCase().includes(q) ||
         genCat.toLowerCase().includes(q);
 
-      const matchStatus = statusFilter === 'all' || r.payment_status === statusFilter;
       const matchRaceType =
         raceTypeFilter === 'all' ||
         (raceTypeFilter === 'competitive' && (r.race_type || '').toLowerCase().includes('comp') && !(r.race_type || '').toLowerCase().includes('non')) ||
@@ -364,29 +413,38 @@ export default function VolunteerDeskPage() {
         (categoryFilter === 'female' && genCat === 'Female') ||
         (categoryFilter === 'senior' && genCat === 'Senior Adult (50+)');
 
-      return matchSearch && matchStatus && matchRaceType && matchCategory;
+      return matchSearch && matchRaceType && matchCategory;
     });
-  }, [generalRegistrations, searchQuery, statusFilter, raceTypeFilter, categoryFilter]);
+  }, [generalRegistrations, searchQuery, raceTypeFilter, categoryFilter]);
 
   // ─── CSV Export ───
   const exportDeskCSV = () => {
-    const list = activeSection === 'nst' ? filteredNST : filteredGeneral;
+    const list = activeSection === 'all' ? filteredAll : (activeSection === 'nst' ? filteredNST : filteredGeneral);
     if (list.length === 0) return alert('No records to export.');
 
-    const headers = ['BIB Number', 'Chest #', 'Name', 'Affiliation / City', 'Gender', 'Race Tier', 'T-Shirt Size', 'Phone', 'Email', 'Payment Status'];
+    const headers = ['Segment', 'BIB Number', 'Chest #', 'Name', 'Affiliation / City', 'Gender', 'Race Tier', 'T-Shirt Size', 'Phone', 'Email', 'Payment Status'];
     const rows = list.map(r => {
-      const isNst = (r.category || '').toLowerCase().includes('nst');
+      const isNst = (
+        (r.category || '').toLowerCase().includes('nst') || 
+        (r.category || '').toLowerCase().includes('student') ||
+        (r.email || '').toLowerCase().includes('@adypu.edu.in') ||
+        (r.email || '').toLowerCase().startsWith('e2') ||
+        (r.city || '').toLowerCase().includes('nst') ||
+        (r.city || '').toLowerCase().includes('urn') ||
+        (r.emergency_name || '').toLowerCase().includes('drive.google.com')
+      );
       return [
+        `"${isNst ? 'NST Student' : 'General Public'}"`,
         `"${r.bib_number || ''}"`,
         `"${r.chest_number || ''}"`,
         `"${r.first_name} ${r.last_name}"`,
-        `"${isNst ? getStudentURN(r) : r.city}"`,
-        `"${r.gender || ''}"`,
+        `"${isNst ? (getStudentURN(r) !== '—' ? `URN: ${getStudentURN(r)}` : getStudentYear(r)) : (r.city || 'Pune')}"`,
+        `"${r.gender || 'Male'}"`,
         `"${r.race_type || 'Competitive 5K'}"`,
         `"${r.t_shirt_size || 'M'}"`,
         `"${r.phone}"`,
         `"${r.email}"`,
-        `"${r.payment_status}"`,
+        `"${r.payment_status.toUpperCase()}"`,
       ];
     });
 
@@ -557,8 +615,31 @@ export default function VolunteerDeskPage() {
           </div>
         </div>
 
-        {/* ─── Volunteer Top Section Tabs (Separated Counters) ─── */}
+        {/* ─── Volunteer Top Section Tabs (3 Dedicated Counters) ─── */}
         <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '0 24px', display: 'flex', gap: '8px', borderTop: '1px solid #f1f5f9' }}>
+          <button
+            onClick={() => { setActiveSection('all'); setSearchQuery(''); }}
+            style={{
+              padding: '12px 18px',
+              fontSize: '13px',
+              fontWeight: 800,
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              borderBottom: activeSection === 'all' ? '3px solid #059669' : '3px solid transparent',
+              color: activeSection === 'all' ? '#059669' : '#64748b',
+              transition: 'all 0.15s',
+            }}
+          >
+            <Users size={16} /> All Participants Counter
+            <span style={{ background: activeSection === 'all' ? '#d1fae5' : '#f1f5f9', color: activeSection === 'all' ? '#059669' : '#64748b', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 800 }}>
+              {allMetrics.total}
+            </span>
+          </button>
+
           <button
             onClick={() => { setActiveSection('nst'); setSearchQuery(''); }}
             style={{
@@ -610,6 +691,237 @@ export default function VolunteerDeskPage() {
       {/* ─── Main Content Area ─── */}
       <main style={{ maxWidth: '1600px', margin: '0 auto', padding: '24px' }}>
         {/* ========================================================= */}
+        {/* VIEW 0: ALL PARTICIPANTS DESK COUNTER                     */}
+        {/* ========================================================= */}
+        {activeSection === 'all' && (
+          <div>
+            {/* Top Stat Summary for All Desk */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+              <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #a7f3d0' }}>
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#059669', textTransform: 'uppercase' }}>TOTAL RUNNER QUEUE</div>
+                <div style={{ fontSize: '26px', fontWeight: 900, color: '#059669', marginTop: '4px' }}>{allMetrics.total}</div>
+                <div style={{ fontSize: '12px', color: '#065f46' }}>{allMetrics.total} Confirmed Paid Runners</div>
+              </div>
+
+              <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>AUDIENCE SPLIT</div>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '6px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>NST Students: </span>
+                    <strong style={{ fontSize: '16px', color: '#b45309' }}>{allMetrics.nstCount}</strong>
+                  </div>
+                  <div style={{ width: '1px', height: '20px', background: '#e2e8f0' }} />
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>General Public: </span>
+                    <strong style={{ fontSize: '16px', color: '#0284c7' }}>{allMetrics.generalCount}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>RACE TIERS</div>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '6px' }}>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Competitive: </span>
+                    <strong style={{ fontSize: '16px', color: '#16a34a' }}>{allMetrics.competitive}</strong>
+                  </div>
+                  <div style={{ width: '1px', height: '20px', background: '#e2e8f0' }} />
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Joy Run: </span>
+                    <strong style={{ fontSize: '16px', color: '#eab308' }}>{allMetrics.joy}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* All Search & Filter Bar */}
+            <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '16px', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flex: 1, minWidth: '280px', flexWrap: 'wrap' }}>
+                <div style={{ position: 'relative', width: '100%', maxWidth: '380px' }}>
+                  <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <input
+                    type="text"
+                    placeholder="Search Name, Phone, Email, URN, BIB..."
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    style={{ width: '100%', padding: '10px 14px 10px 36px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '13px', outline: 'none', background: '#f8fafc' }}
+                  />
+                </div>
+
+                <select
+                  value={typeFilter}
+                  onChange={e => setTypeFilter(e.target.value as any)}
+                  style={{ padding: '9px 12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '12.5px', background: '#fff', color: '#0f172a', fontWeight: 600, outline: 'none', cursor: 'pointer' }}
+                >
+                  <option value="all">All Segments ({allMetrics.total})</option>
+                  <option value="nst">🎓 NST Students ({allMetrics.nstCount})</option>
+                  <option value="general">👥 General Public ({allMetrics.generalCount})</option>
+                </select>
+
+                <select
+                  value={raceTypeFilter}
+                  onChange={e => setRaceTypeFilter(e.target.value as any)}
+                  style={{ padding: '9px 12px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '12.5px', background: '#fff', color: '#0f172a', fontWeight: 600, outline: 'none', cursor: 'pointer' }}
+                >
+                  <option value="all">All Race Tiers</option>
+                  <option value="competitive">Competitive 5K</option>
+                  <option value="non-competitive">Non-Competitive Joy 5K</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={exportDeskCSV}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#059669', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: '10px', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  <Download size={14} /> Export CSV ({filteredAll.length})
+                </button>
+              </div>
+            </div>
+
+            {/* Table for ALL Desk */}
+            <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12.5px' }}>
+                  <thead>
+                    <tr style={{ background: '#0f172a', color: '#fff', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      <th style={{ padding: '12px 14px' }}>#</th>
+                      <th style={{ padding: '12px 14px' }}>BIB / Chest</th>
+                      <th style={{ padding: '12px 14px' }}>Participant Name & Contact</th>
+                      <th style={{ padding: '12px 14px' }}>Segment</th>
+                      <th style={{ padding: '12px 14px' }}>Details</th>
+                      <th style={{ padding: '12px 14px' }}>Race Tier</th>
+                      <th style={{ padding: '12px 14px' }}>T-Shirt</th>
+                      <th style={{ padding: '12px 14px' }}>Payment</th>
+                      <th style={{ padding: '12px 14px', textAlign: 'center' }}>Check-In</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredAll.length === 0 ? (
+                      <tr>
+                        <td colSpan={9} style={{ padding: '36px 16px', textAlign: 'center', color: '#94a3b8' }}>
+                          No runners match your search or filter.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredAll.map((runner, index) => {
+                        const isNst = (
+                          (runner.category || '').toLowerCase().includes('nst') || 
+                          (runner.category || '').toLowerCase().includes('student') ||
+                          (runner.email || '').toLowerCase().includes('@adypu.edu.in') ||
+                          (runner.email || '').toLowerCase().startsWith('e2') ||
+                          (runner.city || '').toLowerCase().includes('nst') ||
+                          (runner.city || '').toLowerCase().includes('urn') ||
+                          (runner.emergency_name || '').toLowerCase().includes('drive.google.com')
+                        );
+                        const urn = isNst ? getStudentURN(runner) : '';
+                        const year = isNst ? getStudentYear(runner) : '';
+                        const isPaid = runner.payment_status === 'paid';
+
+                        return (
+                          <tr
+                            key={runner.id}
+                            style={{
+                              borderBottom: '1px solid #f1f5f9',
+                              background: isPaid ? '#ffffff' : '#fff5f5',
+                            }}
+                          >
+                            <td style={{ padding: '12px 14px', color: '#64748b', fontWeight: 600 }}>{index + 1}</td>
+                            <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                              <div style={{ fontWeight: 800, color: '#0f172a' }}>{runner.bib_number || '—'}</div>
+                              <div style={{ fontSize: '11px', color: '#64748b' }}>Chest #{runner.chest_number || '—'}</div>
+                            </td>
+                            <td style={{ padding: '12px 14px' }}>
+                              <div style={{ fontWeight: 800, color: '#0f172a' }}>{runner.first_name} {runner.last_name}</div>
+                              <div style={{ fontSize: '11px', color: '#64748b' }}>{runner.phone || '—'} • {runner.email || '—'}</div>
+                            </td>
+                            <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                              <span
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  padding: '3px 8px',
+                                  borderRadius: '6px',
+                                  fontSize: '11px',
+                                  fontWeight: 800,
+                                  background: isNst ? '#fef3c7' : '#eff6ff',
+                                  color: isNst ? '#b45309' : '#0284c7',
+                                }}
+                              >
+                                {isNst ? <GraduationCap size={11} /> : <Users size={11} />}
+                                {isNst ? 'NST Student' : 'General'}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px 14px' }}>
+                              <div style={{ fontWeight: 600, color: '#0f172a' }}>
+                                {isNst ? (urn !== '—' ? `URN: ${urn}` : year) : (runner.city || 'Pune')}
+                              </div>
+                              <div style={{ fontSize: '11px', color: '#64748b' }}>
+                                {runner.gender || 'Male'} • {calculateAge(runner.dob)}
+                              </div>
+                            </td>
+                            <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                              <span
+                                style={{
+                                  padding: '3px 8px',
+                                  borderRadius: '6px',
+                                  fontSize: '11.5px',
+                                  fontWeight: 700,
+                                  background: (runner.race_type || '').toLowerCase().includes('comp') ? '#f0fdf4' : '#fefce8',
+                                  color: (runner.race_type || '').toLowerCase().includes('comp') ? '#15803d' : '#a16207',
+                                }}
+                              >
+                                {runner.race_type || 'Competitive 5K'}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                              <strong>{runner.t_shirt_size || 'M'}</strong>
+                            </td>
+                            <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                              <span
+                                style={{
+                                  display: 'inline-block',
+                                  padding: '3px 8px',
+                                  borderRadius: '6px',
+                                  fontSize: '11px',
+                                  fontWeight: 800,
+                                  background: isPaid ? '#ecfdf5' : '#fee2e2',
+                                  color: isPaid ? '#15803d' : '#b91c1c',
+                                }}
+                              >
+                                {isPaid ? 'PAID' : 'PENDING'}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px 14px', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                              <button
+                                onClick={() => setSelectedRunner(runner)}
+                                style={{
+                                  background: '#0f172a',
+                                  color: '#fff',
+                                  border: 'none',
+                                  padding: '6px 12px',
+                                  borderRadius: '8px',
+                                  fontSize: '11.5px',
+                                  fontWeight: 700,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                Check-In / Details
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
         {/* VIEW 1: NST STUDENTS DESK COUNTER                         */}
         {/* ========================================================= */}
         {activeSection === 'nst' && (
@@ -619,7 +931,7 @@ export default function VolunteerDeskPage() {
               <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #fde68a' }}>
                 <div style={{ fontSize: '11px', fontWeight: 800, color: '#b45309', textTransform: 'uppercase' }}>STUDENT QUEUE</div>
                 <div style={{ fontSize: '26px', fontWeight: 900, color: '#b45309', marginTop: '4px' }}>{nstMetrics.total}</div>
-                <div style={{ fontSize: '12px', color: '#78350f' }}>{nstMetrics.paid} Paid • {nstMetrics.pending} Pending</div>
+                <div style={{ fontSize: '12px', color: '#78350f' }}>{nstMetrics.total} Confirmed Paid Students & Faculty</div>
               </div>
 
               <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
@@ -853,7 +1165,7 @@ export default function VolunteerDeskPage() {
               <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #bfdbfe' }}>
                 <div style={{ fontSize: '11px', fontWeight: 800, color: '#0284c7', textTransform: 'uppercase' }}>GENERAL QUEUE</div>
                 <div style={{ fontSize: '26px', fontWeight: 900, color: '#0284c7', marginTop: '4px' }}>{generalMetrics.total}</div>
-                <div style={{ fontSize: '12px', color: '#0369a1' }}>{generalMetrics.paid} Paid • {generalMetrics.pending} Pending</div>
+                <div style={{ fontSize: '12px', color: '#0369a1' }}>{generalMetrics.total} Confirmed Paid Runners</div>
               </div>
 
               <div style={{ background: '#fff', padding: '16px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
@@ -919,18 +1231,6 @@ export default function VolunteerDeskPage() {
               </div>
 
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Status:</span>
-                <button className={`filter-btn ${statusFilter === 'all' ? 'active' : ''}`} onClick={() => setStatusFilter('all')}>
-                  All ({generalMetrics.total})
-                </button>
-                <button className={`filter-btn ${statusFilter === 'paid' ? 'active' : ''}`} onClick={() => setStatusFilter('paid')}>
-                  Paid ({generalMetrics.paid})
-                </button>
-                <button className={`filter-btn ${statusFilter === 'pending' ? 'active' : ''}`} onClick={() => setStatusFilter('pending')}>
-                  Unpaid ({generalMetrics.pending})
-                </button>
-
-                <div style={{ width: '1px', height: '20px', background: '#e2e8f0', margin: '0 4px' }} />
 
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Category:</span>
                 <button className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`} onClick={() => setCategoryFilter('all')}>
