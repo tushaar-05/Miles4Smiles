@@ -124,6 +124,15 @@ export default function AdminPage() {
   }, [isAuthenticated, passcode]);
 
   const verifyAndLoad = async (codeToVerify: string, showSpinner = true) => {
+    if (codeToVerify !== 'm4s@2026') {
+      setAuthError('Invalid admin passcode. Access denied.');
+      setIsAuthenticated(false);
+      sessionStorage.removeItem('m4s_admin_passcode');
+      sessionStorage.removeItem('m4s_admin_cached_regs');
+      setIsVerifying(false);
+      setIsCheckingAuth(false);
+      return;
+    }
     if (showSpinner) setIsVerifying(true);
     setAuthError('');
     try {
@@ -132,7 +141,7 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        setAuthError(data.error || 'Invalid passcode. Access denied.');
+        setAuthError(data.error || 'Invalid admin passcode. Access denied.');
         setIsAuthenticated(false);
         sessionStorage.removeItem('m4s_admin_passcode');
         sessionStorage.removeItem('m4s_admin_cached_regs');
@@ -155,11 +164,13 @@ export default function AdminPage() {
     e.preventDefault();
     const code = passcode.trim();
     if (!code) return;
-    if (code === 'm4s@2026') {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('m4s_admin_passcode', code);
+    if (code !== 'm4s@2026') {
+      setAuthError('Invalid admin passcode. Access denied.');
+      return;
     }
-    verifyAndLoad(code, code !== 'm4s@2026');
+    setIsAuthenticated(true);
+    sessionStorage.setItem('m4s_admin_passcode', code);
+    verifyAndLoad(code, false);
   };
 
   const handleRefresh = async () => {
@@ -301,20 +312,46 @@ export default function AdminPage() {
     sessionStorage.removeItem('m4s_admin_passcode');
   };
 
+  // ─── Helper: Format Clean Txn & Customer IDs ───
+  const formatTxnId = (val?: string) => {
+    if (!val || val === '—') return '—';
+    const str = String(val).trim();
+    if (
+      str === 'unknown' ||
+      str === 'MANUAL_PROOF' ||
+      str === 'GATEWAY' ||
+      str === 'GATEWAY_FREE_TIER' ||
+      str.startsWith('order_general_') ||
+      str.startsWith('easebuzz_') ||
+      str.startsWith('order_')
+    ) {
+      return '—';
+    }
+    return str;
+  };
+
   // ─── Data Splitting: NST Students vs General Audience ───
   const nstRegistrations = useMemo(() => {
     return registrations.filter(r => 
       (r.category || '').toLowerCase().includes('nst') || 
-      (r.email || '').includes('@adypu.edu.in') ||
-      (r.city || '').toLowerCase().includes('nst')
+      (r.category || '').toLowerCase().includes('student') ||
+      (r.email || '').toLowerCase().includes('@adypu.edu.in') ||
+      (r.email || '').toLowerCase().startsWith('e2') ||
+      (r.city || '').toLowerCase().includes('nst') ||
+      (r.city || '').toLowerCase().includes('urn') ||
+      (r.emergency_name || '').toLowerCase().includes('drive.google.com')
     );
   }, [registrations]);
 
   const generalRegistrations = useMemo(() => {
     return registrations.filter(r => 
       !(r.category || '').toLowerCase().includes('nst') && 
-      !(r.email || '').includes('@adypu.edu.in') &&
-      !(r.city || '').toLowerCase().includes('nst')
+      !(r.category || '').toLowerCase().includes('student') &&
+      !(r.email || '').toLowerCase().includes('@adypu.edu.in') &&
+      !(r.email || '').toLowerCase().startsWith('e2') &&
+      !(r.city || '').toLowerCase().includes('nst') &&
+      !(r.city || '').toLowerCase().includes('urn') &&
+      !(r.emergency_name || '').toLowerCase().includes('drive.google.com')
     );
   }, [registrations]);
 
@@ -335,10 +372,12 @@ export default function AdminPage() {
 
   // Helper to calculate exact age from DOB
   const calculateAge = (dobString?: string) => {
-    if (!dobString || dobString === '—') return '—';
-    const num = parseInt(dobString);
-    if (!isNaN(num) && num > 0 && num < 120 && !dobString.includes('-')) return `${num} yrs`;
-    const birthDate = new Date(dobString);
+    if (!dobString || dobString === '—' || dobString === 'unknown') return '—';
+    const str = String(dobString).trim();
+    if (/year|1st|2nd|3rd|4th/i.test(str)) return '—';
+    const num = parseInt(str);
+    if (!isNaN(num) && num >= 10 && num < 120 && !str.includes('-') && !str.includes('/')) return `${num} yrs`;
+    const birthDate = new Date(str);
     if (isNaN(birthDate.getTime())) return '—';
     const eventDate = new Date('2026-09-05');
     let age = eventDate.getFullYear() - birthDate.getFullYear();
@@ -346,7 +385,7 @@ export default function AdminPage() {
     if (m < 0 || (m === 0 && eventDate.getDate() < birthDate.getDate())) {
       age--;
     }
-    return age > 0 && age < 120 ? `${age} yrs` : '—';
+    return age >= 10 && age < 120 ? `${age} yrs` : '—';
   };
 
   // Helper to categorize General Public runner
@@ -1057,10 +1096,10 @@ export default function AdminPage() {
                         {/* Gateway Customer & Txn ID */}
                         <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
                           <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            Cust: <strong style={{ color: '#0f172a' }}>{student.razorpay_order_id && student.razorpay_order_id !== 'unknown' ? student.razorpay_order_id : '—'}</strong>
+                            Cust: <strong style={{ color: '#0f172a' }}>{formatTxnId(student.razorpay_order_id)}</strong>
                           </div>
                           <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            Txn: <strong style={{ color: '#0f172a' }}>{student.razorpay_payment_id && student.razorpay_payment_id !== 'unknown' ? student.razorpay_payment_id : '—'}</strong>
+                            Txn: <strong style={{ color: '#0f172a' }}>{formatTxnId(student.razorpay_payment_id)}</strong>
                           </div>
                         </td>
 
@@ -1391,10 +1430,10 @@ export default function AdminPage() {
                           {/* Gateway Ref */}
                           <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
                             <div style={{ fontSize: '11px', color: '#64748b' }}>
-                              Cust: <strong style={{ color: '#0f172a' }}>{runner.razorpay_order_id && runner.razorpay_order_id !== 'unknown' ? runner.razorpay_order_id : '—'}</strong>
+                              Cust: <strong style={{ color: '#0f172a' }}>{formatTxnId(runner.razorpay_order_id)}</strong>
                             </div>
                             <div style={{ fontSize: '11px', color: '#64748b' }}>
-                              Txn: <strong style={{ color: '#0f172a' }}>{runner.razorpay_payment_id && runner.razorpay_payment_id !== 'unknown' ? runner.razorpay_payment_id : '—'}</strong>
+                              Txn: <strong style={{ color: '#0f172a' }}>{formatTxnId(runner.razorpay_payment_id)}</strong>
                             </div>
                           </td>
 

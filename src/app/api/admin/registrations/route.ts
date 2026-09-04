@@ -2,27 +2,35 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 import { syncLiveGoogleSheets } from '@/lib/sheetsSync';
 
-function getProvidedPasscode(req: NextRequest): string {
-  return (
-    req.headers.get('x-admin-passcode') ||
-    req.headers.get('x-volunteer-passcode') ||
-    req.nextUrl.searchParams.get('passcode') ||
-    ''
-  );
+function verifyAuth(req: NextRequest): { valid: boolean; role?: 'admin' | 'volunteer' } {
+  const adminPasscode = process.env.ADMIN_PASSCODE || 'm4s@2026';
+  const volunteerPasscode = process.env.VOLUNTEER_PASSCODE || 'desk2026';
+
+  const adminHeader = req.headers.get('x-admin-passcode');
+  const volunteerHeader = req.headers.get('x-volunteer-passcode');
+  const queryPasscode = req.nextUrl.searchParams.get('passcode');
+
+  if (adminHeader !== null) {
+    return { valid: adminHeader === adminPasscode, role: 'admin' };
+  }
+
+  if (volunteerHeader !== null) {
+    return { valid: volunteerHeader === volunteerPasscode, role: 'volunteer' };
+  }
+
+  if (queryPasscode) {
+    if (queryPasscode === adminPasscode) return { valid: true, role: 'admin' };
+    if (queryPasscode === volunteerPasscode) return { valid: true, role: 'volunteer' };
+  }
+
+  return { valid: false };
 }
 
 function verifyAdminStrict(req: NextRequest): boolean {
   const adminPasscode = process.env.ADMIN_PASSCODE || 'm4s@2026';
-  const provided = getProvidedPasscode(req);
-  return provided === adminPasscode;
-}
-
-function verifyAdminOrVolunteer(req: NextRequest): boolean {
-  const adminPasscode = process.env.ADMIN_PASSCODE || 'm4s@2026';
-  const volunteerPasscode = process.env.VOLUNTEER_PASSCODE || 'desk2026';
-  const provided = getProvidedPasscode(req);
-
-  return provided === adminPasscode || provided === volunteerPasscode;
+  const adminHeader = req.headers.get('x-admin-passcode');
+  const queryPasscode = req.nextUrl.searchParams.get('passcode');
+  return adminHeader === adminPasscode || queryPasscode === adminPasscode;
 }
 
 /**
@@ -31,9 +39,10 @@ function verifyAdminOrVolunteer(req: NextRequest): boolean {
  * Automatically syncs with live Google Sheets feeds
  */
 export async function GET(req: NextRequest) {
-  if (!verifyAdminOrVolunteer(req)) {
+  const auth = verifyAuth(req);
+  if (!auth.valid) {
     return NextResponse.json(
-      { success: false, error: 'Unauthorized: Invalid passcode' },
+      { success: false, error: 'Unauthorized: Invalid passcode for this portal' },
       { status: 401 }
     );
   }
@@ -80,7 +89,8 @@ export async function GET(req: NextRequest) {
  * Create a new manual / on-spot registration (Accessible by Admin and Volunteer Desk)
  */
 export async function POST(req: NextRequest) {
-  if (!verifyAdminOrVolunteer(req)) {
+  const auth = verifyAuth(req);
+  if (!auth.valid) {
     return NextResponse.json(
       { success: false, error: 'Unauthorized: Invalid passcode' },
       { status: 401 }
